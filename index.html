@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fun Games</title>
+<link href="https://fonts.googleapis.com/css2?family=Boogaloo&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sushi-color: #FF6B6B;
+    --shooting-color: #4ECDC4;
+    --sumo-color: #FFE66D;
+    --bg: #1a1a2e;
+    --card-bg: #16213e;
+    --accent: #e94560;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background-color: var(--bg);
+    font-family: 'Nunito', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+    cursor: default;
+  }
+
+  /* Animated background dots */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: radial-gradient(circle, rgba(255,255,255,0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  header {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    padding: 52px 20px 20px;
+  }
+
+  .title-wrap {
+    display: inline-block;
+    position: relative;
+  }
+
+  h1 {
+    font-family: 'Boogaloo', cursive;
+    font-size: clamp(3.5rem, 9vw, 7rem);
+    color: #fff;
+    letter-spacing: 2px;
+    line-height: 1;
+    text-shadow:
+      4px 4px 0 var(--accent),
+      8px 8px 0 rgba(233,69,96,0.3);
+    animation: titleBounce 3s ease-in-out infinite;
+  }
+
+  .star {
+    position: absolute;
+    font-size: 2rem;
+    animation: spin 4s linear infinite;
+  }
+  .star:nth-child(1) { top: -10px; left: -50px; animation-delay: 0s; }
+  .star:nth-child(2) { top: -15px; right: -50px; animation-delay: -2s; }
+
+  .subtitle {
+    color: rgba(255,255,255,0.45);
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-top: 8px;
+  }
+
+  @keyframes titleBounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  /* Game grid */
+  .games-grid {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+    gap: 14px;
+    flex-wrap: nowrap;
+    padding: 40px 40px 60px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .game-card {
+    position: relative;
+    width: 150px;
+    border-radius: 20px;
+    overflow: hidden;
+    cursor: pointer;
+    text-decoration: none;
+    transition: transform 0.25s cubic-bezier(.34,1.56,.64,1), box-shadow 0.25s ease;
+    animation: cardIn 0.6s cubic-bezier(.34,1.56,.64,1) both;
+  }
+  .game-card:nth-child(1) { animation-delay: 0.1s; }
+  .game-card:nth-child(2) { animation-delay: 0.2s; }
+  .game-card:nth-child(3) { animation-delay: 0.3s; }
+
+  @keyframes cardIn {
+    from { opacity: 0; transform: translateY(60px) scale(0.85); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .game-card:hover {
+    transform: translateY(-12px) scale(1.03) rotate(-1deg);
+  }
+  .game-card:nth-child(2):hover { transform: translateY(-12px) scale(1.03) rotate(0deg); }
+  .game-card:nth-child(3):hover { transform: translateY(-12px) scale(1.03) rotate(1deg); }
+
+  .card-inner {
+    position: relative;
+    width: 100%;
+    padding-bottom: 115%;
+  }
+
+  .card-bg {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Sushi card */
+  .card-sushi .card-bg { background: linear-gradient(145deg, #FF6B6B 0%, #FF8E53 100%); }
+  .card-sushi { box-shadow: 0 12px 40px rgba(255,107,107,0.4); }
+  .card-sushi:hover { box-shadow: 0 24px 60px rgba(255,107,107,0.6); }
+
+  /* Shooting card */
+  .card-shooting .card-bg { background: linear-gradient(145deg, #0f3460 0%, #4ECDC4 100%); }
+  .card-shooting { box-shadow: 0 12px 40px rgba(78,205,196,0.35); }
+  .card-shooting:hover { box-shadow: 0 24px 60px rgba(78,205,196,0.55); }
+
+  /* Sumo card */
+  .card-sumo .card-bg { background: linear-gradient(145deg, #f7971e 0%, #FFE66D 100%); }
+  .card-sumo { box-shadow: 0 12px 40px rgba(255,230,109,0.35); }
+  .card-sumo:hover { box-shadow: 0 24px 60px rgba(255,230,109,0.55); }
+
+  /* Card scene illustration */
+  .card-scene {
+    font-size: 3.5rem;
+    line-height: 1;
+    filter: drop-shadow(0 8px 16px rgba(0,0,0,0.25));
+    transition: transform 0.3s cubic-bezier(.34,1.56,.64,1);
+  }
+  .game-card:hover .card-scene { transform: scale(1.15) translateY(-4px); }
+
+  /* Decorative circles */
+  .card-circle {
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0.15;
+  }
+  .card-circle-1 { width: 160px; height: 160px; background: #fff; top: -40px; right: -40px; }
+  .card-circle-2 { width: 80px; height: 80px; background: #fff; bottom: 60px; left: -20px; }
+
+  /* Card label */
+  .card-label {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 20px 16px 22px;
+    text-align: center;
+    background: linear-gradient(transparent, rgba(0,0,0,0.45));
+  }
+
+  .card-title {
+    font-family: 'Boogaloo', cursive;
+    font-size: 2.2rem;
+    color: #fff;
+    letter-spacing: 1px;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  }
+
+  .card-cta {
+    display: inline-block;
+    margin-top: 4px;
+    font-size: 0.75rem;
+    font-weight: 900;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.75);
+  }
+
+  /* Corner badge */
+  .badge {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    background: rgba(255,255,255,0.92);
+    border-radius: 100px;
+    padding: 4px 12px;
+    font-size: 0.65rem;
+    font-weight: 900;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #333;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  }
+
+  /* ============================================================
+     GAME PAGES (hidden by default)
+  ============================================================ */
+  .game-page {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    animation: pageIn 0.4s ease both;
+  }
+  .game-page.active { display: flex; }
+
+  @keyframes pageIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to   { opacity: 1; transform: scale(1); }
+  }
+
+  /* Back button */
+  .back-btn {
+    position: absolute;
+    top: 24px;
+    left: 24px;
+    background: rgba(255,255,255,0.15);
+    border: 2px solid rgba(255,255,255,0.3);
+    border-radius: 100px;
+    padding: 10px 22px;
+    color: #fff;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+    backdrop-filter: blur(8px);
+  }
+  .back-btn:hover { background: rgba(255,255,255,0.3); transform: translateX(-3px); }
+
+  .game-title-banner {
+    font-family: 'Boogaloo', cursive;
+    font-size: clamp(3rem, 7vw, 5.5rem);
+    color: #fff;
+    text-shadow: 4px 4px 0 rgba(0,0,0,0.2);
+    margin-bottom: 16px;
+  }
+
+  .game-emoji-big {
+    font-size: 8rem;
+    animation: gameBounce 1s ease-in-out infinite alternate;
+    filter: drop-shadow(0 16px 24px rgba(0,0,0,0.3));
+  }
+  @keyframes gameBounce {
+    from { transform: translateY(0) scale(1); }
+    to   { transform: translateY(-18px) scale(1.07); }
+  }
+
+  .game-desc {
+    color: rgba(255,255,255,0.8);
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin-top: 20px;
+    max-width: 340px;
+    text-align: center;
+    line-height: 1.5;
+  }
+
+  .play-btn {
+    margin-top: 36px;
+    background: #fff;
+    border: none;
+    border-radius: 100px;
+    padding: 16px 48px;
+    font-family: 'Boogaloo', cursive;
+    font-size: 1.6rem;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: transform 0.2s cubic-bezier(.34,1.56,.64,1), box-shadow 0.2s;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+  }
+  .play-btn:hover { transform: scale(1.08); box-shadow: 0 14px 36px rgba(0,0,0,0.3); }
+  .play-btn:active { transform: scale(0.97); }
+
+  /* Sushi game page */
+  #page-sushi { background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%); }
+  #page-sushi .play-btn { color: #FF6B6B; }
+
+  /* Shooting game page */
+  #page-shooting { background: linear-gradient(135deg, #0f3460 0%, #16213e 50%, #4ECDC4 100%); }
+  #page-shooting .play-btn { color: #0f3460; }
+
+  /* Sumo game page */
+  #page-sumo { background: linear-gradient(135deg, #f7971e 0%, #FFE66D 100%); }
+  #page-sumo .play-btn { color: #c07d00; }
+
+  /* Decorative shapes on game pages */
+  .deco-shape {
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0.1;
+    pointer-events: none;
+  }
+  .deco-shape-1 { width: 400px; height: 400px; background: #fff; top: -150px; right: -100px; }
+  .deco-shape-2 { width: 250px; height: 250px; background: #fff; bottom: -80px; left: -60px; }
+
+  /* Shooting game canvas area */
+  #shooting-canvas-wrap {
+    position: relative;
+    width: min(560px, 90vw);
+    height: min(320px, 55vw);
+    background: rgba(0,0,0,0.35);
+    border-radius: 16px;
+    overflow: hidden;
+    border: 2px solid rgba(78,205,196,0.4);
+    box-shadow: 0 0 40px rgba(78,205,196,0.2);
+    cursor: crosshair;
+    margin-top: 12px;
+  }
+  .target {
+    position: absolute;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #FFE66D, #FF6B6B);
+    border: 3px solid rgba(255,255,255,0.7);
+    box-shadow: 0 0 12px rgba(255,100,100,0.6);
+    cursor: crosshair;
+    transition: transform 0.1s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    user-select: none;
+  }
+  .target:hover { transform: scale(1.1); }
+  .score-display {
+    position: absolute;
+    top: 10px;
+    right: 14px;
+    font-family: 'Boogaloo', cursive;
+    font-size: 1.4rem;
+    color: #4ECDC4;
+    text-shadow: 0 0 8px rgba(78,205,196,0.6);
+  }
+  .time-display {
+    position: absolute;
+    top: 10px;
+    left: 14px;
+    font-family: 'Boogaloo', cursive;
+    font-size: 1.4rem;
+    color: #FFE66D;
+  }
+  .pop-text {
+    position: absolute;
+    font-family: 'Boogaloo', cursive;
+    font-size: 1.4rem;
+    color: #fff;
+    pointer-events: none;
+    animation: popUp 0.6s ease forwards;
+  }
+  @keyframes popUp {
+    0%   { opacity: 1; transform: translateY(0) scale(1); }
+    100% { opacity: 0; transform: translateY(-40px) scale(1.4); }
+  }
+
+  /* Sushi game */
+  #sushi-game-wrap {
+    width: min(560px, 90vw);
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+  .sushi-conveyor {
+    position: relative;
+    width: 100%;
+    height: 90px;
+    background: rgba(0,0,0,0.25);
+    border-radius: 14px;
+    overflow: hidden;
+    border: 2px solid rgba(255,255,255,0.2);
+  }
+  .sushi-item {
+    position: absolute;
+    font-size: 2.6rem;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    transition: transform 0.1s;
+    user-select: none;
+  }
+  .sushi-item:hover { transform: translateY(-50%) scale(1.2); }
+  .sushi-score {
+    font-family: 'Boogaloo', cursive;
+    font-size: 1.4rem;
+    color: #fff;
+  }
+  .sushi-instructions {
+    color: rgba(255,255,255,0.75);
+    font-size: 0.9rem;
+    font-weight: 700;
+  }
+
+  /* Sumo game */
+  #sumo-game-wrap {
+    width: min(500px, 90vw);
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+  .sumo-arena {
+    position: relative;
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 50% 45%, #e8d5a3 0%, #c9a96e 60%, #8b6914 100%);
+    border: 8px solid #5c4a1e;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4), inset 0 -4px 12px rgba(0,0,0,0.2);
+    overflow: hidden;
+  }
+  .sumo-ring-line {
+    position: absolute;
+    inset: 16px;
+    border-radius: 50%;
+    border: 3px solid rgba(92,74,30,0.5);
+  }
+  .sumo-fighter {
+    position: absolute;
+    font-size: 3rem;
+    transform: translate(-50%, -50%);
+    transition: left 0.1s, top 0.1s;
+    user-select: none;
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
+  }
+  .sumo-score-wrap {
+    display: flex;
+    gap: 30px;
+    align-items: center;
+  }
+  .sumo-score-item {
+    text-align: center;
+    color: #fff;
+  }
+  .sumo-score-item .label {
+    font-size: 0.75rem;
+    font-weight: 900;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    opacity: 0.7;
+  }
+  .sumo-score-item .val {
+    font-family: 'Boogaloo', cursive;
+    font-size: 2rem;
+  }
+  .sumo-instructions {
+    color: rgba(255,255,255,0.7);
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+
+<!-- ===================== START PAGE ===================== -->
+<div id="start-page">
+  <header>
+    <div class="title-wrap">
+      <span class="star">⭐</span>
+      <h1>Fun Games</h1>
+      <span class="star">⭐</span>
+    </div>
+    <p class="subtitle">Choose your adventure</p>
+  </header>
+
+  <div class="games-grid">
+
+    <!-- Sushi Card -->
+    <a class="game-card card-sushi" href="https://arnonmaya.github.io/games/sushi.html">
+      <div class="card-inner">
+        <div class="card-bg">
+          <div class="card-circle card-circle-1"></div>
+          <div class="card-circle card-circle-2"></div>
+          <div class="card-scene">🍣</div>
+          <div class="card-label">
+            <div class="card-title">Sushi</div>
+            <div class="card-cta">Tap to play →</div>
+          </div>
+          <div class="badge">🎌 Japan Vibes</div>
+        </div>
+      </div>
+    </a>
+
+    <!-- Shooting Card -->
+    <a class="game-card card-shooting" href="https://arnonmaya.github.io/games/shoot.html">
+      <div class="card-inner">
+        <div class="card-bg">
+          <div class="card-circle card-circle-1"></div>
+          <div class="card-circle card-circle-2"></div>
+          <div class="card-scene">🔫</div>
+          <div class="card-label">
+            <div class="card-title">Shooting</div>
+            <div class="card-cta">Tap to play →</div>
+          </div>
+          <div class="badge">🔥 Hot Shot</div>
+        </div>
+      </div>
+    </a>
+
+    <!-- Sumo Card -->
+    <a class="game-card card-sumo" href="https://arnonmaya.github.io/games/sumo.html">
+      <div class="card-inner">
+        <div class="card-bg">
+          <div class="card-circle card-circle-1"></div>
+          <div class="card-circle card-circle-2"></div>
+          <div class="card-scene">🤼</div>
+          <div class="card-label">
+            <div class="card-title">Sumo</div>
+            <div class="card-cta">Tap to play →</div>
+          </div>
+          <div class="badge">🏆 Champion</div>
+        </div>
+      </div>
+    </a>
+
+  </div>
+</div>
+
+<!-- ===================== SUSHI GAME PAGE ===================== -->
+<div id="page-sushi" class="game-page">
+  <div class="deco-shape deco-shape-1"></div>
+  <div class="deco-shape deco-shape-2"></div>
+  <button class="back-btn" onclick="goBack()">← Back</button>
+  <div class="game-emoji-big">🍣</div>
+  <div class="game-title-banner">Sushi Catch!</div>
+  <div id="sushi-game-wrap">
+    <div class="sushi-score">Score: <span id="sushi-score">0</span></div>
+    <div class="sushi-conveyor" id="sushi-belt"></div>
+    <div class="sushi-instructions">Click the sushi as it rolls by! 🎌</div>
+  </div>
+</div>
+
+<!-- ===================== SHOOTING GAME PAGE ===================== -->
+<div id="page-shooting" class="game-page">
+  <div class="deco-shape deco-shape-1"></div>
+  <div class="deco-shape deco-shape-2"></div>
+  <button class="back-btn" onclick="goBack()">← Back</button>
+  <div class="game-title-banner">Target Blaster!</div>
+  <div id="shooting-canvas-wrap" onclick="handleShootClick(event)">
+    <div class="time-display">⏱ <span id="shoot-time">30</span>s</div>
+    <div class="score-display">Score: <span id="shoot-score">0</span></div>
+  </div>
+  <div class="game-desc" style="font-size:0.9rem; margin-top:10px;">Click the targets before time runs out! 🎯</div>
+</div>
+
+<!-- ===================== SUMO GAME PAGE ===================== -->
+<div id="page-sumo" class="game-page">
+  <div class="deco-shape deco-shape-1"></div>
+  <div class="deco-shape deco-shape-2"></div>
+  <button class="back-btn" onclick="goBack()">← Back</button>
+  <div class="game-title-banner">Sumo Clash!</div>
+  <div id="sumo-game-wrap">
+    <div class="sumo-score-wrap">
+      <div class="sumo-score-item">
+        <div class="label">🧑 You</div>
+        <div class="val" id="sumo-p1-score">0</div>
+      </div>
+      <div style="color:rgba(255,255,255,0.4); font-size:1.5rem; font-weight:900;">VS</div>
+      <div class="sumo-score-item">
+        <div class="label">CPU 🤖</div>
+        <div class="val" id="sumo-cpu-score">0</div>
+      </div>
+    </div>
+    <div class="sumo-arena" id="sumo-ring">
+      <div class="sumo-ring-line"></div>
+      <div class="sumo-fighter" id="fighter-p1" style="left:35%; top:50%">🧑</div>
+      <div class="sumo-fighter" id="fighter-cpu" style="left:65%; top:50%">🤖</div>
+    </div>
+    <div class="sumo-instructions">Arrow keys (or WASD) to push the CPU out of the ring!</div>
+  </div>
+</div>
+
+<script>
+// ===================== NAVIGATION =====================
+let currentGame = null;
+
+function openGame(name) {
+  document.getElementById('start-page').style.display = 'none';
+  document.getElementById('page-' + name).classList.add('active');
+  currentGame = name;
+  if (name === 'sushi') startSushi();
+  if (name === 'shooting') startShooting();
+  if (name === 'sumo') startSumo();
+}
+
+function goBack() {
+  if (currentGame) {
+    document.getElementById('page-' + currentGame).classList.remove('active');
+    stopSushi(); stopShooting(); stopSumo();
+  }
+  document.getElementById('start-page').style.display = '';
+  currentGame = null;
+}
+
+// ===================== SUSHI GAME =====================
+const sushiEmojis = ['🍣','🍱','🍤','🍙','🍘','🦐','🥟','🍚'];
+let sushiScore = 0, sushiInterval = null, sushiItemTimers = [];
+
+function startSushi() {
+  sushiScore = 0;
+  document.getElementById('sushi-score').textContent = 0;
+  document.getElementById('sushi-belt').innerHTML = '';
+  clearInterval(sushiInterval);
+  sushiItemTimers.forEach(clearTimeout);
+  sushiItemTimers = [];
+  sushiInterval = setInterval(spawnSushi, 1100);
+}
+
+function spawnSushi() {
+  if (currentGame !== 'sushi') return;
+  const belt = document.getElementById('sushi-belt');
+  const item = document.createElement('div');
+  item.className = 'sushi-item';
+  item.textContent = sushiEmojis[Math.floor(Math.random() * sushiEmojis.length)];
+  const beltW = belt.clientWidth;
+  item.style.left = beltW + 'px';
+  let pos = beltW;
+  const speed = 1.8 + Math.random() * 1.2;
+
+  item.addEventListener('click', (e) => {
+    e.stopPropagation();
+    sushiScore += 10;
+    document.getElementById('sushi-score').textContent = sushiScore;
+    // pop effect
+    item.style.transform = 'translateY(-50%) scale(2)';
+    item.style.opacity = '0';
+    item.style.transition = 'all 0.3s';
+    setTimeout(() => item.remove(), 300);
+  });
+
+  belt.appendChild(item);
+
+  function move() {
+    if (currentGame !== 'sushi') { item.remove(); return; }
+    pos -= speed;
+    item.style.left = pos + 'px';
+    if (pos < -60) { item.remove(); return; }
+    requestAnimationFrame(move);
+  }
+  requestAnimationFrame(move);
+}
+
+function stopSushi() {
+  clearInterval(sushiInterval);
+  sushiItemTimers.forEach(clearTimeout);
+  sushiItemTimers = [];
+}
+
+// ===================== SHOOTING GAME =====================
+let shootScore = 0, shootTimeLeft = 30, shootTimer = null, shootTargets = [];
+let shootActive = false;
+
+function startShooting() {
+  shootScore = 0; shootTimeLeft = 30; shootActive = true;
+  document.getElementById('shoot-score').textContent = 0;
+  document.getElementById('shoot-time').textContent = 30;
+  const wrap = document.getElementById('shooting-canvas-wrap');
+  // clear old targets
+  wrap.querySelectorAll('.target').forEach(t => t.remove());
+  shootTargets = [];
+  clearInterval(shootTimer);
+  spawnTarget(); spawnTarget();
+  shootTimer = setInterval(() => {
+    if (!shootActive) return;
+    shootTimeLeft--;
+    document.getElementById('shoot-time').textContent = shootTimeLeft;
+    if (shootTimeLeft <= 0) {
+      shootActive = false;
+      clearInterval(shootTimer);
+      shootTargets.forEach(t => t.remove());
+      // show result
+      const res = document.createElement('div');
+      res.style.cssText = 'position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,0.6);border-radius:14px;';
+      res.innerHTML = `<div style="font-family:Boogaloo,cursive;font-size:2.5rem;color:#FFE66D">Time's Up!</div>
+        <div style="font-family:Boogaloo,cursive;font-size:1.6rem;color:#4ECDC4;margin-top:8px">Score: ${shootScore}</div>
+        <button onclick="restartShooting()" style="margin-top:20px;padding:10px 28px;background:#4ECDC4;border:none;border-radius:100px;font-family:Boogaloo,cursive;font-size:1.3rem;cursor:pointer;color:#0f3460">Play Again</button>`;
+      wrap.appendChild(res);
+    }
+  }, 1000);
+}
+
+function restartShooting() {
+  const wrap = document.getElementById('shooting-canvas-wrap');
+  wrap.querySelectorAll('div:not(.score-display):not(.time-display)').forEach(d => d.remove());
+  startShooting();
+}
+
+function spawnTarget() {
+  if (!shootActive) return;
+  const wrap = document.getElementById('shooting-canvas-wrap');
+  const t = document.createElement('div');
+  t.className = 'target';
+  t.textContent = ['🎯','💥','⭐','🔴'][Math.floor(Math.random()*4)];
+  const maxX = wrap.clientWidth - 60;
+  const maxY = wrap.clientHeight - 60;
+  t.style.left = (20 + Math.random() * maxX) + 'px';
+  t.style.top  = (20 + Math.random() * maxY) + 'px';
+  t.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (!shootActive) return;
+    shootScore++;
+    document.getElementById('shoot-score').textContent = shootScore;
+    // pop text
+    const pop = document.createElement('div');
+    pop.className = 'pop-text';
+    pop.textContent = '+1';
+    pop.style.left = t.style.left;
+    pop.style.top  = t.style.top;
+    wrap.appendChild(pop);
+    setTimeout(() => pop.remove(), 600);
+    t.remove();
+    shootTargets = shootTargets.filter(x => x !== t);
+    setTimeout(spawnTarget, 300 + Math.random() * 400);
+  });
+  wrap.appendChild(t);
+  shootTargets.push(t);
+
+  // auto-move target every 1.5s
+  setTimeout(() => {
+    if (!t.parentNode) return;
+    const nx = 20 + Math.random() * (wrap.clientWidth - 60);
+    const ny = 20 + Math.random() * (wrap.clientHeight - 60);
+    t.style.left = nx + 'px';
+    t.style.top  = ny + 'px';
+  }, 1500);
+}
+
+function handleShootClick(e) {
+  // clicked canvas but not target — miss flash
+  const wrap = document.getElementById('shooting-canvas-wrap');
+  if (!shootActive) return;
+  const miss = document.createElement('div');
+  miss.className = 'pop-text';
+  miss.style.color = 'rgba(255,100,100,0.7)';
+  miss.textContent = 'Miss!';
+  miss.style.left = (e.offsetX - 16) + 'px';
+  miss.style.top  = (e.offsetY - 16) + 'px';
+  wrap.appendChild(miss);
+  setTimeout(() => miss.remove(), 500);
+}
+
+function stopShooting() {
+  shootActive = false;
+  clearInterval(shootTimer);
+}
+
+// ===================== SUMO GAME =====================
+let p1x = 35, p1y = 50, cpux = 65, cpuy = 50;
+let p1Score = 0, cpuScore = 0;
+let sumoLoop = null;
+let keysHeld = {};
+const RING_CX = 50, RING_CY = 50, RING_R = 42;
+const FIGHTER_R = 7;
+
+function startSumo() {
+  p1x = 35; p1y = 50; cpux = 65; cpuy = 50;
+  p1Score = 0; cpuScore = 0;
+  updateSumoUI();
+  document.addEventListener('keydown', sumoKeyDown);
+  document.addEventListener('keyup', sumoKeyUp);
+  clearInterval(sumoLoop);
+  sumoLoop = setInterval(sumoStep, 50);
+}
+
+function stopSumo() {
+  document.removeEventListener('keydown', sumoKeyDown);
+  document.removeEventListener('keyup', sumoKeyUp);
+  clearInterval(sumoLoop);
+  keysHeld = {};
+}
+
+function sumoKeyDown(e) { keysHeld[e.key] = true; if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].includes(e.key)) e.preventDefault(); }
+function sumoKeyUp(e)   { keysHeld[e.key] = false; }
+
+function sumoStep() {
+  if (currentGame !== 'sumo') return;
+  const speed = 1.8;
+  let dx = 0, dy = 0;
+  if (keysHeld['ArrowUp']    || keysHeld['w'] || keysHeld['W']) dy -= speed;
+  if (keysHeld['ArrowDown']  || keysHeld['s'] || keysHeld['S']) dy += speed;
+  if (keysHeld['ArrowLeft']  || keysHeld['a'] || keysHeld['A']) dx -= speed;
+  if (keysHeld['ArrowRight'] || keysHeld['d'] || keysHeld['D']) dx += speed;
+
+  p1x += dx; p1y += dy;
+
+  // collision push
+  const dist = Math.hypot(p1x - cpux, p1y - cpuy);
+  if (dist < FIGHTER_R * 2) {
+    const ang = Math.atan2(cpuy - p1y, cpux - p1x);
+    const push = (FIGHTER_R * 2 - dist) / 2 + 1.5;
+    cpux += Math.cos(ang) * push;
+    cpuy += Math.sin(ang) * push;
+    p1x -= Math.cos(ang) * (push * 0.4);
+    p1y -= Math.sin(ang) * (push * 0.4);
+  }
+
+  // CPU simple AI — move toward center, slightly chase p1
+  const cpuToP1Ang = Math.atan2(p1y - cpuy, p1x - cpux);
+  const cpuToCenter = Math.atan2(RING_CY - cpuy, RING_CX - cpux);
+  const cpuDistCenter = Math.hypot(cpux - RING_CX, cpuy - RING_CY);
+  let cDx, cDy;
+  if (cpuDistCenter > 15) {
+    cDx = Math.cos(cpuToCenter) * 0.7;
+    cDy = Math.sin(cpuToCenter) * 0.7;
+  } else {
+    cDx = Math.cos(cpuToP1Ang) * 0.55;
+    cDy = Math.sin(cpuToP1Ang) * 0.55;
+  }
+  cpux += cDx; cpuy += cDy;
+
+  // Boundary clamp p1
+  const p1d = Math.hypot(p1x - RING_CX, p1y - RING_CY);
+  if (p1d > RING_R - FIGHTER_R) {
+    // p1 out!
+    cpuScore++;
+    updateSumoScores();
+    resetFighters();
+    return;
+  }
+
+  // Boundary clamp cpu
+  const cpud = Math.hypot(cpux - RING_CX, cpuy - RING_CY);
+  if (cpud > RING_R - FIGHTER_R) {
+    // cpu out!
+    p1Score++;
+    updateSumoScores();
+    resetFighters();
+    return;
+  }
+
+  updateSumoUI();
+}
+
+function resetFighters() {
+  p1x = 35; p1y = 50; cpux = 65; cpuy = 50;
+  updateSumoUI();
+}
+
+function updateSumoUI() {
+  document.getElementById('fighter-p1').style.left = p1x + '%';
+  document.getElementById('fighter-p1').style.top  = p1y + '%';
+  document.getElementById('fighter-cpu').style.left = cpux + '%';
+  document.getElementById('fighter-cpu').style.top  = cpuy + '%';
+}
+
+function updateSumoScores() {
+  document.getElementById('sumo-p1-score').textContent  = p1Score;
+  document.getElementById('sumo-cpu-score').textContent = cpuScore;
+}
+</script>
+</body>
+</html>
