@@ -117,6 +117,29 @@
   }
   .overlay-sub { color: #a09070; font-size: 0.82rem; letter-spacing: 2px; margin-bottom: 22px; text-align: center; padding: 0 20px; }
 
+  .countdown-ring {
+    width: 64px; height: 64px;
+    position: relative;
+    margin: 0 auto 20px;
+    display: none;
+  }
+  .countdown-ring svg { transform: rotate(-90deg); }
+  .countdown-ring circle {
+    fill: none;
+    stroke-width: 5;
+    stroke-linecap: round;
+  }
+  .countdown-ring .bg { stroke: rgba(255,255,255,0.08); }
+  .countdown-ring .fg { stroke: #e8c97a; transition: stroke-dashoffset 1s linear; }
+  .countdown-num {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%,-50%);
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: #e8c97a;
+  }
+
   .picker { margin-bottom: 18px; text-align: center; }
   .picker p { color: #c0a060; font-size: 0.78rem; letter-spacing: 2px; margin-bottom: 10px; }
   .picker-btns { display: flex; gap: 10px; justify-content: center; }
@@ -358,20 +381,21 @@
 <div class="overlay show" id="overlay">
   <div class="overlay-emoji" id="ovEmoji">⛩</div>
   <div class="overlay-title" id="ovTitle" style="color:#e8c97a">Sumo Wrestling</div>
-  <div class="overlay-sub" id="ovSub">What are you playing on?</div>
+  <div class="overlay-sub" id="ovSub">Push opponents outside the ring line. First to 3 points wins!</div>
 
-  <!-- Step 1: Device picker -->
-  <div id="devicePickerDiv" style="margin-bottom:18px;text-align:center;">
-    <p style="color:#c0a060;font-size:0.78rem;letter-spacing:2px;margin-bottom:12px;">SELECT YOUR DEVICE</p>
-    <div style="display:flex;gap:14px;justify-content:center;">
-      <button class="device-btn" onclick="selectDevice('computer')">💻<span>Computer</span></button>
-      <button class="device-btn" onclick="selectDevice('tablet')">📱<span>Tablet</span></button>
-      <button class="device-btn" onclick="selectDevice('phone')">📞<span>Phone</span></button>
-    </div>
+  <!-- Countdown ring (shown only after match winner) -->
+  <div class="countdown-ring" id="countdownRing">
+    <svg width="64" height="64" viewBox="0 0 64 64">
+      <circle class="bg" cx="32" cy="32" r="27"/>
+      <circle class="fg" id="countdownCircle" cx="32" cy="32" r="27"
+        stroke-dasharray="169.6" stroke-dashoffset="0"/>
+    </svg>
+    <div class="countdown-num" id="countdownNum">5</div>
   </div>
 
-  <!-- Step 2: Player count + controls preview (hidden until device chosen) -->
-  <div class="picker" id="pickerDiv" style="display:none;">
+  <div id="devicePickerDiv" style="display:none;"></div>
+
+  <div class="picker" id="pickerDiv">
     <p>NUMBER OF PLAYERS</p>
     <div class="picker-btns">
       <button class="pnum" onclick="selectCount(1)">1</button>
@@ -382,7 +406,7 @@
     <div class="controls-preview" id="controlsPreview"></div>
   </div>
 
-  <button class="btn" id="ovBtn" style="display:none;">Start Game</button>
+  <button class="btn" id="ovBtn">Start Game</button>
 </div>
 
 <!-- Controls popup shown briefly at round start -->
@@ -426,13 +450,21 @@ function selectDevice(type) {
   const subs = {
     computer: 'Push opponents outside the ring. First to 3 wins!',
     tablet:   'Joystick circles will appear to control your sumo!',
-    phone:    'Push opponents outside the ring. First to 3 wins!'
+    phone:    'Joystick circles will appear to control your sumo!'
   };
   document.getElementById('ovSub').textContent = subs[type];
 
   // Show player picker & start button
   document.getElementById('pickerDiv').style.display = 'block';
-  document.getElementById('ovBtn').style.display = 'inline-block';
+  const btn = document.getElementById('ovBtn');
+  btn.style.display = 'inline-block';
+  btn.textContent = 'Start Game';
+  btn.onclick = () => {
+    scores = [0,0,0,0]; round = 1;
+    buildUI();
+    hideOverlay();
+    startRound();
+  };
   buildControlsPreview(numPlayers);
 }
 
@@ -524,14 +556,12 @@ function showControlsPopup() {
 }
 
 // ── Start / reset ───────────────────────────────────────────────
-document.getElementById('ovBtn').addEventListener('click', () => {
-  const picker = document.getElementById('pickerDiv');
-  if (picker.style.display === 'none') return; // device not yet chosen
+document.getElementById('ovBtn').onclick = () => {
   scores = [0,0,0,0]; round = 1;
   buildUI();
   hideOverlay();
   startRound();
-});
+};
 
 function buildUI() {
   // Scoreboard
@@ -845,22 +875,14 @@ function endRound(winner) {
   if (matchWinner>=0) {
     showOverlay(
       `${CONFIGS[matchWinner].name} Wins!`,
-      `Match champion — ${POINTS_TO_WIN} points reached!`,
+      `Match champion — ${POINTS_TO_WIN} points reached! Returning to start…`,
       '🏆', CONFIGS[matchWinner].color,
-      'Play Again'
+      'Play Again Now'
     );
-    document.getElementById('ovBtn').onclick=()=>{
-      // Reset to device selection screen
-      scores=[0,0,0,0]; round=1;
-      document.getElementById('devicePickerDiv').style.display='block';
-      document.getElementById('pickerDiv').style.display='none';
-      document.getElementById('ovBtn').style.display='none';
-      document.getElementById('ovEmoji').textContent='⛩';
-      document.getElementById('ovTitle').textContent='Sumo Wrestling';
-      document.getElementById('ovTitle').style.color='#e8c97a';
-      document.getElementById('ovSub').textContent='What are you playing on?';
-      document.querySelectorAll('.device-btn').forEach(b=>b.classList.remove('active'));
-      document.getElementById('overlay').classList.add('show');
+    startMatchCountdown();
+    document.getElementById('ovBtn').onclick = () => {
+      stopMatchCountdown();
+      location.reload();
     };
   } else {
     const sub = winner
@@ -877,6 +899,41 @@ function endRound(winner) {
   }
 }
 
+let countdownInterval = null;
+const COUNTDOWN_SECS = 5;
+const CIRCUMFERENCE = 2 * Math.PI * 27; // 169.6
+
+function startMatchCountdown() {
+  const ring   = document.getElementById('countdownRing');
+  const circle = document.getElementById('countdownCircle');
+  const num    = document.getElementById('countdownNum');
+  ring.style.display = 'block';
+
+  let remaining = COUNTDOWN_SECS;
+  num.textContent = remaining;
+  circle.style.strokeDashoffset = '0';
+
+  // Force reflow so the first transition fires
+  circle.getBoundingClientRect();
+
+  countdownInterval = setInterval(() => {
+    remaining--;
+    num.textContent = remaining;
+    const offset = CIRCUMFERENCE * (1 - remaining / COUNTDOWN_SECS);
+    circle.style.strokeDashoffset = offset;
+
+    if (remaining <= 0) {
+      stopMatchCountdown();
+      location.reload();
+    }
+  }, 1000);
+}
+
+function stopMatchCountdown() {
+  if (countdownInterval) { clearInterval(countdownInterval); countdownInterval = null; }
+  document.getElementById('countdownRing').style.display = 'none';
+}
+
 function showOverlay(title, sub, emoji, color, btnLabel) {
   document.getElementById('ovTitle').textContent=title;
   document.getElementById('ovTitle').style.color=color;
@@ -886,6 +943,7 @@ function showOverlay(title, sub, emoji, color, btnLabel) {
   document.getElementById('ovBtn').style.display='inline-block';
   document.getElementById('devicePickerDiv').style.display='none';
   document.getElementById('pickerDiv').style.display='none';
+  document.getElementById('countdownRing').style.display='none';
   document.getElementById('overlay').classList.add('show');
 }
 function hideOverlay(){ document.getElementById('overlay').classList.remove('show'); }
