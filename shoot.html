@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>SHOOT FIGHT</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Orbitron:wght@400;700;900&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #0a0a0f;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    font-family: 'Orbitron', monospace;
+    overflow: hidden;
+    color: #fff;
+  }
+
+  #title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 52px;
+    letter-spacing: 12px;
+    background: linear-gradient(90deg, #ff4444, #ffaa00, #ff4444);
+    background-size: 200%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shimmer 2s linear infinite;
+    margin-bottom: 8px;
+    text-shadow: none;
+  }
+
+  @keyframes shimmer {
+    0% { background-position: 0% }
+    100% { background-position: 200% }
+  }
+
+  #hud {
+    display: flex;
+    gap: 30px;
+    margin-bottom: 10px;
+    align-items: center;
+  }
+
+  .player-hud {
+    text-align: center;
+    min-width: 150px;
+  }
+
+  .player-name {
+    font-size: 11px;
+    letter-spacing: 3px;
+    margin-bottom: 4px;
+  }
+
+  #p1-name { color: #4af; }
+  #p2-name { color: #f84; }
+
+  .health-bar-bg {
+    width: 140px;
+    height: 12px;
+    background: #1a1a2e;
+    border-radius: 6px;
+    border: 1px solid #333;
+    overflow: hidden;
+  }
+
+  #p1-health-fill { height: 100%; width: 100%; background: linear-gradient(90deg, #4af, #08f); border-radius: 6px; transition: width 0.1s; }
+  #p2-health-fill { height: 100%; width: 100%; background: linear-gradient(90deg, #f84, #f40); border-radius: 6px; transition: width 0.1s; }
+
+  .kills-label {
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: #555;
+    margin-top: 3px;
+  }
+
+  .kills-count {
+    font-size: 22px;
+    font-weight: 900;
+    letter-spacing: 2px;
+    margin-top: 1px;
+  }
+
+  #k1 { color: #4af; }
+  #k2 { color: #f84; }
+
+  #timer-box {
+    text-align: center;
+    min-width: 110px;
+  }
+
+  #timer-label {
+    font-size: 9px;
+    letter-spacing: 3px;
+    color: #555;
+    margin-bottom: 2px;
+  }
+
+  #timer-display {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 42px;
+    letter-spacing: 4px;
+    color: #fff;
+    line-height: 1;
+    transition: color 0.3s;
+  }
+
+  #timer-display.urgent { color: #ff4444; animation: timerPulse 0.5s ease-in-out infinite alternate; }
+  @keyframes timerPulse { from { text-shadow: 0 0 8px #ff4444; } to { text-shadow: 0 0 24px #ff4444; } }
+
+  canvas {
+    border: 2px solid #222;
+    box-shadow: 0 0 40px rgba(255,100,0,0.15), 0 0 80px rgba(0,100,255,0.1);
+    display: block;
+  }
+
+  #controls {
+    margin-top: 10px;
+    display: flex;
+    gap: 60px;
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: #555;
+  }
+
+  .ctrl { text-align: center; }
+  .ctrl span { display: block; margin: 2px 0; }
+  #ctrl1 { color: #4af88a; }
+  #ctrl2 { color: #f8844a; }
+
+  #overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.88);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+  }
+
+  #overlay h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 72px;
+    letter-spacing: 16px;
+    margin-bottom: 10px;
+  }
+
+  #overlay p {
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: #888;
+    margin-bottom: 30px;
+  }
+
+  #overlay .sub {
+    font-size: 14px;
+    letter-spacing: 3px;
+    color: #aaa;
+  }
+
+  #start-btn {
+    margin-top: 20px;
+    padding: 14px 48px;
+    background: transparent;
+    border: 2px solid #ff4444;
+    color: #ff4444;
+    font-family: 'Orbitron', monospace;
+    font-size: 13px;
+    letter-spacing: 5px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  #start-btn:hover { background: #ff4444; color: #000; box-shadow: 0 0 20px #ff4444; }
+
+  #winner-text { font-size: 20px; letter-spacing: 5px; margin-top: 10px; }
+</style>
+</head>
+<body>
+
+<div id="title">SHOOT FIGHT</div>
+
+<div id="hud">
+  <div class="player-hud">
+    <div class="player-name" id="p1-name">◀ PLAYER 1</div>
+    <div class="health-bar-bg"><div id="p1-health-fill"></div></div>
+    <div class="kills-label">KILLS</div>
+    <div class="kills-count" id="k1">0</div>
+  </div>
+  <div id="timer-box">
+    <div id="timer-label">TIME</div>
+    <div id="timer-display">1:00</div>
+  </div>
+  <div class="player-hud">
+    <div class="player-name" id="p2-name">PLAYER 2 ▶</div>
+    <div class="health-bar-bg"><div id="p2-health-fill"></div></div>
+    <div class="kills-label">KILLS</div>
+    <div class="kills-count" id="k2">0</div>
+  </div>
+</div>
+
+<canvas id="canvas" width="800" height="560"></canvas>
+
+<div id="controls">
+  <div class="ctrl" id="ctrl1">
+    <span style="font-size:11px;font-weight:bold">PLAYER 1</span>
+    <span>W A S D — MOVE</span>
+    <span>F — SHOOT</span>
+  </div>
+  <div class="ctrl" id="ctrl2">
+    <span style="font-size:11px;font-weight:bold">PLAYER 2</span>
+    <span>↑ ← ↓ → — MOVE</span>
+    <span>/ — SHOOT</span>
+  </div>
+</div>
+
+<div id="overlay">
+  <h1 style="background:linear-gradient(90deg,#4af,#f84);-webkit-background-clip:text;-webkit-text-fill-color:transparent">SHOOT FIGHT</h1>
+  <p>2-PLAYER ARENA SHOOTER</p>
+  <div class="sub">PLAYER 1: WASD + F to shoot</div>
+  <div class="sub">PLAYER 2: ARROWS + / to shoot</div>
+  <div class="sub" style="margin-top:8px;font-size:11px;color:#666">60 seconds · Avoid mines · Hide behind walls · Most kills wins</div>
+  <button id="start-btn" onclick="startGame()">START GAME</button>
+  <div id="winner-text"></div>
+</div>
+
+<script>
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+const W = canvas.width, H = canvas.height;
+const TILE = 40;
+const COLS = W / TILE, ROWS = H / TILE;
+
+// ── MAP LAYOUT ──────────────────────────────────────────────
+// W=wall, M=mine, .=floor  — center rows 5-8 cols 8-11 are clear for spawning
+const MAP_TEMPLATE = [
+  'WWWWWWWWWWWWWWWWWWWW',
+  'W..........W.......W',
+  'W.WW....WW...WW....W',
+  'W..........M.......W',
+  'W....WWW...........W',
+  'W..M...............W',
+  'W..................W',
+  'W..................W',
+  'W..........M...WWW.W',
+  'W....WW............W',
+  'W..M.......WWW...M.W',
+  'W..........W.......W',
+  'W.WW..M....W.WW....W',
+  'WWWWWWWWWWWWWWWWWWWW',
+];
+
+let map = [];
+let walls = [], mines = [];
+
+function buildMap() {
+  map = []; walls = []; mines = [];
+  for (let r = 0; r < MAP_TEMPLATE.length; r++) {
+    map[r] = [];
+    for (let c = 0; c < MAP_TEMPLATE[r].length; c++) {
+      const ch = MAP_TEMPLATE[r][c];
+      map[r][c] = ch;
+      if (ch === 'W') walls.push({x: c*TILE, y: r*TILE, w: TILE, h: TILE});
+      if (ch === 'M') mines.push({x: c*TILE + TILE/2, y: r*TILE + TILE/2, r: 10, alive: true, pulse: 0});
+    }
+  }
+}
+
+// ── GAME STATE ───────────────────────────────────────────────
+let p1, p2, bullets, keys, gameRunning, countdown, countdownTimer;
+let kills = {p1: 0, p2: 0};
+let matchTimeLeft = 60; // seconds
+let matchTimer = null;
+
+// Map center: canvas is 800x560, TILE=40, center = (400,280)
+// Spawn P1 left of center facing right, P2 right of center facing left
+// Row 6 (y=240), cols 8 and 11 — guaranteed floor tiles
+const SPAWN_CX = W / 2; // 400
+const SPAWN_CY = H / 2; // 280
+const SPAWN_OFFSET = 60; // distance apart from center
+
+function initPlayers() {
+  p1 = {
+    x: SPAWN_CX - SPAWN_OFFSET - 11, y: SPAWN_CY - 11,
+    w: 22, h: 22,
+    vx: 0, vy: 0, speed: 2.8,
+    angle: 0, // facing right (toward p2)
+    hp: 100, maxHp: 100,
+    color: '#44aaff', color2: '#0088dd',
+    shootCooldown: 0, shootRate: 18,
+    id: 1, alive: true, trail: []
+  };
+  p2 = {
+    x: SPAWN_CX + SPAWN_OFFSET - 11, y: SPAWN_CY - 11,
+    w: 22, h: 22,
+    vx: 0, vy: 0, speed: 2.8,
+    angle: Math.PI, // facing left (toward p1)
+    hp: 100, maxHp: 100,
+    color: '#ff8844', color2: '#dd4400',
+    shootCooldown: 0, shootRate: 18,
+    id: 2, alive: true, trail: []
+  };
+}
+
+function startGame() {
+  buildMap();
+  initPlayers();
+  bullets = [];
+  keys = {};
+  gameRunning = true;
+  countdown = 5;
+  kills = {p1: 0, p2: 0};
+  matchTimeLeft = 60;
+  window._fightFlash = 0;
+  document.getElementById('overlay').style.display = 'none';
+  document.getElementById('winner-text').textContent = '';
+  updateHUD();
+
+  // Escape countdown (5s)
+  if (countdownTimer) clearInterval(countdownTimer);
+  countdownTimer = setInterval(() => {
+    countdown--;
+    if (countdown <= 0) {
+      countdown = 0;
+      window._fightFlash = 40;
+      clearInterval(countdownTimer);
+      countdownTimer = null;
+      // Start 60s match timer after escape phase
+      if (matchTimer) clearInterval(matchTimer);
+      matchTimer = setInterval(() => {
+        matchTimeLeft--;
+        updateHUD();
+        if (matchTimeLeft <= 0) {
+          matchTimeLeft = 0;
+          clearInterval(matchTimer);
+          matchTimer = null;
+          gameRunning = false;
+          setTimeout(() => endMatch(), 200);
+        }
+      }, 1000);
+    }
+  }, 1000);
+
+  requestAnimationFrame(loop);
+}
+
+// ── INPUT ────────────────────────────────────────────────────
+document.addEventListener('keydown', e => { keys[e.code] = true; e.preventDefault(); });
+document.addEventListener('keyup', e => { keys[e.code] = false; });
+
+// ── COLLISION ────────────────────────────────────────────────
+function rectRect(ax, ay, aw, ah, bx, by, bw, bh) {
+  return ax < bx+bw && ax+aw > bx && ay < by+bh && ay+ah > by;
+}
+
+function collidesWall(x, y, w, h) {
+  for (const wall of walls) {
+    if (rectRect(x, y, w, h, wall.x, wall.y, wall.w, wall.h)) return true;
+  }
+  return false;
+}
+
+// ── SHOOT ────────────────────────────────────────────────────
+function shoot(p) {
+  if (p.shootCooldown > 0 || !p.alive) return;
+  if (countdown > 0) return; // no shooting during escape phase
+  const speed = 7;
+  bullets.push({
+    x: p.x + p.w/2 + Math.cos(p.angle)*14,
+    y: p.y + p.h/2 + Math.sin(p.angle)*14,
+    vx: Math.cos(p.angle) * speed,
+    vy: Math.sin(p.angle) * speed,
+    owner: p.id,
+    alive: true,
+    r: 5,
+    trail: []
+  });
+  p.shootCooldown = p.shootRate;
+}
+
+// ── UPDATE ───────────────────────────────────────────────────
+function update() {
+  if (!gameRunning) return;
+
+  // Player 1 controls: WASD + F
+  let dx1 = 0, dy1 = 0;
+  if (keys['KeyA']) dx1 = -1;
+  if (keys['KeyD']) dx1 = 1;
+  if (keys['KeyW']) dy1 = -1;
+  if (keys['KeyS']) dy1 = 1;
+  if (keys['KeyF']) shoot(p1);
+
+  // Player 2 controls: Arrows + /
+  let dx2 = 0, dy2 = 0;
+  if (keys['ArrowLeft']) dx2 = -1;
+  if (keys['ArrowRight']) dx2 = 1;
+  if (keys['ArrowUp']) dy2 = -1;
+  if (keys['ArrowDown']) dy2 = 1;
+  if (keys['Slash']) shoot(p2);
+
+  movePlayer(p1, dx1, dy1);
+  movePlayer(p2, dx2, dy2);
+
+  // Update bullets
+  for (const b of bullets) {
+    if (!b.alive) continue;
+    b.trail.push({x: b.x, y: b.y});
+    if (b.trail.length > 6) b.trail.shift();
+    b.x += b.vx;
+    b.y += b.vy;
+
+    // Wall collision
+    for (const wall of walls) {
+      if (rectRect(b.x-b.r, b.y-b.r, b.r*2, b.r*2, wall.x, wall.y, wall.w, wall.h)) {
+        b.alive = false;
+        spawnHitParticles(b.x, b.y, '#aaa', 5);
+        break;
+      }
+    }
+    if (!b.alive) continue;
+
+    // Out of bounds
+    if (b.x < 0 || b.x > W || b.y < 0 || b.y > H) { b.alive = false; continue; }
+
+    // Hit players
+    checkBulletHit(b, p1);
+    checkBulletHit(b, p2);
+  }
+
+  bullets = bullets.filter(b => b.alive);
+
+  // Mines
+  for (const m of mines) {
+    if (!m.alive) continue;
+    m.pulse = (m.pulse + 0.05) % (Math.PI*2);
+    checkMineTrigger(m, p1);
+    checkMineTrigger(m, p2);
+  }
+
+  // Cooldowns
+  if (p1.shootCooldown > 0) p1.shootCooldown--;
+  if (p2.shootCooldown > 0) p2.shootCooldown--;
+
+  // Particles
+  particles = particles.filter(p => p.life > 0);
+  for (const p of particles) {
+    p.x += p.vx;
+    p.y += p.vy;
+    p.vy += 0.08;
+    p.life--;
+    p.r *= 0.95;
+  }
+
+  updateHUD();
+}
+
+
+function movePlayer(p, dx, dy) {
+  if (!p.alive) return;
+
+  // Diagonal normalize
+  if (dx !== 0 && dy !== 0) { dx *= 0.707; dy *= 0.707; }
+
+  const nx = p.x + dx * p.speed;
+  const ny = p.y + dy * p.speed;
+
+  if (!collidesWall(nx, p.y, p.w, p.h)) p.x = nx;
+  if (!collidesWall(p.x, ny, p.w, p.h)) p.y = ny;
+
+  // Clamp
+  p.x = Math.max(1, Math.min(W - p.w - 1, p.x));
+  p.y = Math.max(1, Math.min(H - p.h - 1, p.y));
+
+  // Aim toward movement
+  if (dx !== 0 || dy !== 0) {
+    p.angle = Math.atan2(dy, dx);
+  }
+
+  p.trail.push({x: p.x + p.w/2, y: p.y + p.h/2});
+  if (p.trail.length > 8) p.trail.shift();
+}
+
+function killPlayer(p, killerOwner) {
+  if (!p.alive) return;
+  const cx = p.x + p.w/2, cy = p.y + p.h/2;
+  p.hp = 0;
+  p.alive = false;
+  spawnDeathParticles(cx, cy, p.color);
+  if (killerOwner === 1) kills.p1++;
+  else if (killerOwner === 2) kills.p2++;
+  else { // mine — credit opponent
+    if (p.id === 1) kills.p2++;
+    else kills.p1++;
+  }
+  updateHUD();
+  // Respawn after 1.5s in a random corner (safe floor tile)
+  setTimeout(() => respawnPlayer(p), 1500);
+}
+
+// 4 corners — inner safe tiles just inside border walls
+const CORNERS = [
+  { x: TILE + 9,         y: TILE + 9         }, // top-left
+  { x: W - TILE*2 + 9,  y: TILE + 9         }, // top-right
+  { x: TILE + 9,         y: H - TILE*2 + 9  }, // bottom-left
+  { x: W - TILE*2 + 9,  y: H - TILE*2 + 9  }, // bottom-right
+];
+
+function respawnPlayer(p) {
+  // Pick a corner far from the other player
+  const other = p.id === 1 ? p2 : p1;
+  const sorted = [...CORNERS].sort((a, b) => {
+    const da = Math.hypot(a.x - (other.x+11), a.y - (other.y+11));
+    const db = Math.hypot(b.x - (other.x+11), b.y - (other.y+11));
+    return db - da; // farthest first
+  });
+  const corner = sorted[0];
+  p.x = corner.x;
+  p.y = corner.y;
+  p.hp = 100;
+  p.alive = true;
+  p.trail = [];
+  p.shootCooldown = 30; // brief grace period
+  spawnHitParticles(p.x + 11, p.y + 11, p.color, 16);
+}
+
+function checkBulletHit(b, p) {
+  if (!b.alive || !p.alive) return;
+  if (b.owner === p.id) return;
+  const cx = p.x + p.w/2, cy = p.y + p.h/2;
+  const dist = Math.hypot(b.x - cx, b.y - cy);
+  if (dist < p.w/2 + b.r + 2) {
+    b.alive = false;
+    spawnHitParticles(b.x, b.y, p.color, 12);
+    killPlayer(p, b.owner);
+  }
+}
+
+function checkMineTrigger(m, p) {
+  if (!p.alive) return;
+  const cx = p.x + p.w/2, cy = p.y + p.h/2;
+  if (Math.hypot(m.x - cx, m.y - cy) < m.r + 11) {
+    m.alive = false;
+    spawnHitParticles(m.x, m.y, '#ff0', 20);
+    spawnHitParticles(m.x, m.y, '#f80', 15);
+    killPlayer(p, null); // mine kill
+  }
+}
+
+// ── PARTICLES ────────────────────────────────────────────────
+let particles = [];
+function spawnHitParticles(x, y, color, count) {
+  for (let i = 0; i < count; i++) {
+    const a = Math.random() * Math.PI * 2;
+    const sp = 1 + Math.random() * 3;
+    particles.push({ x, y, vx: Math.cos(a)*sp, vy: Math.sin(a)*sp - 1, r: 2+Math.random()*3, color, life: 20+Math.random()*15 });
+  }
+}
+function spawnDeathParticles(x, y, color) {
+  for (let i = 0; i < 40; i++) {
+    const a = Math.random() * Math.PI * 2;
+    const sp = 1 + Math.random() * 5;
+    particles.push({ x, y, vx: Math.cos(a)*sp, vy: Math.sin(a)*sp - 2, r: 3+Math.random()*5, color, life: 35+Math.random()*20 });
+  }
+}
+
+// ── DRAW ─────────────────────────────────────────────────────
+function draw() {
+  // Background
+  ctx.fillStyle = '#0e0e18';
+  ctx.fillRect(0, 0, W, H);
+
+  // Floor grid
+  ctx.strokeStyle = '#1a1a2a';
+  ctx.lineWidth = 0.5;
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      ctx.strokeRect(c*TILE, r*TILE, TILE, TILE);
+    }
+  }
+
+  // Walls
+  for (const wall of walls) {
+    ctx.fillStyle = '#1c1c30';
+    ctx.fillRect(wall.x, wall.y, wall.w, wall.h);
+    // top highlight
+    ctx.fillStyle = '#2a2a45';
+    ctx.fillRect(wall.x, wall.y, wall.w, 3);
+    // shadow
+    ctx.fillStyle = '#0d0d1a';
+    ctx.fillRect(wall.x, wall.y+wall.h-3, wall.w, 3);
+    ctx.fillRect(wall.x+wall.w-3, wall.y, 3, wall.h);
+    // Brick lines
+    ctx.strokeStyle = '#151528';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(wall.x+1, wall.y+1, wall.w-2, wall.h-2);
+  }
+
+  // Mines
+  for (const m of mines) {
+    if (!m.alive) continue;
+    const pulse = Math.sin(m.pulse) * 0.5 + 0.5;
+
+    // Outer glow
+    const grd = ctx.createRadialGradient(m.x, m.y, 0, m.x, m.y, 18 + pulse*6);
+    grd.addColorStop(0, `rgba(255,220,0,${0.4*pulse})`);
+    grd.addColorStop(1, 'rgba(255,100,0,0)');
+    ctx.fillStyle = grd;
+    ctx.beginPath();
+    ctx.arc(m.x, m.y, 18 + pulse*6, 0, Math.PI*2);
+    ctx.fill();
+
+    // Body
+    ctx.beginPath();
+    ctx.arc(m.x, m.y, m.r, 0, Math.PI*2);
+    ctx.fillStyle = `rgb(${180 + pulse*60|0}, ${80+pulse*30|0}, 0)`;
+    ctx.fill();
+    ctx.strokeStyle = '#ff0';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    // Skull
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 10px Arial';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('💀', m.x, m.y);
+  }
+
+  // Player trails
+  drawTrail(p1);
+  drawTrail(p2);
+
+  // Players
+  drawPlayer(p1);
+  drawPlayer(p2);
+
+  // Bullet trails + bullets
+  for (const b of bullets) {
+    if (!b.alive) continue;
+    // Trail
+    for (let i = 0; i < b.trail.length; i++) {
+      const alpha = (i / b.trail.length) * 0.5;
+      ctx.beginPath();
+      ctx.arc(b.trail[i].x, b.trail[i].y, b.r * (i/b.trail.length), 0, Math.PI*2);
+      ctx.fillStyle = b.owner === 1 ? `rgba(68,170,255,${alpha})` : `rgba(255,136,68,${alpha})`;
+      ctx.fill();
+    }
+    // Bullet
+    const grad = ctx.createRadialGradient(b.x, b.y, 0, b.x, b.y, b.r*2);
+    grad.addColorStop(0, b.owner === 1 ? '#fff' : '#fff');
+    grad.addColorStop(0.3, b.owner === 1 ? '#4af' : '#f84');
+    grad.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.beginPath();
+    ctx.arc(b.x, b.y, b.r*2, 0, Math.PI*2);
+    ctx.fillStyle = grad;
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(b.x, b.y, b.r, 0, Math.PI*2);
+    ctx.fillStyle = '#fff';
+    ctx.fill();
+  }
+
+  // Particles
+  for (const p of particles) {
+    ctx.globalAlpha = Math.max(0, p.life / 35);
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, Math.max(0.5, p.r), 0, Math.PI*2);
+    ctx.fillStyle = p.color;
+    ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+
+  // ── COUNTDOWN OVERLAY ──────────────────────────────────────
+  if (countdown > 0) {
+    // Dim center zone
+    ctx.fillStyle = 'rgba(0,0,0,0.32)';
+    ctx.fillRect(0, 0, W, H);
+
+    // "ESCAPE!" label
+    ctx.save();
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.font = 'bold 18px Orbitron, monospace';
+    ctx.fillStyle = '#ffcc00';
+    ctx.letterSpacing = '6px';
+    ctx.fillText('⚠  ESCAPE!  ⚠', W/2, H/2 - 60);
+
+    // Big countdown number with pulse scale
+    const pulse = 1 + Math.sin(Date.now() / 150) * 0.06;
+    ctx.save();
+    ctx.translate(W/2, H/2 + 10);
+    ctx.scale(pulse, pulse);
+    ctx.font = 'bold 88px Bebas Neue, sans-serif';
+    // Glow
+    ctx.shadowColor = countdown <= 2 ? '#ff4444' : '#ffcc00';
+    ctx.shadowBlur = 30;
+    ctx.fillStyle = countdown <= 2 ? '#ff6666' : '#ffee44';
+    ctx.fillText(countdown, 0, 0);
+    ctx.shadowBlur = 0;
+    ctx.restore();
+
+    // "No shooting" note
+    ctx.font = '11px Orbitron, monospace';
+    ctx.fillStyle = 'rgba(255,100,100,0.8)';
+    ctx.fillText('NO SHOOTING UNTIL BATTLE STARTS', W/2, H/2 + 68);
+
+    // Dashed line between players
+    ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([6, 6]);
+    ctx.beginPath();
+    ctx.moveTo(p1.x + p1.w/2, p1.y + p1.h/2);
+    ctx.lineTo(p2.x + p2.w/2, p2.y + p2.h/2);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    ctx.restore();
+  } else if (countdown === 0 && countdownTimer === null) {
+    // Flash "FIGHT!" for a moment — use a frame counter trick
+    if (!window._fightFlash) window._fightFlash = 30;
+    if (window._fightFlash > 0) {
+      ctx.save();
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      const alpha = window._fightFlash / 30;
+      const scale = 1 + (1 - alpha) * 0.5;
+      ctx.globalAlpha = alpha;
+      ctx.translate(W/2, H/2);
+      ctx.scale(scale, scale);
+      ctx.font = 'bold 96px Bebas Neue, sans-serif';
+      ctx.shadowColor = '#ff4444';
+      ctx.shadowBlur = 40;
+      ctx.fillStyle = '#ff4444';
+      ctx.fillText('FIGHT!', 0, 0);
+      ctx.restore();
+      ctx.globalAlpha = 1;
+      window._fightFlash--;
+    }
+  }
+}
+
+function drawTrail(p) {
+  for (let i = 0; i < p.trail.length; i++) {
+    const alpha = (i / p.trail.length) * 0.18;
+    ctx.beginPath();
+    ctx.arc(p.trail[i].x, p.trail[i].y, 8 * (i/p.trail.length), 0, Math.PI*2);
+    ctx.fillStyle = p.color.replace(')', `,${alpha})`).replace('rgb', 'rgba').replace('##', '#');
+    ctx.globalAlpha = alpha;
+    ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+}
+
+function drawPlayer(p) {
+  if (!p.alive) return;
+  const cx = p.x + p.w/2, cy = p.y + p.h/2;
+  const r = p.w/2;
+
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.rotate(p.angle);
+
+  // Shadow
+  ctx.shadowColor = p.color;
+  ctx.shadowBlur = 14;
+
+  // Body
+  ctx.beginPath();
+  ctx.arc(0, 0, r, 0, Math.PI*2);
+  const grd = ctx.createRadialGradient(-r*0.3, -r*0.3, 0, 0, 0, r);
+  grd.addColorStop(0, lighten(p.color));
+  grd.addColorStop(1, p.color2);
+  ctx.fillStyle = grd;
+  ctx.fill();
+
+  // Outline
+  ctx.strokeStyle = p.color;
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  ctx.shadowBlur = 0;
+
+  // Gun barrel
+  ctx.fillStyle = p.color;
+  ctx.beginPath();
+  ctx.roundRect(r - 4, -3, 12, 6, 2);
+  ctx.fill();
+  // Barrel tip flash effect if recently shot
+  ctx.fillStyle = '#fff';
+  ctx.beginPath();
+  ctx.arc(r + 8, 0, 2, 0, Math.PI*2);
+  ctx.fill();
+
+  // Visor / eye
+  ctx.fillStyle = 'rgba(255,255,255,0.9)';
+  ctx.beginPath();
+  ctx.ellipse(r*0.3, -r*0.2, 4, 3, 0, 0, Math.PI*2);
+  ctx.fill();
+
+  ctx.restore();
+
+  // Spawn shield ring (grace period)
+  if (p.shootCooldown > 0 && p.shootCooldown <= 30) {
+    const alpha = p.shootCooldown / 30;
+    ctx.beginPath();
+    ctx.arc(cx, cy, r + 8, 0, Math.PI * 2);
+    ctx.strokeStyle = p.color;
+    ctx.globalAlpha = alpha * 0.7;
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+  }
+
+  // HP bar above player — shows alive status
+  const barW = 30, barH = 4;
+  const hpRatio = p.hp / p.maxHp;
+  ctx.fillStyle = '#111';
+  ctx.fillRect(cx - barW/2, cy - r - 10, barW, barH);
+  ctx.fillStyle = hpRatio > 0.5 ? p.color : hpRatio > 0.25 ? '#ff0' : '#f00';
+  ctx.fillRect(cx - barW/2, cy - r - 10, barW * hpRatio, barH);
+
+  // Player number
+  ctx.fillStyle = '#fff';
+  ctx.font = 'bold 9px Orbitron, monospace';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('P' + p.id, cx, cy);
+}
+
+function lighten(hex) {
+  // Just returns a lighter variant
+  if (hex === '#44aaff') return '#99ddff';
+  if (hex === '#ff8844') return '#ffcc99';
+  return '#ffffff';
+}
+
+// ── HUD UPDATE ───────────────────────────────────────────────
+function updateHUD() {
+  // Health bar: full when alive, empty when dead (one-shot mechanic)
+  document.getElementById('p1-health-fill').style.width = p1.alive ? '100%' : '0%';
+  document.getElementById('p2-health-fill').style.width = p2.alive ? '100%' : '0%';
+  document.getElementById('k1').textContent = kills.p1;
+  document.getElementById('k2').textContent = kills.p2;
+
+  const secs = Math.max(0, matchTimeLeft);
+  const mm = Math.floor(secs / 60);
+  const ss = String(secs % 60).padStart(2, '0');
+  const timerEl = document.getElementById('timer-display');
+  timerEl.textContent = `${mm}:${ss}`;
+  timerEl.className = secs <= 10 ? 'urgent' : '';
+}
+
+// ── MATCH END ────────────────────────────────────────────────
+function endMatch() {
+  // Clean up timers
+  if (countdownTimer) { clearInterval(countdownTimer); countdownTimer = null; }
+  if (matchTimer) { clearInterval(matchTimer); matchTimer = null; }
+
+  let winner = '';
+  if (kills.p1 > kills.p2) winner = 'PLAYER 1 WINS!';
+  else if (kills.p2 > kills.p1) winner = 'PLAYER 2 WINS!';
+  else winner = 'DRAW!';
+
+  const wt = document.getElementById('winner-text');
+  wt.innerHTML = `${winner}<br><span style="font-size:12px;color:#888;letter-spacing:3px">KILLS — P1: ${kills.p1}  P2: ${kills.p2}</span>`;
+  wt.style.color = winner.includes('1') ? '#4af' : winner.includes('2') ? '#f84' : '#fff';
+  document.getElementById('start-btn').textContent = 'PLAY AGAIN';
+  document.getElementById('overlay').style.display = 'flex';
+}
+
+// ── MAIN LOOP ────────────────────────────────────────────────
+function loop() {
+  update();
+  draw();
+  if (gameRunning) requestAnimationFrame(loop);
+}
+
+// ── INIT: show overlay ────────────────────────────────────────
+buildMap();
+initPlayers();
+bullets = [];
+particles = [];
+keys = {};
+countdown = 0;
+countdownTimer = null;
+matchTimer = null;
+window._fightFlash = 0;
+updateHUD();
+draw();
+</script>
+</body>
+</html>
