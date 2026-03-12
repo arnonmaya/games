@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sushi Stack</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Zen+Dots&family=Noto+Sans+JP:wght@400;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #0a0a0f;
+    font-family: 'Noto Sans JP', sans-serif;
+    overflow: hidden;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Animated Japanese paper texture background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 20%, rgba(180,40,40,0.08) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 80%, rgba(220,120,20,0.06) 0%, transparent 50%),
+      repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(255,255,255,0.01) 40px, rgba(255,255,255,0.01) 41px),
+      repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(255,255,255,0.01) 40px, rgba(255,255,255,0.01) 41px);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  #menu, #game-wrap, #result-screen {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #menu h1 {
+    font-family: 'Zen Dots', cursive;
+    font-size: clamp(2rem, 6vw, 4.5rem);
+    color: #f5e6c8;
+    letter-spacing: 0.05em;
+    text-shadow: 0 0 40px rgba(220,80,40,0.6), 0 2px 0 rgba(0,0,0,0.5);
+    margin-bottom: 0.2em;
+  }
+
+  .subtitle {
+    color: #c87840;
+    font-size: clamp(0.75rem, 2vw, 1rem);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    margin-bottom: 3em;
+  }
+
+  .player-select {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2.5em;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .player-btn {
+    width: 80px; height: 80px;
+    background: rgba(255,255,255,0.04);
+    border: 2px solid rgba(200,120,60,0.3);
+    border-radius: 12px;
+    color: #f5e6c8;
+    font-size: 1.8rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 4px;
+  }
+  .player-btn span { font-size: 0.6rem; letter-spacing: 0.1em; color: #c87840; text-transform: uppercase; }
+  .player-btn:hover, .player-btn.active {
+    background: rgba(220,80,40,0.2);
+    border-color: #dc5028;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(220,80,40,0.3);
+  }
+
+  .controls-info {
+    color: rgba(245,230,200,0.5);
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    text-align: center;
+    line-height: 2;
+    margin-bottom: 2em;
+  }
+  .controls-info strong { color: #c87840; }
+
+  .start-btn {
+    padding: 0.8em 3em;
+    background: linear-gradient(135deg, #dc5028, #c03018);
+    border: none;
+    border-radius: 8px;
+    color: #f5e6c8;
+    font-family: 'Zen Dots', cursive;
+    font-size: 1.1rem;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 4px 20px rgba(220,80,40,0.4);
+  }
+  .start-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(220,80,40,0.6);
+  }
+
+  /* GAME */
+  #game-wrap { display: none; position: relative; }
+
+  #timer-bar {
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  #timer-display {
+    font-family: 'Zen Dots', cursive;
+    font-size: 2rem;
+    color: #f5e6c8;
+    text-shadow: 0 0 20px rgba(220,80,40,0.8);
+    min-width: 3ch;
+    text-align: center;
+  }
+  #timer-display.urgent { color: #ff4444; animation: pulse 0.5s infinite alternate; }
+  @keyframes pulse { from { opacity: 1; } to { opacity: 0.5; } }
+
+  #game-canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Result */
+  #result-screen { display: none; }
+  #result-screen h2 {
+    font-family: 'Zen Dots', cursive;
+    font-size: clamp(1.5rem, 5vw, 3.5rem);
+    color: #f5e6c8;
+    text-shadow: 0 0 40px rgba(220,80,40,0.8);
+    margin-bottom: 0.3em;
+    text-align: center;
+  }
+  .result-details {
+    color: #c87840;
+    font-size: clamp(0.8rem, 2vw, 1.1rem);
+    letter-spacing: 0.1em;
+    margin-bottom: 2em;
+    text-align: center;
+    line-height: 2;
+  }
+
+  /* Falling pieces animation */
+  .kamon {
+    position: fixed;
+    font-size: 1.5rem;
+    opacity: 0.06;
+    animation: float linear infinite;
+    pointer-events: none;
+    z-index: 0;
+  }
+  @keyframes float {
+    from { transform: translateY(100vh) rotate(0deg); }
+    to { transform: translateY(-20vh) rotate(360deg); }
+  }
+</style>
+</head>
+<body>
+
+<!-- Decorative background elements -->
+<script>
+  const kamons = ['🌸','⛩','🎌','🍣','🥢','🌊','🔴'];
+  for(let i=0;i<12;i++){
+    const el = document.createElement('div');
+    el.className='kamon';
+    el.textContent = kamons[Math.floor(Math.random()*kamons.length)];
+    el.style.left = Math.random()*100+'vw';
+    el.style.animationDuration = (8+Math.random()*12)+'s';
+    el.style.animationDelay = (-Math.random()*20)+'s';
+    document.body.appendChild(el);
+  }
+</script>
+
+<!-- MENU -->
+<div id="menu">
+  <h1>🍣 SUSHI STACK</h1>
+  <div class="subtitle">積み寿司 — Tower Challenge</div>
+
+  <div class="player-select" id="player-select">
+    <button class="player-btn active" data-players="1">🧑<span>1P</span></button>
+    <button class="player-btn" data-players="2">👥<span>2P</span></button>
+    <button class="player-btn" data-players="3">👨‍👩‍👦<span>3P</span></button>
+    <button class="player-btn" data-players="4">👨‍👩‍👧‍👦<span>4P</span></button>
+  </div>
+
+  <div class="controls-info" id="controls-info">
+    Loading controls...
+  </div>
+
+  <button class="start-btn" id="start-btn">START GAME</button>
+</div>
+
+<!-- GAME -->
+<div id="game-wrap">
+  <div id="timer-bar">
+    <div id="timer-display">60</div>
+  </div>
+  <canvas id="game-canvas"></canvas>
+</div>
+
+<!-- RESULT -->
+<div id="result-screen">
+  <h2 id="result-title">🏆 WINNER!</h2>
+  <div class="result-details" id="result-details"></div>
+  <button class="start-btn" id="replay-btn">PLAY AGAIN</button>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+// SUSHI STACK — Full Game Engine
+// ═══════════════════════════════════════════════════════════════
+
+const canvas = document.getElementById('game-canvas');
+const ctx = canvas.getContext('2d');
+
+// ── Player config ──────────────────────────────────────────────
+const PLAYER_CONFIGS = {
+  1: [
+    { id:0, label:'P1', color:'#e8405a', key:'Space',   touch:true,  zone:'tl' }
+  ],
+  2: [
+    { id:0, label:'P1', color:'#e8405a', key:'Space',   touch:true,  zone:'bl' },
+    { id:1, label:'P2', color:'#4090e8', key:'Enter',   touch:false, zone:'tl' }
+  ],
+  3: [
+    { id:0, label:'P1', color:'#e8405a', key:'Space',   touch:true,  zone:'tl' },
+    { id:1, label:'P2', color:'#4090e8', key:'Enter',   touch:false, zone:'tr' },
+    { id:2, label:'P3', color:'#40c870', key:'ShiftRight', touch:false, zone:'bl' }
+  ],
+  4: [
+    { id:0, label:'P1', color:'#e8405a', key:'Space',   touch:true,  zone:'tl' },
+    { id:1, label:'P2', color:'#4090e8', key:'Enter',   touch:false, zone:'tr' },
+    { id:2, label:'P3', color:'#40c870', key:'ShiftRight', touch:false, zone:'bl' },
+    { id:3, label:'P4', color:'#e8c040', key:'Backspace', touch:false, zone:'br' }
+  ]
+};
+
+const CONTROLS_TEXT = {
+  1: '<strong>SPACE / TAP</strong> — Drop sushi',
+  2: '<strong>P1: SPACE/TAP</strong> — Drop &nbsp; | &nbsp; <strong>P2: ENTER</strong> — Drop',
+  3: '<strong>P1: SPACE</strong> &nbsp; <strong>P2: ENTER</strong> &nbsp; <strong>P3: SHIFT-R</strong>',
+  4: '<strong>P1: SPACE</strong> &nbsp; <strong>P2: ENTER</strong> &nbsp; <strong>P3: SHIFT-R</strong> &nbsp; <strong>P4: BACKSPACE</strong>'
+};
+
+// ── Constants ──────────────────────────────────────────────────
+const SUSHI_SPEED   = 60;   // px/sec
+const SUSHI_HEIGHT  = 15;
+const SUSHI_WIDTHS  = [15, 25, 35];
+const SURFACE_W     = 60;
+const SURFACE_H     = 10;
+const GAME_DURATION = 60;
+const WIN_HEIGHT_ABOVE_SURFACE = 200; // px above surface = win
+const GRAVITY       = 400;  // px/sec²
+const OVERLAP_RATIO = 0.5;
+
+// ── Palette (sushi types) ──────────────────────────────────────
+const SUSHI_COLORS = [
+  { top:'#f8cfc0', body:'#f4a882', label:'🍣' },
+  { top:'#f8e8a0', body:'#e8c840', label:'🍱' },
+  { top:'#c8f0d0', body:'#60c880', label:'🥒' },
+  { top:'#f0c8e8', body:'#d870b8', label:'🌸' },
+  { top:'#c8e8f8', body:'#60a8d8', label:'🐟' },
+  { top:'#f8d8b0', body:'#e8a040', label:'🦐' },
+];
+
+// ── State ──────────────────────────────────────────────────────
+let numPlayers = 1;
+let players = [];
+let gameRunning = false;
+let gameOver = false;
+let timeLeft = GAME_DURATION;
+let lastTime = null;
+let animFrame = null;
+let winnerId = null;
+
+// ── Zone calculation ───────────────────────────────────────────
+function getZoneRect(zone, W, H) {
+  const hw = W/2, hh = H/2;
+  switch(zone) {
+    case 'tl': return { x:0,   y:0,   w:hw,  h:hh };
+    case 'tr': return { x:hw,  y:0,   w:hw,  h:hh };
+    case 'bl': return { x:0,   y:hh,  w:hw,  h:hh };
+    case 'br': return { x:hw,  y:hh,  w:hw,  h:hh };
+    case 'lt': return { x:0,   y:0,   w:hw,  h:hh };
+    case 'lb': return { x:0,   y:hh,  w:hw,  h:hh };
+    default:   return { x:0,   y:0,   w:W,   h:H  };
+  }
+}
+
+// For 1 player, use top-left quarter
+function getZoneForPlayer(zone, W, H, numP) {
+  if (numP === 1) return { x:0, y:0, w:W/2, h:H/2 };
+  return getZoneRect(zone, W, H);
+}
+
+// ── Entry direction: sushi enters from which edge? ─────────────
+// Returns 'left' or 'right' (horizontal chopstick movement)
+function getEntryDir(zone) {
+  // tl, bl → enter from left; tr, br → enter from right
+  if (zone === 'tr' || zone === 'br') return 'right';
+  return 'left';
+}
+
+// ── Player init ────────────────────────────────────────────────
+function initPlayers() {
+  const W = canvas.width, H = canvas.height;
+  const configs = PLAYER_CONFIGS[numPlayers];
+  players = configs.map(cfg => {
+    const zone = getZoneForPlayer(cfg.zone, W, H, numPlayers);
+    const surfaceX = zone.x + zone.w/2 - SURFACE_W/2;
+    const surfaceY = zone.y + zone.h - 60; // near bottom of zone
+    const entryDir = getEntryDir(cfg.zone);
+    const winLine  = surfaceY - WIN_HEIGHT_ABOVE_SURFACE;
+
+    return {
+      id:        cfg.id,
+      label:     cfg.label,
+      color:     cfg.color,
+      key:       cfg.key,
+      zone,
+      surfaceX,
+      surfaceY,
+      entryDir,
+      winLine:   Math.max(zone.y + 10, winLine),
+      stack:     [],           // { x, y, w, h } placed pieces
+      chopstick: newChopstick(zone, surfaceX, entryDir),
+      score:     0,
+      eliminated: false,
+      winner:    false,
+      particles: [],
+    };
+  });
+}
+
+function newChopstick(zone, surfaceX, entryDir) {
+  const sushiW = SUSHI_WIDTHS[Math.floor(Math.random()*SUSHI_WIDTHS.length)];
+  const sushiColor = SUSHI_COLORS[Math.floor(Math.random()*SUSHI_COLORS.length)];
+  // Start at entry edge of zone
+  const startX = entryDir === 'left'
+    ? zone.x - sushiW
+    : zone.x + zone.w;
+  const centerX = zone.x + zone.w/2 - sushiW/2; // target center of zone
+
+  return {
+    x: startX,
+    y: -999,       // set when drawn (hovers above current stack top)
+    w: sushiW,
+    h: SUSHI_HEIGHT,
+    color: sushiColor,
+    speed: entryDir === 'left' ? SUSHI_SPEED : -SUSHI_SPEED,
+    dir: entryDir,
+    phase: 'in',   // 'in' | 'center' | 'out' | 'falling'
+    centerX,
+    vy: 0,
+    falling: false,
+    startX,
+    endX: entryDir === 'left' ? zone.x + zone.w : zone.x - sushiW,
+  };
+}
+
+// ── Stack top Y ────────────────────────────────────────────────
+function towerTopY(player) {
+  const towerPieces = player.stack.filter(p => p.inTower);
+  if (towerPieces.length === 0) return player.surfaceY;
+  return Math.min(...towerPieces.map(p => p.y));
+}
+
+function stackTopY(player) {
+  if (player.stack.length === 0) return player.surfaceY;
+  return Math.min(...player.stack.map(p => p.y));
+}
+
+// Chopstick always hovers above the tower top (the column that matters)
+function chopstickHoverY(player) {
+  return towerTopY(player) - 20 - SUSHI_HEIGHT;
+}
+
+// ── Drop logic ─────────────────────────────────────────────────
+function dropSushi(player) {
+  if (player.eliminated || player.winner || player.chopstick.falling) return;
+  const cs = player.chopstick;
+  cs.falling = true;
+  cs.vy = 0;
+  cs.phase = 'falling';
+}
+
+// ── Overlap check (single pair) ────────────────────────────────
+function checkOverlap(pieceX, pieceW, targetX, targetW) {
+  const left  = Math.max(pieceX, targetX);
+  const right = Math.min(pieceX + pieceW, targetX + targetW);
+  const overlap = Math.max(0, right - left);
+  return overlap / pieceW >= OVERLAP_RATIO;
+}
+
+// Total overlap between a piece and ALL pieces at a given Y level
+function totalSupportOverlap(pieceX, pieceW, supportPieces) {
+  // Merge support ranges to avoid double-counting overlapping supports
+  const ranges = supportPieces.map(p => [p.x, p.x + p.w]);
+  ranges.sort((a, b) => a[0] - b[0]);
+  const merged = [];
+  for (const [l, r] of ranges) {
+    if (merged.length && l <= merged[merged.length-1][1]) {
+      merged[merged.length-1][1] = Math.max(merged[merged.length-1][1], r);
+    } else {
+      merged.push([l, r]);
+    }
+  }
+  let totalOverlap = 0;
+  for (const [ml, mr] of merged) {
+    const left  = Math.max(pieceX, ml);
+    const right = Math.min(pieceX + pieceW, mr);
+    totalOverlap += Math.max(0, right - left);
+  }
+  return totalOverlap / pieceW >= OVERLAP_RATIO;
+}
+
+// ── Place piece ────────────────────────────────────────────────
+function placePiece(player, piece) {
+  const towerPieces = player.stack.filter(p => p.inTower);
+  const topTowerY   = towerTopY(player);
+
+  // All tower pieces sitting at the very top level
+  const topLevelPieces = towerPieces.filter(p => p.y === topTowerY);
+
+  // Does this piece have enough support from the top tower level?
+  const supportPieces = topLevelPieces.length > 0
+    ? topLevelPieces
+    : [{ x: player.surfaceX, w: SURFACE_W }];
+
+  const hasSupport = totalSupportOverlap(piece.x, piece.w, supportPieces);
+
+  if (towerPieces.length === 0) {
+    // No tower yet — vanishes if it misses the surface entirely
+    if (!checkOverlap(piece.x, piece.w, player.surfaceX, SURFACE_W)) {
+      player.chopstick = newChopstick(player.zone, player.surfaceX, player.entryDir);
+      return;
+    }
+    piece.y = player.surfaceY - SUSHI_HEIGHT;
+    piece.inTower = checkOverlap(piece.x, piece.w, player.surfaceX, SURFACE_W);
+    player.stack.push({ ...piece });
+    spawnParticles(player, piece.x + piece.w/2, piece.y);
+  } else if (hasSupport) {
+    // Enough combined support from top-level tower pieces — stack it
+    piece.y = topTowerY - SUSHI_HEIGHT;
+    piece.inTower = true;
+    player.stack.push({ ...piece });
+    spawnParticles(player, piece.x + piece.w/2, piece.y);
+  } else {
+    // Not enough support — if over surface, land as side piece; if outside, vanish
+    if (!checkOverlap(piece.x, piece.w, player.surfaceX, SURFACE_W)) {
+      player.chopstick = newChopstick(player.zone, player.surfaceX, player.entryDir);
+      return;
+    }
+    const sidePiecesBelow = player.stack.filter(p =>
+      !p.inTower && checkOverlap(piece.x, piece.w, p.x, p.w)
+    );
+    const landY = sidePiecesBelow.length > 0
+      ? Math.min(...sidePiecesBelow.map(p => p.y)) - SUSHI_HEIGHT
+      : player.surfaceY - SUSHI_HEIGHT;
+    piece.y = landY;
+    piece.inTower = false;
+    player.stack.push({ ...piece });
+    spawnParticles(player, piece.x + piece.w/2, piece.y);
+  }
+
+  // Win check — only tower height counts
+  if (towerTopY(player) <= player.winLine) {
+    triggerWin(player.id);
+  }
+
+  player.chopstick = newChopstick(player.zone, player.surfaceX, player.entryDir);
+}
+
+function toppleTower(player, piece) {
+  // Only topple the inTower pieces from the top down
+  const towerPieces = player.stack.filter(p => p.inTower);
+  const knockFrom = Math.floor(towerPieces.length * 0.6);
+  const knocked = towerPieces.slice(knockFrom);
+  // Remove them from the main stack
+  knocked.forEach(kp => {
+    const idx = player.stack.indexOf(kp);
+    if (idx !== -1) player.stack.splice(idx, 1);
+    player.particles.push({
+      type: 'piece',
+      x: kp.x, y: kp.y,
+      vx: (Math.random()-0.5)*80,
+      vy: -50,
+      w: kp.w, h: kp.h,
+      color: kp.color,
+      life: 1.5
+    });
+  });
+}
+
+function triggerWin(playerId) {
+  if (gameOver) return;
+  gameOver = true;
+  winnerId = playerId;
+  const p = players.find(p => p.id === playerId);
+  if (p) p.winner = true;
+  setTimeout(showResult, 600);
+}
+
+// ── Particles ─────────────────────────────────────────────────
+function spawnParticles(player, cx, cy) {
+  for (let i=0;i<8;i++) {
+    const angle = Math.random()*Math.PI*2;
+    const speed = 40 + Math.random()*80;
+    player.particles.push({
+      type: 'dot',
+      x: cx, y: cy,
+      vx: Math.cos(angle)*speed,
+      vy: Math.sin(angle)*speed - 60,
+      r: 2+Math.random()*3,
+      color: player.color,
+      life: 0.6 + Math.random()*0.4
+    });
+  }
+}
+
+// ── Update ─────────────────────────────────────────────────────
+function update(dt) {
+  if (!gameRunning || gameOver) return;
+
+  timeLeft -= dt;
+  if (timeLeft <= 0) {
+    timeLeft = 0;
+    endByTime();
+    return;
+  }
+
+  const timerEl = document.getElementById('timer-display');
+  const secs = Math.ceil(timeLeft);
+  timerEl.textContent = secs;
+  timerEl.className = secs <= 10 ? 'urgent' : '';
+
+  players.forEach(player => {
+    if (player.eliminated) return;
+
+    const cs = player.chopstick;
+    const hoverY = chopstickHoverY(player);
+
+    if (!cs.falling) {
+      // Move horizontally
+      cs.x += cs.speed * dt;
+      cs.y = hoverY;
+
+      const zLeft  = player.zone.x;
+      const zRight = player.zone.x + player.zone.w;
+
+      // Bounce at zone edges
+      if (cs.dir === 'left') {
+        if (cs.x + cs.w >= zRight) {
+          cs.speed = -SUSHI_SPEED;
+          cs.dir = 'right';
+        } else if (cs.x <= zLeft) {
+          cs.speed = SUSHI_SPEED;
+          cs.dir = 'left';
+        }
+      } else {
+        if (cs.x <= zLeft) {
+          cs.speed = SUSHI_SPEED;
+          cs.dir = 'left';
+        } else if (cs.x + cs.w >= zRight) {
+          cs.speed = -SUSHI_SPEED;
+          cs.dir = 'right';
+        }
+      }
+
+    } else {
+      // Falling — always aim for the tower top
+      cs.vy += GRAVITY * dt;
+      cs.y  += cs.vy * dt;
+
+      const landY = towerTopY(player) - SUSHI_HEIGHT;
+
+      if (cs.y >= landY) {
+        cs.y = landY;
+        placePiece(player, cs);
+      }
+    }
+
+    // Update particles
+    player.particles = player.particles.filter(p => p.life > 0);
+    player.particles.forEach(p => {
+      p.x += p.vx * dt;
+      p.y += p.vy * dt;
+      if (p.type === 'dot') p.vy += 200*dt;
+      if (p.type === 'piece') { p.vy += GRAVITY*dt; p.x += p.vx*dt; }
+      p.life -= dt;
+    });
+  });
+}
+
+function endByTime() {
+  if (gameOver) return;
+  gameOver = true;
+  // Tally stack heights
+  let best = -1, bestId = -1;
+  players.forEach(p => {
+    const height = p.stack.length > 0
+      ? (p.surfaceY - Math.min(...p.stack.map(s => s.y)))
+      : 0;
+    if (height > best) { best = height; bestId = p.id; }
+  });
+  winnerId = bestId;
+  setTimeout(showResult, 400);
+}
+
+// ── Draw ───────────────────────────────────────────────────────
+function draw() {
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+
+  // Background
+  ctx.fillStyle = '#0e0e18';
+  ctx.fillRect(0, 0, W, H);
+
+  // Zone dividers
+  ctx.strokeStyle = 'rgba(200,120,60,0.15)';
+  ctx.lineWidth = 1;
+  if (numPlayers > 1) {
+    ctx.beginPath(); ctx.moveTo(W/2,0); ctx.lineTo(W/2,H); ctx.stroke();
+  }
+  if (numPlayers > 2) {
+    ctx.beginPath(); ctx.moveTo(0,H/2); ctx.lineTo(W/2,H/2); ctx.stroke();
+  }
+  if (numPlayers === 4) {
+    ctx.beginPath(); ctx.moveTo(W/2,H/2); ctx.lineTo(W,H/2); ctx.stroke();
+  }
+
+  players.forEach(drawPlayer);
+  drawTouchButtons();
+}
+
+function drawPlayer(player) {
+  const { zone, surfaceX, surfaceY, color, label, winLine, stack, chopstick, particles, winner, eliminated } = player;
+
+  // Zone label
+  ctx.font = '700 11px "Noto Sans JP"';
+  ctx.letterSpacing = '0.1em';
+  ctx.fillStyle = color + '88';
+  ctx.textAlign = 'left';
+  ctx.fillText(label, zone.x + 10, zone.y + 22);
+  ctx.letterSpacing = '0em';
+
+  // Win line
+  ctx.strokeStyle = color + 'aa';
+  ctx.lineWidth = 1.5;
+  ctx.setLineDash([6,4]);
+  ctx.beginPath();
+  ctx.moveTo(zone.x + 4, winLine);
+  ctx.lineTo(zone.x + zone.w - 4, winLine);
+  ctx.stroke();
+  ctx.setLineDash([]);
+  // Win line label
+  ctx.font = '600 9px "Noto Sans JP"';
+  ctx.fillStyle = color + '99';
+  ctx.textAlign = 'right';
+  ctx.fillText('WIN', zone.x + zone.w - 6, winLine - 3);
+
+  // Surface (platform)
+  const grad = ctx.createLinearGradient(surfaceX, surfaceY, surfaceX, surfaceY + SURFACE_H);
+  grad.addColorStop(0, '#c8a870');
+  grad.addColorStop(1, '#8a6840');
+  ctx.fillStyle = grad;
+  ctx.beginPath();
+  ctx.roundRect(surfaceX, surfaceY, SURFACE_W, SURFACE_H, 3);
+  ctx.fill();
+  // Subtle wood grain
+  ctx.strokeStyle = 'rgba(255,255,255,0.12)';
+  ctx.lineWidth = 1;
+  for (let i=4; i<SURFACE_W; i+=8) {
+    ctx.beginPath();
+    ctx.moveTo(surfaceX+i, surfaceY+2);
+    ctx.lineTo(surfaceX+i, surfaceY+SURFACE_H-2);
+    ctx.stroke();
+  }
+
+  // Stack pieces
+  stack.forEach((piece, i) => {
+    drawSushiPiece(ctx, piece.x, piece.y, piece.w, piece.h, piece.color, 1);
+  });
+
+  // Stack height counter
+  if (stack.length > 0) {
+    const topY = Math.min(...stack.map(s => s.y));
+    const heightPx = surfaceY - topY;
+    ctx.font = 'bold 10px "Noto Sans JP"';
+    ctx.fillStyle = color + 'cc';
+    ctx.textAlign = 'center';
+    ctx.fillText(`${Math.round(heightPx)}px`, surfaceX + SURFACE_W/2, topY - 5);
+  }
+
+  // Chopstick + moving sushi
+  if (!eliminated && !gameOver || (gameOver && !winner)) {
+    if (!chopstick.falling || chopstick.y < surfaceY) {
+      drawChopsticks(ctx, chopstick, color);
+      drawSushiPiece(ctx, chopstick.x, chopstick.y, chopstick.w, chopstick.h, chopstick.color, 1);
+    }
+  }
+
+  // Winner flash
+  if (winner) {
+    ctx.fillStyle = color + '22';
+    ctx.fillRect(zone.x, zone.y, zone.w, zone.h);
+    ctx.font = 'bold 48px serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('🏆', zone.x + zone.w/2, zone.y + zone.h/2);
+  }
+
+  // Particles
+  particles.forEach(p => {
+    const alpha = Math.max(0, p.life);
+    if (p.type === 'dot') {
+      ctx.globalAlpha = alpha;
+      ctx.fillStyle = p.color;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+      ctx.fill();
+      ctx.globalAlpha = 1;
+    } else if (p.type === 'piece') {
+      ctx.globalAlpha = Math.min(1, alpha * 2);
+      drawSushiPiece(ctx, p.x, p.y, p.w, p.h, p.color, alpha);
+      ctx.globalAlpha = 1;
+    }
+  });
+}
+
+function drawSushiPiece(ctx, x, y, w, h, color, alpha) {
+  ctx.globalAlpha = alpha;
+  // Rice body
+  const bodyGrad = ctx.createLinearGradient(x, y+h*0.4, x, y+h);
+  bodyGrad.addColorStop(0, '#f8f4ee');
+  bodyGrad.addColorStop(1, '#e8e0d4');
+  ctx.fillStyle = bodyGrad;
+  ctx.beginPath();
+  ctx.roundRect(x, y + Math.floor(h*0.4), w, Math.ceil(h*0.6), 2);
+  ctx.fill();
+
+  // Topping
+  const topGrad = ctx.createLinearGradient(x, y, x, y+h*0.5);
+  topGrad.addColorStop(0, color.top);
+  topGrad.addColorStop(1, color.body);
+  ctx.fillStyle = topGrad;
+  ctx.beginPath();
+  ctx.roundRect(x+1, y, w-2, Math.ceil(h*0.55), [3,3,0,0]);
+  ctx.fill();
+
+  // Nori band
+  ctx.fillStyle = '#1a1a2a';
+  ctx.fillRect(x, y+Math.floor(h*0.38), w, 2);
+
+  // Highlight
+  ctx.fillStyle = 'rgba(255,255,255,0.3)';
+  ctx.beginPath();
+  ctx.roundRect(x+2, y+1, w-4, 3, 1);
+  ctx.fill();
+
+  ctx.globalAlpha = 1;
+}
+
+function drawChopsticks(ctx, cs, color) {
+  const cx = cs.x + cs.w/2;
+  const cy = cs.y;
+
+  ctx.strokeStyle = color + 'cc';
+  ctx.lineWidth = 2;
+  ctx.lineCap = 'round';
+
+  // Two chopstick lines above
+  ctx.beginPath();
+  ctx.moveTo(cx - 5, cy - 8);
+  ctx.lineTo(cx - 12, cy - 28);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(cx + 5, cy - 8);
+  ctx.lineTo(cx + 12, cy - 28);
+  ctx.stroke();
+
+  // Tips touching sushi
+  ctx.beginPath();
+  ctx.moveTo(cx - 5, cy - 6);
+  ctx.lineTo(cs.x + 4, cy);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(cx + 5, cy - 6);
+  ctx.lineTo(cs.x + cs.w - 4, cy);
+  ctx.stroke();
+}
+
+// ── Touch buttons (drawn on canvas) ───────────────────────────
+const TOUCH_BTN_R = 38; // radius
+const touchBtnPressed = {}; // playerId → timestamp of last press
+
+function getTouchBtnCenter(player) {
+  const { zone } = player;
+  // Place in bottom-corner of the zone, away from the stack (which is centered)
+  // Use bottom-right corner for left zones, bottom-left for right zones
+  const isRight = (player.zone.x > 0);
+  const cx = isRight
+    ? zone.x + TOUCH_BTN_R + 18
+    : zone.x + zone.w - TOUCH_BTN_R - 18;
+  const cy = zone.y + zone.h - TOUCH_BTN_R - 18;
+  return { cx, cy };
+}
+
+const isTouchDevice = () => window.matchMedia('(pointer: coarse)').matches;
+
+function drawTouchButtons() {
+  if (!gameRunning || gameOver) return;
+  if (!isTouchDevice()) return;
+  players.forEach(player => {
+    if (player.eliminated || player.winner) return;
+    const { cx, cy } = getTouchBtnCenter(player);
+    const now = performance.now();
+    const pressAge = now - (touchBtnPressed[player.id] || -9999);
+    const isPressed = pressAge < 150;
+    const scale = isPressed ? 0.88 : 1;
+
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.scale(scale, scale);
+
+    // Outer glow ring
+    const glowAlpha = isPressed ? 0.6 : 0.2;
+    ctx.beginPath();
+    ctx.arc(0, 0, TOUCH_BTN_R + 8, 0, Math.PI*2);
+    ctx.fillStyle = player.color + Math.round(glowAlpha * 255).toString(16).padStart(2,'0');
+    ctx.fill();
+
+    // Button body
+    const grad = ctx.createRadialGradient(-6, -6, 2, 0, 0, TOUCH_BTN_R);
+    if (isPressed) {
+      grad.addColorStop(0, player.color + 'dd');
+      grad.addColorStop(1, player.color + '88');
+    } else {
+      grad.addColorStop(0, 'rgba(255,255,255,0.18)');
+      grad.addColorStop(1, 'rgba(0,0,0,0.35)');
+    }
+    ctx.beginPath();
+    ctx.arc(0, 0, TOUCH_BTN_R, 0, Math.PI*2);
+    ctx.fillStyle = isPressed ? grad : 'rgba(20,20,30,0.75)';
+    ctx.fill();
+    ctx.strokeStyle = player.color + (isPressed ? 'ff' : '88');
+    ctx.lineWidth = 2.5;
+    ctx.stroke();
+
+    // Drop arrow icon
+    ctx.fillStyle = isPressed ? '#fff' : player.color + 'ee';
+    ctx.font = `${isPressed ? 26 : 24}px serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('🥢', 0, -2);
+
+    // "DROP" label
+    ctx.font = `bold 9px "Noto Sans JP"`;
+    ctx.fillStyle = isPressed ? '#ffffffcc' : player.color + 'aa';
+    ctx.textBaseline = 'alphabetic';
+    ctx.fillText('DROP', 0, TOUCH_BTN_R - 8);
+
+    ctx.restore();
+  });
+}
+
+function isTouchOnBtn(tx, ty, player) {
+  const { cx, cy } = getTouchBtnCenter(player);
+  const dx = tx - cx, dy = ty - cy;
+  return Math.sqrt(dx*dx + dy*dy) <= TOUCH_BTN_R + 12; // slightly forgiving
+}
+
+// ── Game loop ──────────────────────────────────────────────────
+function gameLoop(ts) {
+  if (!gameRunning) return;
+  if (lastTime === null) lastTime = ts;
+  const dt = Math.min((ts - lastTime) / 1000, 0.05);
+  lastTime = ts;
+
+  update(dt);
+  draw();
+
+  animFrame = requestAnimationFrame(gameLoop);
+}
+
+// ── Input ──────────────────────────────────────────────────────
+function setupInput() {
+  document.addEventListener('keydown', e => {
+    if (!gameRunning || gameOver) return;
+    players.forEach(p => {
+      if (e.code === p.key) {
+        e.preventDefault();
+        dropSushi(p);
+      }
+    });
+  });
+
+  canvas.addEventListener('touchstart', e => {
+    e.preventDefault();
+    if (!gameRunning || gameOver) return;
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    for (let t of e.changedTouches) {
+      const tx = (t.clientX - rect.left) * scaleX;
+      const ty = (t.clientY - rect.top) * scaleY;
+      players.forEach(p => {
+        // Hit button circle OR anywhere in zone as fallback
+        if (isTouchOnBtn(tx, ty, p) ||
+            (tx >= p.zone.x && tx < p.zone.x + p.zone.w &&
+             ty >= p.zone.y && ty < p.zone.y + p.zone.h)) {
+          touchBtnPressed[p.id] = performance.now();
+          dropSushi(p);
+        }
+      });
+    }
+  }, { passive: false });
+}
+
+// ── Screens ────────────────────────────────────────────────────
+function showMenu() {
+  document.getElementById('menu').style.display = 'flex';
+  document.getElementById('game-wrap').style.display = 'none';
+  document.getElementById('result-screen').style.display = 'none';
+}
+
+function showGame() {
+  document.getElementById('menu').style.display = 'none';
+  document.getElementById('game-wrap').style.display = 'flex';
+  document.getElementById('result-screen').style.display = 'none';
+}
+
+function showResult() {
+  gameRunning = false;
+  gameOver = true;
+  if (animFrame) { cancelAnimationFrame(animFrame); animFrame = null; }
+
+  document.getElementById('menu').style.display = 'none';
+  document.getElementById('game-wrap').style.display = 'none';
+  document.getElementById('result-screen').style.display = 'flex';
+
+  const winner = players.find(p => p.id === winnerId);
+  const titleEl = document.getElementById('result-title');
+  const detailEl = document.getElementById('result-details');
+
+  if (winner) {
+    titleEl.textContent = `🏆 ${winner.label} WINS!`;
+    titleEl.style.color = winner.color;
+  } else {
+    titleEl.textContent = '🎌 TIME UP!';
+    titleEl.style.color = '#f5e6c8';
+  }
+
+  // Show heights
+  const lines = players.map(p => {
+    const height = p.stack.length > 0
+      ? Math.round(p.surfaceY - Math.min(...p.stack.map(s => s.y)))
+      : 0;
+    const pieces = p.stack.length;
+    const star = p.id === winnerId ? ' ⭐' : '';
+    return `${p.label}: ${pieces} pieces · ${height}px tall${star}`;
+  });
+  detailEl.innerHTML = lines.join('<br>');
+
+  // 5-second countdown then auto-return to menu
+  let countdown = 5;
+  const replayBtn = document.getElementById('replay-btn');
+  replayBtn.textContent = `PLAY AGAIN (${countdown})`;
+  const countInterval = setInterval(() => {
+    countdown--;
+    if (countdown <= 0) {
+      clearInterval(countInterval);
+      replayBtn.textContent = 'PLAY AGAIN';
+      startGame();
+    } else {
+      replayBtn.textContent = `PLAY AGAIN (${countdown})`;
+    }
+  }, 1000);
+
+  // If user clicks, cancel the auto-countdown
+  replayBtn.onclick = () => {
+    clearInterval(countInterval);
+    replayBtn.textContent = 'PLAY AGAIN';
+    startGame();
+  };
+}
+
+// ── Resize / init ──────────────────────────────────────────────
+function resizeCanvas() {
+  canvas.width  = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+
+function startGame() {
+  if (animFrame) { cancelAnimationFrame(animFrame); animFrame = null; }
+  resizeCanvas();
+  timeLeft = GAME_DURATION;
+  gameOver = false;
+  winnerId = null;
+  lastTime = null;
+  gameRunning = true;
+  initPlayers();
+  showGame();
+  animFrame = requestAnimationFrame(gameLoop);
+}
+
+// ── Menu bindings ──────────────────────────────────────────────
+document.querySelectorAll('.player-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.player-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    numPlayers = parseInt(btn.dataset.players);
+    document.getElementById('controls-info').innerHTML = CONTROLS_TEXT[numPlayers];
+  });
+});
+
+document.getElementById('start-btn').addEventListener('click', startGame);
+
+window.addEventListener('resize', () => {
+  if (gameRunning) {
+    resizeCanvas();
+    initPlayers(); // re-layout
+  }
+});
+
+// Init
+numPlayers = 1;
+document.getElementById('controls-info').innerHTML = CONTROLS_TEXT[1];
+setupInput();
+showMenu();
+</script>
+</body>
+</html>
