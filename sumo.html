@@ -1,0 +1,1312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sumo Wrestling</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #1a0a00;
+    font-family: 'Georgia', serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    overflow: hidden;
+    user-select: none;
+  }
+
+  h1 {
+    color: #e8c97a;
+    font-size: 1.8rem;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+    text-shadow: 0 0 20px rgba(232,201,122,0.5);
+  }
+
+  .subtitle { color: #a07040; font-size: 0.75rem; letter-spacing: 2px; margin-bottom: 10px; }
+
+  .scoreboard {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .player-score {
+    text-align: center;
+    min-width: 80px;
+    padding: 6px 10px;
+    border-radius: 6px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .player-name { font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 4px; }
+  .score-dots { display: flex; gap: 5px; justify-content: center; margin-top: 3px; }
+  .dot { width: 11px; height: 11px; border-radius: 50%; border: 2px solid; transition: background 0.3s; }
+
+  .round-info { color: #e8c97a; font-size: 0.8rem; letter-spacing: 2px; text-align: center; }
+
+  .ps0 .player-name { color: #ff6b6b; }
+  .ps0 .dot { border-color: #ff6b6b; }
+  .ps0 .dot.filled { background: #ff6b6b; }
+
+  .ps1 .player-name { color: #6bb5ff; }
+  .ps1 .dot { border-color: #6bb5ff; }
+  .ps1 .dot.filled { background: #6bb5ff; }
+
+  .ps2 .player-name { color: #6bff9e; }
+  .ps2 .dot { border-color: #6bff9e; }
+  .ps2 .dot.filled { background: #6bff9e; }
+
+  .ps3 .player-name { color: #ffcc44; }
+  .ps3 .dot { border-color: #ffcc44; }
+  .ps3 .dot.filled { background: #ffcc44; }
+
+  canvas { display: block; }
+
+  .controls-bar {
+    margin-top: 10px;
+    display: flex;
+    gap: 14px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .ctrl-pill {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 0.65rem;
+    letter-spacing: 1px;
+    text-align: center;
+  }
+
+  .ctrl-pill b { display: block; margin-bottom: 2px; font-size: 0.7rem; }
+
+  .overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.88);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+  }
+  .overlay.show { opacity: 1; pointer-events: all; }
+
+  .overlay-emoji { font-size: 3rem; margin-bottom: 8px; }
+  .overlay-title {
+    font-size: 2.2rem;
+    font-weight: bold;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    text-shadow: 0 0 30px currentColor;
+  }
+  .overlay-sub { color: #a09070; font-size: 0.82rem; letter-spacing: 2px; margin-bottom: 22px; text-align: center; padding: 0 20px; }
+
+  .picker { margin-bottom: 18px; text-align: center; }
+  .picker p { color: #c0a060; font-size: 0.78rem; letter-spacing: 2px; margin-bottom: 10px; }
+  .picker-btns { display: flex; gap: 10px; justify-content: center; }
+  .pnum {
+    width: 50px; height: 50px;
+    border-radius: 50%;
+    border: 2px solid #806040;
+    background: rgba(255,255,255,0.05);
+    color: #e8c97a;
+    font-size: 1.3rem;
+    font-family: 'Georgia', serif;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .pnum:hover, .pnum.active { background: rgba(232,201,122,0.2); border-color: #e8c97a; transform: scale(1.1); }
+
+  .btn {
+    background: linear-gradient(135deg, #c8a040, #e8c97a);
+    color: #1a0a00;
+    border: none;
+    padding: 11px 32px;
+    font-size: 0.95rem;
+    font-family: 'Georgia', serif;
+    letter-spacing: 2px;
+    cursor: pointer;
+    border-radius: 4px;
+    font-weight: bold;
+    text-transform: uppercase;
+    transition: transform 0.1s, box-shadow 0.1s;
+    box-shadow: 0 4px 15px rgba(232,201,122,0.3);
+  }
+  .btn:hover { transform: scale(1.05); box-shadow: 0 6px 20px rgba(232,201,122,0.5); }
+
+  .device-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    width: 88px;
+    padding: 14px 10px;
+    border-radius: 12px;
+    border: 2px solid #806040;
+    background: rgba(255,255,255,0.05);
+    color: #e8c97a;
+    font-family: 'Georgia', serif;
+    font-size: 1.8rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .device-btn span {
+    font-size: 0.65rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #a08050;
+  }
+  .device-btn:hover, .device-btn.active {
+    background: rgba(232,201,122,0.15);
+    border-color: #e8c97a;
+    transform: scale(1.08);
+    box-shadow: 0 0 16px rgba(232,201,122,0.25);
+  }
+  .device-btn.active span { color: #e8c97a; }
+
+  .controls-preview {
+    margin-top: 18px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    max-width: 360px;
+  }
+
+  .ctrl-card {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 10px;
+    padding: 10px 14px;
+    text-align: center;
+    min-width: 130px;
+  }
+
+  .ctrl-card-name {
+    font-size: 0.72rem;
+    font-weight: bold;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .ctrl-card-keys {
+    display: grid;
+    grid-template-columns: repeat(3, 28px);
+    grid-template-rows: repeat(2, 28px);
+    gap: 3px;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .key {
+    width: 28px; height: 28px;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.25);
+    border-bottom: 3px solid rgba(255,255,255,0.15);
+    border-radius: 5px;
+    font-size: 0.62rem;
+    color: #e8d8b0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Georgia', serif;
+  }
+
+  .key.wide {
+    grid-column: span 3;
+    width: 100%;
+    font-size: 0.58rem;
+    letter-spacing: 1px;
+  }
+
+  .key.empty { background: transparent; border-color: transparent; }
+
+  /* Round-start controls popup */
+  .controls-popup {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: rgba(10,5,0,0.92);
+    border: 1px solid rgba(232,201,122,0.3);
+    border-radius: 12px;
+    padding: 14px 22px;
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s, transform 0.4s;
+    z-index: 20;
+    max-width: 500px;
+  }
+
+  .controls-popup.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  .popup-card {
+    text-align: center;
+    font-size: 0.68rem;
+    letter-spacing: 1px;
+  }
+
+  .popup-card-name {
+    font-weight: bold;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+    font-size: 0.7rem;
+  }
+
+  .popup-keys-row {
+    display: flex;
+    gap: 3px;
+    justify-content: center;
+    margin-bottom: 2px;
+  }
+
+  .pkey {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.22);
+    border-bottom: 2px solid rgba(255,255,255,0.1);
+    border-radius: 4px;
+    padding: 2px 5px;
+    font-size: 0.6rem;
+    color: #ddd;
+    min-width: 22px;
+    text-align: center;
+  }
+
+  /* ── Virtual joysticks (touch only) ── */
+  .joystick-wrap {
+    position: fixed;
+    bottom: 30px;
+    width: 100px;
+    height: 100px;
+    z-index: 30;
+    display: none;
+    touch-action: none;
+  }
+  .joystick-wrap.j0 { left: 20px; }
+  .joystick-wrap.j1 { right: 20px; }
+  .joystick-wrap.j2 { left: 140px; }
+  .joystick-wrap.j3 { right: 140px; }
+
+  .joystick-base {
+    width: 100px; height: 100px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.06);
+    border: 2px solid rgba(255,255,255,0.15);
+    position: absolute;
+    top: 0; left: 0;
+  }
+
+  .joystick-label {
+    position: absolute;
+    top: -22px; left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.65rem;
+    font-weight: bold;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    opacity: 0.8;
+  }
+
+  .joystick-knob {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    position: absolute;
+    top: 28px; left: 28px;
+    pointer-events: none;
+    transition: background 0.1s;
+  }
+
+  @media (pointer: coarse) {
+    /* joystick visibility is controlled by JS based on device selection */
+    body { padding-bottom: 0; }
+  }
+</style>
+</head>
+<body>
+
+<h1>⛩ Sumo Wrestling</h1>
+<p class="subtitle">Push opponents beyond the ring line</p>
+
+<div class="scoreboard" id="scoreboard"></div>
+<canvas id="c" width="440" height="440"></canvas>
+<div class="controls-bar" id="ctrlBar"></div>
+
+<div class="overlay show" id="overlay">
+  <div class="overlay-emoji" id="ovEmoji">⛩</div>
+  <div class="overlay-title" id="ovTitle" style="color:#e8c97a">Sumo Wrestling</div>
+  <div class="overlay-sub" id="ovSub">What are you playing on?</div>
+
+  <!-- Step 1: Device picker -->
+  <div id="devicePickerDiv" style="margin-bottom:18px;text-align:center;">
+    <p style="color:#c0a060;font-size:0.78rem;letter-spacing:2px;margin-bottom:12px;">SELECT YOUR DEVICE</p>
+    <div style="display:flex;gap:14px;justify-content:center;">
+      <button class="device-btn" onclick="selectDevice('computer')">💻<span>Computer</span></button>
+      <button class="device-btn" onclick="selectDevice('tablet')">📱<span>Tablet</span></button>
+      <button class="device-btn" onclick="selectDevice('phone')">📞<span>Phone</span></button>
+    </div>
+  </div>
+
+  <!-- Step 2: Player count + controls preview (hidden until device chosen) -->
+  <div class="picker" id="pickerDiv" style="display:none;">
+    <p>NUMBER OF PLAYERS</p>
+    <div class="picker-btns">
+      <button class="pnum" onclick="selectCount(1)">1</button>
+      <button class="pnum active" onclick="selectCount(2)">2</button>
+      <button class="pnum" onclick="selectCount(3)">3</button>
+      <button class="pnum" onclick="selectCount(4)">4</button>
+    </div>
+    <div class="controls-preview" id="controlsPreview"></div>
+  </div>
+
+  <button class="btn" id="ovBtn" style="display:none;">Start Game</button>
+</div>
+
+<!-- Controls popup shown briefly at round start -->
+<div class="controls-popup" id="controlsPopup"></div>
+
+<script>
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+const CX = 220, CY = 220;
+const RING_R = 108;
+const LINE_W = 5;
+const PLAYER_R = 26;
+const FRICTION = 0.84;
+const SPEED = 0.20;
+const PUSH_FORCE = 0.24;
+const POINTS_TO_WIN = 3;
+
+const CONFIGS = [
+  { color: '#ff6b6b', shadow: '#ff000055', name: 'P1', keys: { up:'w',  down:'s',         left:'a',         right:'d'          }, label: 'W / A / S / D' },
+  { color: '#6bb5ff', shadow: '#0055ff55', name: 'P2', keys: { up:'ArrowUp', down:'ArrowDown', left:'ArrowLeft', right:'ArrowRight' }, label: '↑ / ↓ / ← / →' },
+  { color: '#6bff9e', shadow: '#00cc5555', name: 'P3', keys: { up:'i',  down:'k',         left:'j',         right:'l'          }, label: 'J / I / K / L' },
+  { color: '#ffcc44', shadow: '#cc880055', name: 'P4', keys: { up:'t',  down:'g',         left:'f',         right:'h'          }, label: 'F / T / G / H' },
+];
+
+let numPlayers = 2;
+let deviceType = 'computer'; // 'computer' | 'tablet' | 'phone'
+let scores = [0,0,0,0];
+let round = 1;
+let gameActive = false;
+let animId = null;
+let players = [];
+let heldKeys = {};
+let flashTimer = 0, flashX = 0, flashY = 0;
+
+function selectDevice(type) {
+  deviceType = type;
+  document.querySelectorAll('.device-btn').forEach(b => b.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+
+  // Update subtitle
+  const subs = {
+    computer: 'Push opponents outside the ring. First to 3 wins!',
+    tablet:   'Joystick circles will appear to control your sumo!',
+    phone:    'Push opponents outside the ring. First to 3 wins!'
+  };
+  document.getElementById('ovSub').textContent = subs[type];
+
+  // Show player picker & start button
+  document.getElementById('pickerDiv').style.display = 'block';
+  document.getElementById('ovBtn').style.display = 'inline-block';
+  buildControlsPreview(numPlayers);
+}
+
+document.addEventListener('keydown', e => {
+  heldKeys[e.key] = true;
+  if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].includes(e.key)) e.preventDefault();
+});
+document.addEventListener('keyup', e => { heldKeys[e.key] = false; });
+
+// ── Player count selection ──────────────────────────────────────
+function selectCount(n) {
+  numPlayers = n;
+  document.querySelectorAll('.pnum').forEach((b,i) => b.classList.toggle('active', i+1===n));
+  buildControlsPreview(n);
+}
+
+const KEY_LABELS = [
+  { up:'W', down:'S', left:'A', right:'D' },
+  { up:'↑', down:'↓', left:'←', right:'→' },
+  { up:'I', down:'K', left:'J', right:'L' },
+  { up:'T', down:'G', left:'F', right:'H' },
+];
+
+function buildControlsPreview(n) {
+  const total = n === 1 ? 1 : n; // only show human players
+  const container = document.getElementById('controlsPreview');
+  container.innerHTML = '';
+  for (let i = 0; i < total; i++) {
+    const k = KEY_LABELS[i];
+    const card = document.createElement('div');
+    card.className = 'ctrl-card';
+    card.style.borderColor = CONFIGS[i].color + '55';
+    card.innerHTML = `
+      <div class="ctrl-card-name" style="color:${CONFIGS[i].color}">${CONFIGS[i].name}</div>
+      <div class="ctrl-card-keys">
+        <div class="key empty"></div>
+        <div class="key">${k.up}</div>
+        <div class="key empty"></div>
+        <div class="key">${k.left}</div>
+        <div class="key">${k.down}</div>
+        <div class="key">${k.right}</div>
+      </div>`;
+    container.appendChild(card);
+  }
+  if (n === 1) {
+    const ai = document.createElement('div');
+    ai.className = 'ctrl-card';
+    ai.style.borderColor = '#88888855';
+    ai.innerHTML = `<div class="ctrl-card-name" style="color:#aaa">CPU</div><div style="color:#666;font-size:0.65rem;margin-top:8px">AI controlled</div>`;
+    container.appendChild(ai);
+  }
+}
+
+let popupTimeout = null;
+function showControlsPopup() {
+  const total = numPlayers === 1 ? 1 : numPlayers;
+  const popup = document.getElementById('controlsPopup');
+  popup.innerHTML = '';
+
+  for (let i = 0; i < total; i++) {
+    const k = KEY_LABELS[i];
+    const card = document.createElement('div');
+    card.className = 'popup-card';
+    card.innerHTML = `
+      <div class="popup-card-name" style="color:${CONFIGS[i].color}">${CONFIGS[i].name}</div>
+      <div class="popup-keys-row">
+        <span class="pkey" style="opacity:0.3">·</span>
+        <span class="pkey">${k.up}</span>
+        <span class="pkey" style="opacity:0.3">·</span>
+      </div>
+      <div class="popup-keys-row">
+        <span class="pkey">${k.left}</span>
+        <span class="pkey">${k.down}</span>
+        <span class="pkey">${k.right}</span>
+      </div>`;
+    popup.appendChild(card);
+  }
+
+  if (numPlayers === 1) {
+    const ai = document.createElement('div');
+    ai.className = 'popup-card';
+    ai.innerHTML = `<div class="popup-card-name" style="color:#aaa">CPU</div><div style="color:#666;font-size:0.6rem;margin-top:6px">AI opponent</div>`;
+    popup.appendChild(ai);
+  }
+
+  popup.classList.add('show');
+  if (popupTimeout) clearTimeout(popupTimeout);
+  popupTimeout = setTimeout(() => popup.classList.remove('show'), 3500);
+}
+
+// ── Start / reset ───────────────────────────────────────────────
+document.getElementById('ovBtn').addEventListener('click', () => {
+  const picker = document.getElementById('pickerDiv');
+  if (picker.style.display === 'none') return; // device not yet chosen
+  scores = [0,0,0,0]; round = 1;
+  buildUI();
+  hideOverlay();
+  startRound();
+});
+
+function buildUI() {
+  // Scoreboard
+  const sb = document.getElementById('scoreboard');
+  sb.innerHTML = '';
+  for (let i = 0; i < numPlayers; i++) {
+    if (i > 0) {
+      const ri = document.createElement('div');
+      ri.className = 'round-info'; ri.id = 'roundInfo';
+      sb.appendChild(ri);
+    }
+    const div = document.createElement('div');
+    div.className = `player-score ps${i}`; div.id = `pscore${i}`;
+    div.innerHTML = `<div class="player-name">${CONFIGS[i].name}</div><div class="score-dots" id="sdots${i}"></div>`;
+    sb.appendChild(div);
+  }
+  // Controls
+  const cb = document.getElementById('ctrlBar');
+  cb.innerHTML = '';
+  for (let i = 0; i < numPlayers; i++) {
+    const d = document.createElement('div');
+    d.className = 'ctrl-pill';
+    d.style.borderColor = CONFIGS[i].color + '55';
+    d.style.color = CONFIGS[i].color;
+    d.innerHTML = `<b>${CONFIGS[i].name}</b>${CONFIGS[i].label}`;
+    cb.appendChild(d);
+  }
+  if (numPlayers === 1) {
+    const d = document.createElement('div');
+    d.className = 'ctrl-pill';
+    d.style.borderColor = '#88888855';
+    d.style.color = '#aaa';
+    d.innerHTML = `<b>CPU</b>AI controlled`;
+    cb.appendChild(d);
+  }
+  updateDots();
+}
+
+function updateDots() {
+  for (let i = 0; i < numPlayers; i++) {
+    const el = document.getElementById('sdots'+i);
+    if (!el) continue;
+    el.innerHTML = '';
+    for (let j = 0; j < POINTS_TO_WIN; j++) {
+      const d = document.createElement('div');
+      d.className = 'dot' + (j < scores[i] ? ' filled' : '');
+      el.appendChild(d);
+    }
+  }
+  const ri = document.getElementById('roundInfo');
+  if (ri) ri.textContent = 'Round ' + round;
+}
+
+function spawnPositions(total) {
+  // Spread evenly around a circle inside the ring
+  return Array.from({length: total}, (_,i) => {
+    const a = (Math.PI*2/total)*i - Math.PI/2;
+    const r = total === 2 ? 52 : 68;
+    return { x: CX + Math.cos(a)*r, y: CY + Math.sin(a)*r };
+  });
+}
+
+function resetPlayers() {
+  const total = numPlayers === 1 ? 2 : numPlayers;
+  const pos = spawnPositions(total);
+  players = [];
+  for (let i = 0; i < total; i++) {
+    players.push({
+      x: pos[i].x, y: pos[i].y,
+      vx: 0, vy: 0,
+      r: PLAYER_R,
+      color: CONFIGS[i].color,
+      shadow: CONFIGS[i].shadow,
+      name: CONFIGS[i].name,
+      keys: CONFIGS[i].keys,
+      isAI: numPlayers === 1 && i > 0,
+      eliminated: false,
+      index: i,
+      pushing: false,
+    });
+  }
+}
+
+function startRound() {
+  resetPlayers();
+  updateDots();
+  gameActive = true;
+  initJoysticks();
+  showControlsPopup();
+  if (animId) cancelAnimationFrame(animId);
+  loop();
+}
+
+// ── Sand texture ─────────────────────────────────────────────────
+let sandImg;
+(function makeSand() {
+  const sc = document.createElement('canvas');
+  sc.width = sc.height = 440;
+  const sx = sc.getContext('2d');
+  sx.fillStyle = '#c8a060';
+  sx.beginPath(); sx.arc(CX,CY,RING_R,0,Math.PI*2); sx.fill();
+  for (let i=0;i<900;i++) {
+    const a=Math.random()*Math.PI*2, r=Math.random()*RING_R;
+    sx.fillStyle=`rgba(${Math.random()>.5?'170,120,50':'210,165,75'},${0.12+Math.random()*0.22})`;
+    const sz=1+Math.random()*2;
+    sx.fillRect(CX+Math.cos(a)*r, CY+Math.sin(a)*r, sz, sz);
+  }
+  sandImg = sc;
+})();
+
+// ── Crowd (pre-rendered) ──────────────────────────────────────────
+let crowdImg;
+const CROWD_COLORS = [
+  '#e74c3c','#3498db','#2ecc71','#f39c12','#9b59b6',
+  '#1abc9c','#e67e22','#34495e','#e91e63','#00bcd4',
+  '#ff5722','#607d8b','#795548','#cddc39','#ff9800',
+];
+(function makeCrowd() {
+  const cc = document.createElement('canvas');
+  cc.width = cc.height = 440;
+  const cx2 = cc.getContext('2d');
+
+  // Stadium floor outside ring
+  const floorGrad = cx2.createRadialGradient(CX,CY,RING_R,CX,CY,220);
+  floorGrad.addColorStop(0,'#2a1505');
+  floorGrad.addColorStop(1,'#0f0602');
+  cx2.fillStyle = floorGrad;
+  cx2.fillRect(0,0,440,440);
+
+  // Wide empty floor between ring and crowd
+  const rng = (min,max) => min+Math.random()*(max-min);
+  const CROWD_INNER = RING_R + 72;  // big gap — crowd starts far from ring
+  const OUTER = 215;
+
+  // Clay/wood floor between ring and crowd
+  const floorRing = cx2.createRadialGradient(CX,CY,RING_R+2,CX,CY,CROWD_INNER);
+  floorRing.addColorStop(0,'#3a1e08');
+  floorRing.addColorStop(0.5,'#2e1506');
+  floorRing.addColorStop(1,'#1e0d03');
+  cx2.save();
+  cx2.beginPath();
+  cx2.arc(CX,CY,CROWD_INNER,0,Math.PI*2);
+  cx2.arc(CX,CY,RING_R,0,Math.PI*2,true); // hole in middle
+  cx2.fillStyle = floorRing;
+  cx2.fill();
+  cx2.restore();
+
+  // Subtle floor planks/lines radiating outward
+  for (let a=0; a<Math.PI*2; a+=Math.PI/18) {
+    cx2.strokeStyle='rgba(0,0,0,0.18)';
+    cx2.lineWidth=1;
+    cx2.beginPath();
+    cx2.moveTo(CX+Math.cos(a)*(RING_R+4), CY+Math.sin(a)*(RING_R+4));
+    cx2.lineTo(CX+Math.cos(a)*(CROWD_INNER-2), CY+Math.sin(a)*(CROWD_INNER-2));
+    cx2.stroke();
+  }
+
+  // Crowd seated in tight rings from CROWD_INNER outward
+  for (let ring = 0; ring < 5; ring++) {
+    const frac = ring / 4;
+    const radius = CROWD_INNER + frac*(OUTER-CROWD_INNER);
+    const personR = 5.5 - frac*1.8;
+    const circumference = 2*Math.PI*radius;
+    const count = Math.floor(circumference / (personR*2.2));
+    const angleOffset = Math.random()*Math.PI*2;
+
+    for (let i=0; i<count; i++) {
+      const angle = angleOffset + (Math.PI*2/count)*i;
+      const jitterR = rng(-personR*0.5, personR*0.5);
+      const px = CX + Math.cos(angle)*(radius+jitterR);
+      const py = CY + Math.sin(angle)*(radius+jitterR);
+      const col = CROWD_COLORS[Math.floor(Math.random()*CROWD_COLORS.length)];
+      const brightness = 0.45 + frac*0.3;
+
+      // Body
+      cx2.fillStyle = adjustBrightness(col, brightness*0.7);
+      cx2.beginPath(); cx2.ellipse(px, py+personR*0.8, personR*0.7, personR*1.1, 0, 0, Math.PI*2); cx2.fill();
+
+      // Head
+      cx2.fillStyle = pickSkin(brightness);
+      cx2.beginPath(); cx2.arc(px, py-personR*0.4, personR*0.7, 0, Math.PI*2); cx2.fill();
+
+      // Raised arms
+      if (Math.random() < 0.3) {
+        cx2.strokeStyle = adjustBrightness(col, brightness*0.6);
+        cx2.lineWidth = personR*0.32;
+        cx2.lineCap = 'round';
+        cx2.beginPath();
+        cx2.moveTo(px-personR*0.6, py+personR*0.2);
+        cx2.lineTo(px-personR*1.1, py-personR*0.8);
+        cx2.moveTo(px+personR*0.6, py+personR*0.2);
+        cx2.lineTo(px+personR*1.1, py-personR*0.8);
+        cx2.stroke();
+      }
+    }
+  }
+
+  // Vignette at edges
+  const vig = cx2.createRadialGradient(CX,CY,CROWD_INNER,CX,CY,220);
+  vig.addColorStop(0,'rgba(0,0,0,0)');
+  vig.addColorStop(1,'rgba(0,0,0,0.6)');
+  cx2.fillStyle=vig;
+  cx2.fillRect(0,0,440,440);
+
+  crowdImg = cc;
+})();
+
+function adjustBrightness(hex, factor) {
+  const [r,g,b] = hr(hex);
+  return `rgb(${Math.round(r*factor)},${Math.round(g*factor)},${Math.round(b*factor)})`;
+}
+function pickSkin(brightness) {
+  const skins=['#fde3c8','#f5c6a0','#d4956a','#a0623a','#7a3b1e'];
+  const s=skins[Math.floor(Math.random()*skins.length)];
+  return adjustBrightness(s, brightness);
+}
+
+// ── Update ───────────────────────────────────────────────────────
+function getInput(p) {
+  if (p.isAI) {
+    let target = null, best = Infinity;
+    for (const o of players) {
+      if (o===p||o.eliminated) continue;
+      const d = hypot(p,o);
+      if (d<best) { best=d; target=o; }
+    }
+    if (!target) return {dx:0,dy:0};
+    const dx=target.x-p.x, dy=target.y-p.y, m=Math.sqrt(dx*dx+dy*dy)||1;
+    return {dx:dx/m, dy:dy/m};
+  }
+
+  // Touch joystick input (takes priority on touch devices)
+  const tj = touchInput[p.index];
+  if (tj.dx !== 0 || tj.dy !== 0) return { dx: tj.dx, dy: tj.dy };
+
+  // Keyboard fallback
+  const k=p.keys;
+  return {
+    dx:(heldKeys[k.right]?1:0)-(heldKeys[k.left]?1:0),
+    dy:(heldKeys[k.down] ?1:0)-(heldKeys[k.up]  ?1:0),
+  };
+}
+
+function hypot(a,b){return Math.sqrt((a.x-b.x)**2+(a.y-b.y)**2);}
+
+function update() {
+  const alive = players.filter(p=>!p.eliminated);
+  if (alive.length<2) return;
+
+  // Movement
+  for (const p of alive) {
+    const inp = getInput(p);
+    const m = Math.sqrt(inp.dx*inp.dx+inp.dy*inp.dy)||1;
+    p.pushing = (inp.dx!==0||inp.dy!==0);
+    if (p.pushing) { p.vx+=(inp.dx/m)*SPEED; p.vy+=(inp.dy/m)*SPEED; }
+    p.vx*=FRICTION; p.vy*=FRICTION;
+    p.x+=p.vx; p.y+=p.vy;
+  }
+
+  // Collisions between players
+  for (let i=0;i<alive.length;i++) {
+    for (let j=i+1;j<alive.length;j++) {
+      const a=alive[i], b=alive[j];
+      const dx=b.x-a.x, dy=b.y-a.y, d=Math.sqrt(dx*dx+dy*dy);
+      const md=a.r+b.r;
+      if (d<md&&d>0) {
+        const nx=dx/d, ny=dy/d, ov=md-d;
+        a.x-=nx*ov*0.5; a.y-=ny*ov*0.5;
+        b.x+=nx*ov*0.5; b.y+=ny*ov*0.5;
+        const rvx=a.vx-b.vx, rvy=a.vy-b.vy, dot=rvx*nx+rvy*ny;
+        if (dot>0) {
+          const imp=dot*PUSH_FORCE;
+          a.vx-=nx*imp*2; a.vy-=ny*imp*2;
+          b.vx+=nx*imp*2; b.vy+=ny*imp*2;
+          flashTimer=10; flashX=(a.x+b.x)/2; flashY=(a.y+b.y)/2;
+          cheerTimer=15;
+        }
+      }
+    }
+  }
+
+  // Elimination: player centre crosses beyond ring line
+  let newlyElim = [];
+  for (const p of alive) {
+    const dx=p.x-CX, dy=p.y-CY;
+    if (Math.sqrt(dx*dx+dy*dy) > RING_R) {
+      p.eliminated=true; p.vx=0; p.vy=0;
+      cheerTimer=30;
+      newlyElim.push(p);
+    }
+  }
+
+  flashTimer=Math.max(0,flashTimer-1);
+
+  // Round over?
+  const remaining=players.filter(p=>!p.eliminated);
+  if (remaining.length<=1) {
+    gameActive=false;
+    const winner=remaining[0]||null;
+    if (winner && winner.index < numPlayers) scores[winner.index]++;
+    updateDots();
+    setTimeout(()=>endRound(winner), 500);
+  }
+}
+
+function endRound(winner) {
+  round++;
+  let matchWinner=-1;
+  for (let i=0;i<numPlayers;i++) if(scores[i]>=POINTS_TO_WIN){matchWinner=i;break;}
+
+  if (matchWinner>=0) {
+    showOverlay(
+      `${CONFIGS[matchWinner].name} Wins!`,
+      `Match champion — ${POINTS_TO_WIN} points reached!`,
+      '🏆', CONFIGS[matchWinner].color,
+      'Play Again'
+    );
+    document.getElementById('ovBtn').onclick=()=>{
+      // Reset to device selection screen
+      scores=[0,0,0,0]; round=1;
+      document.getElementById('devicePickerDiv').style.display='block';
+      document.getElementById('pickerDiv').style.display='none';
+      document.getElementById('ovBtn').style.display='none';
+      document.getElementById('ovEmoji').textContent='⛩';
+      document.getElementById('ovTitle').textContent='Sumo Wrestling';
+      document.getElementById('ovTitle').style.color='#e8c97a';
+      document.getElementById('ovSub').textContent='What are you playing on?';
+      document.querySelectorAll('.device-btn').forEach(b=>b.classList.remove('active'));
+      document.getElementById('overlay').classList.add('show');
+    };
+  } else {
+    const sub = winner
+      ? `${winner.name} scores! First to ${POINTS_TO_WIN} points wins the match.`
+      : `Double elimination — no point this round!`;
+    showOverlay(
+      winner ? `${winner.name} Scores!` : 'Draw!',
+      sub,
+      winner ? '👊' : '🤝',
+      winner ? CONFIGS[winner.index].color : '#e8c97a',
+      'Next Round'
+    );
+    document.getElementById('ovBtn').onclick=()=>{ hideOverlay(); startRound(); };
+  }
+}
+
+function showOverlay(title, sub, emoji, color, btnLabel) {
+  document.getElementById('ovTitle').textContent=title;
+  document.getElementById('ovTitle').style.color=color;
+  document.getElementById('ovSub').textContent=sub;
+  document.getElementById('ovEmoji').textContent=emoji;
+  document.getElementById('ovBtn').textContent=btnLabel;
+  document.getElementById('ovBtn').style.display='inline-block';
+  document.getElementById('devicePickerDiv').style.display='none';
+  document.getElementById('pickerDiv').style.display='none';
+  document.getElementById('overlay').classList.add('show');
+}
+function hideOverlay(){ document.getElementById('overlay').classList.remove('show'); }
+
+// ── Draw ─────────────────────────────────────────────────────────
+function drawArena() {
+  // Crowd background
+  ctx.drawImage(crowdImg, 0, 0);
+
+  // Raised platform / dohyō base shadow
+  ctx.save();
+  ctx.filter='blur(18px)';
+  ctx.fillStyle='rgba(0,0,0,0.7)';
+  ctx.beginPath(); ctx.arc(CX,CY+6,RING_R+12,0,Math.PI*2); ctx.fill();
+  ctx.filter='none';
+  ctx.restore();
+
+  // Sand (clipped inside ring)
+  ctx.save();
+  ctx.beginPath(); ctx.arc(CX,CY,RING_R,0,Math.PI*2); ctx.clip();
+  ctx.drawImage(sandImg,0,0);
+  ctx.restore();
+
+  // Center decorations
+  ctx.strokeStyle='rgba(80,40,0,0.28)'; ctx.lineWidth=1.5;
+  ctx.beginPath(); ctx.arc(CX,CY,14,0,Math.PI*2); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(CX-RING_R*0.82,CY); ctx.lineTo(CX+RING_R*0.82,CY); ctx.stroke();
+
+  // Boundary rope — one thin line
+  ctx.strokeStyle='#4a1800';
+  ctx.lineWidth=LINE_W;
+  ctx.beginPath(); ctx.arc(CX,CY,RING_R,0,Math.PI*2); ctx.stroke();
+
+  // Rope highlight
+  ctx.strokeStyle='rgba(160,80,20,0.55)';
+  ctx.lineWidth=1.8;
+  ctx.setLineDash([12,6]);
+  ctx.beginPath(); ctx.arc(CX,CY,RING_R,0,Math.PI*2); ctx.stroke();
+  ctx.setLineDash([]);
+}
+
+function drawSumoWrestler(x, y, r, color, beltColor, skinTone, pushing, eliminated) {
+  ctx.save();
+  if (eliminated) ctx.globalAlpha = 0.22;
+
+  const s = r / 26; // scale factor
+
+  // Ground shadow
+  ctx.save();
+  ctx.filter = 'blur(6px)';
+  ctx.fillStyle = 'rgba(0,0,0,0.4)';
+  ctx.beginPath();
+  ctx.ellipse(x + 3*s, y + r*0.85, r*0.85, r*0.28, 0, 0, Math.PI*2);
+  ctx.fill();
+  ctx.restore();
+
+  // ── Legs ──
+  const legW = r*0.32, legH = r*0.38;
+  const legY = y + r*0.28;
+  // Left leg
+  ctx.fillStyle = skinTone;
+  ctx.beginPath();
+  ctx.ellipse(x - r*0.28, legY, legW, legH, pushing ? -0.25 : 0, 0, Math.PI*2);
+  ctx.fill();
+  // Right leg
+  ctx.beginPath();
+  ctx.ellipse(x + r*0.28, legY, legW, legH, pushing ? 0.25 : 0, 0, Math.PI*2);
+  ctx.fill();
+
+  // Leg shading
+  ctx.fillStyle = 'rgba(0,0,0,0.1)';
+  ctx.beginPath();
+  ctx.ellipse(x - r*0.28, legY + legH*0.3, legW*0.7, legH*0.4, 0, 0, Math.PI*2);
+  ctx.fill();
+  ctx.beginPath();
+  ctx.ellipse(x + r*0.28, legY + legH*0.3, legW*0.7, legH*0.4, 0, 0, Math.PI*2);
+  ctx.fill();
+
+  // ── Torso (big round belly) ──
+  const torsoGrad = ctx.createRadialGradient(x - r*0.2, y - r*0.1, r*0.05, x, y, r*0.85);
+  torsoGrad.addColorStop(0, lighten(skinTone, 0.25));
+  torsoGrad.addColorStop(0.6, skinTone);
+  torsoGrad.addColorStop(1, darken(skinTone, 0.3));
+  ctx.fillStyle = torsoGrad;
+  ctx.beginPath();
+  ctx.ellipse(x, y + r*0.02, r*0.78, r*0.72, 0, 0, Math.PI*2);
+  ctx.fill();
+
+  // Belly button
+  ctx.fillStyle = 'rgba(0,0,0,0.15)';
+  ctx.beginPath();
+  ctx.arc(x, y + r*0.18, r*0.07, 0, Math.PI*2);
+  ctx.fill();
+
+  // ── Mawashi (belt/loincloth) ──
+  ctx.fillStyle = beltColor;
+  ctx.beginPath();
+  ctx.ellipse(x, y + r*0.22, r*0.72, r*0.24, 0, 0, Math.PI*2);
+  ctx.fill();
+  // Belt knot front
+  ctx.fillStyle = darken(beltColor, 0.2);
+  ctx.beginPath();
+  ctx.ellipse(x, y + r*0.22, r*0.18, r*0.16, 0, 0, Math.PI*2);
+  ctx.fill();
+  // Belt highlight
+  ctx.fillStyle = 'rgba(255,255,255,0.15)';
+  ctx.beginPath();
+  ctx.ellipse(x - r*0.05, y + r*0.16, r*0.1, r*0.06, -0.3, 0, Math.PI*2);
+  ctx.fill();
+
+  // ── Arms ──
+  const armLen = pushing ? r*0.72 : r*0.58;
+  const armAngle = pushing ? 0.2 : 0.55;
+  // Left arm
+  ctx.strokeStyle = skinTone;
+  ctx.lineWidth = r*0.28;
+  ctx.lineCap = 'round';
+  ctx.beginPath();
+  ctx.moveTo(x - r*0.62, y - r*0.05);
+  ctx.quadraticCurveTo(
+    x - r*0.82, y - r*(pushing ? 0.35 : 0.15),
+    x - r*(pushing ? 0.92 : 0.72), y + r*(pushing ? 0.08 : 0.28)
+  );
+  ctx.stroke();
+  // Right arm
+  ctx.beginPath();
+  ctx.moveTo(x + r*0.62, y - r*0.05);
+  ctx.quadraticCurveTo(
+    x + r*0.82, y - r*(pushing ? 0.35 : 0.15),
+    x + r*(pushing ? 0.92 : 0.72), y + r*(pushing ? 0.08 : 0.28)
+  );
+  ctx.stroke();
+  // Fists
+  ctx.fillStyle = skinTone;
+  ctx.beginPath();
+  ctx.arc(x - r*(pushing ? 0.92 : 0.72), y + r*(pushing ? 0.08 : 0.28), r*0.18, 0, Math.PI*2);
+  ctx.arc(x + r*(pushing ? 0.92 : 0.72), y + r*(pushing ? 0.08 : 0.28), r*0.18, 0, Math.PI*2);
+  ctx.fill();
+
+  // ── Neck ──
+  ctx.fillStyle = skinTone;
+  ctx.beginPath();
+  ctx.ellipse(x, y - r*0.48, r*0.22, r*0.2, 0, 0, Math.PI*2);
+  ctx.fill();
+
+  // ── Head ──
+  const headGrad = ctx.createRadialGradient(x - r*0.12, y - r*0.78, r*0.05, x, y - r*0.68, r*0.35);
+  headGrad.addColorStop(0, lighten(skinTone, 0.2));
+  headGrad.addColorStop(1, darken(skinTone, 0.15));
+  ctx.fillStyle = headGrad;
+  ctx.beginPath();
+  ctx.ellipse(x, y - r*0.68, r*0.33, r*0.3, 0, 0, Math.PI*2);
+  ctx.fill();
+
+  // ── Topknot (chonmage) ──
+  ctx.fillStyle = '#1a0a00';
+  ctx.beginPath();
+  ctx.ellipse(x, y - r*0.96, r*0.1, r*0.06, 0, 0, Math.PI*2);
+  ctx.fill();
+  ctx.beginPath();
+  ctx.ellipse(x, y - r*1.02, r*0.06, r*0.1, 0, 0, Math.PI*2);
+  ctx.fill();
+
+  // ── Face ──
+  if (pushing) {
+    // Intense pushing face — squinted eyes, gritted teeth
+    ctx.fillStyle = '#111';
+    // Squinted eyes (lines)
+    ctx.strokeStyle = '#222'; ctx.lineWidth = r*0.05; ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(x - r*0.17, y - r*0.72); ctx.lineTo(x - r*0.06, y - r*0.73);
+    ctx.moveTo(x + r*0.06, y - r*0.72); ctx.lineTo(x + r*0.17, y - r*0.73);
+    ctx.stroke();
+    // Angry brows
+    ctx.strokeStyle = '#1a0a00'; ctx.lineWidth = r*0.055;
+    ctx.beginPath();
+    ctx.moveTo(x - r*0.19, y - r*0.78); ctx.lineTo(x - r*0.06, y - r*0.76);
+    ctx.moveTo(x + r*0.06, y - r*0.76); ctx.lineTo(x + r*0.19, y - r*0.78);
+    ctx.stroke();
+    // Gritted mouth
+    ctx.strokeStyle = '#333'; ctx.lineWidth = r*0.045;
+    ctx.beginPath();
+    ctx.moveTo(x - r*0.12, y - r*0.59); ctx.lineTo(x + r*0.12, y - r*0.59);
+    ctx.stroke();
+    // Blush cheeks from effort
+    ctx.fillStyle = 'rgba(220,80,80,0.22)';
+    ctx.beginPath();
+    ctx.ellipse(x - r*0.2, y - r*0.63, r*0.1, r*0.07, 0, 0, Math.PI*2);
+    ctx.ellipse(x + r*0.2, y - r*0.63, r*0.1, r*0.07, 0, 0, Math.PI*2);
+    ctx.fill();
+  } else {
+    // Neutral face
+    ctx.fillStyle = '#222';
+    ctx.beginPath();
+    ctx.arc(x - r*0.12, y - r*0.71, r*0.055, 0, Math.PI*2);
+    ctx.arc(x + r*0.12, y - r*0.71, r*0.055, 0, Math.PI*2);
+    ctx.fill();
+    // Calm brows
+    ctx.strokeStyle = '#1a0a00'; ctx.lineWidth = r*0.045; ctx.lineCap='round';
+    ctx.beginPath();
+    ctx.moveTo(x - r*0.18, y - r*0.77); ctx.lineTo(x - r*0.07, y - r*0.76);
+    ctx.moveTo(x + r*0.07, y - r*0.76); ctx.lineTo(x + r*0.18, y - r*0.77);
+    ctx.stroke();
+    // Neutral mouth
+    ctx.strokeStyle = '#555'; ctx.lineWidth = r*0.04;
+    ctx.beginPath();
+    ctx.arc(x, y - r*0.58, r*0.07, 0.1, Math.PI - 0.1);
+    ctx.stroke();
+  }
+
+  // Player name tag
+  ctx.fillStyle = 'rgba(0,0,0,0.65)';
+  ctx.font = `bold ${Math.round(r*0.42)}px Georgia`;
+  ctx.textAlign = 'center';
+  ctx.fillText(p_label, x, y + r*1.18);
+
+  ctx.restore();
+}
+
+// Skin tones per player index
+const SKIN_TONES = ['#d4956a','#c8834e','#e8b48a','#bf7040'];
+const BELT_COLORS = ['#cc2200','#0044bb','#007733','#cc8800'];
+
+function drawPlayer(p) {
+  drawSumoWrestler(
+    p.x, p.y, p.r,
+    p.color,
+    BELT_COLORS[p.index % BELT_COLORS.length],
+    SKIN_TONES[p.index % SKIN_TONES.length],
+    p.pushing,
+    p.eliminated
+  );
+}
+
+// Temporary global for name label inside drawSumoWrestler
+let p_label = '';
+
+let cheerTimer = 0;
+
+function draw() {
+  ctx.clearRect(0,0,440,440);
+  drawArena();
+
+  // Crowd cheer flash
+  if (cheerTimer > 0) {
+    ctx.save();
+    ctx.globalAlpha = (cheerTimer/15)*0.18;
+    ctx.fillStyle = '#fff8e0';
+    ctx.fillRect(0,0,440,440);
+    ctx.restore();
+    cheerTimer--;
+  }
+
+  if (flashTimer>0) {
+    ctx.save();
+    ctx.globalAlpha=(flashTimer/10)*.32;
+    const fg=ctx.createRadialGradient(flashX,flashY,0,flashX,flashY,25);
+    fg.addColorStop(0,'#fff'); fg.addColorStop(1,'rgba(255,255,255,0)');
+    ctx.fillStyle=fg;
+    ctx.beginPath(); ctx.arc(flashX,flashY,25,0,Math.PI*2); ctx.fill();
+    ctx.restore();
+  }
+
+  players.forEach(p => { p_label = p.name; drawPlayer(p); });
+}
+
+function loop() {
+  if (gameActive) update();
+  draw();
+  animId=requestAnimationFrame(loop);
+}
+
+function lighten(hex,amt=.4){const[r,g,b]=hr(hex);return`rgb(${Math.min(255,r+r*amt)},${Math.min(255,g+g*amt)},${Math.min(255,b+b*amt)})`;}
+function darken(hex,amt=.3){const[r,g,b]=hr(hex);return`rgb(${r*(1-amt)},${g*(1-amt)},${b*(1-amt)})`;}
+function hr(hex){return[parseInt(hex.slice(1,3),16),parseInt(hex.slice(3,5),16),parseInt(hex.slice(5,7),16)];}
+
+// ── Virtual Joysticks (touch) ─────────────────────────────────────
+const JOY_R = 50;       // base radius
+const KNOB_R = 22;      // knob half-size
+const MAX_DIST = JOY_R - KNOB_R;
+
+// touchInput[i] = { dx, dy } for player i
+const touchInput = [{dx:0,dy:0},{dx:0,dy:0},{dx:0,dy:0},{dx:0,dy:0}];
+
+// Each joystick tracks its active touch id
+const joyState = [
+  {el:null,knob:null,active:false,tid:-1,bx:0,by:0},
+  {el:null,knob:null,active:false,tid:-1,bx:0,by:0},
+  {el:null,knob:null,active:false,tid:-1,bx:0,by:0},
+  {el:null,knob:null,active:false,tid:-1,bx:0,by:0},
+];
+
+function initJoysticks() {
+  const total = numPlayers === 1 ? 1 : numPlayers;
+  // Only show joysticks on genuine touch devices — check for touch support at runtime
+  const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+  const showJoysticks = isTouchDevice;
+
+  document.body.style.paddingBottom = showJoysticks ? '150px' : '0';
+
+  for (let i = 0; i < 4; i++) {
+    const wrap = document.getElementById('joy'+i);
+    const knob = document.getElementById('joy'+i+'knob');
+    joyState[i].el   = wrap;
+    joyState[i].knob = knob;
+
+    const isHumanPlayer = i < total && !(numPlayers === 1 && i > 0);
+    wrap.style.display = (showJoysticks && isHumanPlayer) ? 'block' : 'none';
+
+    knob.style.background = `radial-gradient(circle at 35% 35%, ${lighten(CONFIGS[i].color,0.3)}, ${darken(CONFIGS[i].color,0.3)})`;
+    knob.style.boxShadow  = `0 0 12px ${CONFIGS[i].color}55`;
+  }
+
+  if (total === 3) {
+    document.querySelector('.j2').style.cssText += ';left:50%;transform:translateX(-50%);';
+  }
+  if (total === 4) {
+    document.querySelector('.j2').style.left = '140px';
+    document.querySelector('.j3').style.right = '140px';
+  }
+}
+
+function getJoyCenterAbs(idx) {
+  const el = joyState[idx].el;
+  const rect = el.getBoundingClientRect();
+  return { x: rect.left + JOY_R, y: rect.top + JOY_R };
+}
+
+function moveKnob(idx, dx, dy) {
+  const dist = Math.sqrt(dx*dx+dy*dy);
+  const clamped = Math.min(dist, MAX_DIST);
+  const nx = dist > 0 ? dx/dist : 0;
+  const ny = dist > 0 ? dy/dist : 0;
+  const kx = nx * clamped;
+  const ky = ny * clamped;
+  joyState[idx].knob.style.left = (JOY_R - KNOB_R + kx) + 'px';
+  joyState[idx].knob.style.top  = (JOY_R - KNOB_R + ky) + 'px';
+  // normalise input
+  touchInput[idx].dx = nx * (clamped / MAX_DIST);
+  touchInput[idx].dy = ny * (clamped / MAX_DIST);
+}
+
+function resetKnob(idx) {
+  joyState[idx].knob.style.left = (JOY_R - KNOB_R) + 'px';
+  joyState[idx].knob.style.top  = (JOY_R - KNOB_R) + 'px';
+  touchInput[idx].dx = 0;
+  touchInput[idx].dy = 0;
+  joyState[idx].active = false;
+  joyState[idx].tid = -1;
+}
+
+// Single touch handler on the whole document
+document.addEventListener('touchstart', e => {
+  for (const t of e.changedTouches) {
+    for (let i = 0; i < 4; i++) {
+      const js = joyState[i];
+      if (!js.el || js.el.style.display === 'none') continue;
+      const rect = js.el.getBoundingClientRect();
+      if (t.clientX >= rect.left && t.clientX <= rect.right &&
+          t.clientY >= rect.top  && t.clientY <= rect.bottom) {
+        js.active = true; js.tid = t.identifier;
+        const c = getJoyCenterAbs(i);
+        moveKnob(i, t.clientX - c.x, t.clientY - c.y);
+      }
+    }
+  }
+}, {passive:true});
+
+document.addEventListener('touchmove', e => {
+  for (const t of e.changedTouches) {
+    for (let i = 0; i < 4; i++) {
+      const js = joyState[i];
+      if (!js.active || js.tid !== t.identifier) continue;
+      const c = getJoyCenterAbs(i);
+      moveKnob(i, t.clientX - c.x, t.clientY - c.y);
+    }
+  }
+}, {passive:true});
+
+document.addEventListener('touchend', e => {
+  for (const t of e.changedTouches) {
+    for (let i = 0; i < 4; i++) {
+      if (joyState[i].tid === t.identifier) resetKnob(i);
+    }
+  }
+}, {passive:true});
+
+document.addEventListener('touchcancel', e => {
+  for (const t of e.changedTouches) {
+    for (let i = 0; i < 4; i++) {
+      if (joyState[i].tid === t.identifier) resetKnob(i);
+    }
+  }
+}, {passive:true});
+
+// Idle preview
+buildControlsPreview(numPlayers);
+resetPlayers();
+loop();
+</script>
+<!-- Virtual joysticks for touch -->
+<div class="joystick-wrap j0" id="joy0">
+  <div class="joystick-label" id="joy0label" style="color:#ff6b6b">P1</div>
+  <div class="joystick-base"></div>
+  <div class="joystick-knob" id="joy0knob"></div>
+</div>
+<div class="joystick-wrap j1" id="joy1">
+  <div class="joystick-label" id="joy1label" style="color:#6bb5ff">P2</div>
+  <div class="joystick-base"></div>
+  <div class="joystick-knob" id="joy1knob"></div>
+</div>
+<div class="joystick-wrap j2" id="joy2">
+  <div class="joystick-label" id="joy2label" style="color:#6bff9e">P3</div>
+  <div class="joystick-base"></div>
+  <div class="joystick-knob" id="joy2knob"></div>
+</div>
+<div class="joystick-wrap j3" id="joy3">
+  <div class="joystick-label" id="joy3label" style="color:#ffcc44">P4</div>
+  <div class="joystick-base"></div>
+  <div class="joystick-knob" id="joy3knob"></div>
+</div>
+
+</body>
+</html>
