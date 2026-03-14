@@ -362,6 +362,35 @@
             background: #2a2a2a;
             transform: translateY(-2px);
         }
+
+        .back-arrow {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 50px;
+            height: 50px;
+            background: rgba(251, 191, 36, 0.2);
+            border: 2px solid #fbbf24;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 15;
+            transition: all 0.2s ease;
+        }
+
+        .back-arrow:hover {
+            background: rgba(251, 191, 36, 0.4);
+            transform: scale(1.1);
+        }
+
+        .back-arrow::before {
+            content: '←';
+            font-size: 28px;
+            color: #fbbf24;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -410,6 +439,7 @@
 
         <div class="page" id="gamePage">
             <div class="content">
+                <div class="back-arrow" id="backArrow"></div>
                 <div class="game-area">
                     <div class="game-ui">
                         <div class="player-scores-inline" id="playerScores"></div>
@@ -993,6 +1023,11 @@
 
         startBtn.addEventListener('click', startGame);
         replayBtn.addEventListener('click', playAgain);
+        
+        const backArrow = document.getElementById('backArrow');
+        if (backArrow) {
+            backArrow.addEventListener('click', backToMenu);
+        }
 
         updatePlayerScoreDisplay();
         gameState = initGame();
