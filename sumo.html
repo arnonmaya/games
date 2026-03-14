@@ -173,6 +173,46 @@
   }
   .btn:hover { transform: scale(1.05); box-shadow: 0 6px 20px rgba(232,201,122,0.5); }
 
+  .home-btn {
+    display: inline-block;
+    margin-top: 10px;
+    color: #806040;
+    font-size: 0.75rem;
+    letter-spacing: 2px;
+    text-decoration: none;
+    font-family: 'Georgia', serif;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .home-btn:hover { color: #e8c97a; }
+
+  /* ── Back arrow (returns to start screen) ── */
+  .back-arrow {
+    position: fixed;
+    top: 14px;
+    left: 16px;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(232,201,122,0.25);
+    color: #e8c97a;
+    font-size: 1.8rem;
+    line-height: 1;
+    text-align: center;
+    cursor: pointer;
+    z-index: 50;
+    transition: background 0.2s, border-color 0.2s, transform 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .back-arrow:hover {
+    background: rgba(232,201,122,0.18);
+    border-color: #e8c97a;
+    transform: translateY(-2px);
+  }
+
   .device-btn {
     display: flex;
     flex-direction: column;
@@ -367,9 +407,55 @@
     /* joystick visibility is controlled by JS based on device selection */
     body { padding-bottom: 0; }
   }
+
+  /* ── Point scored card ── */
+  .point-card {
+    position: fixed;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%) scale(0.7);
+    background: rgba(10,5,0,0.96);
+    border: 3px solid #e8c97a;
+    border-radius: 20px;
+    padding: 28px 40px;
+    text-align: center;
+    z-index: 25;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s, transform 0.25s;
+    min-width: 220px;
+    box-shadow: 0 0 60px rgba(0,0,0,0.8);
+  }
+  .point-card.show {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  .point-card-emoji { font-size: 2.4rem; margin-bottom: 6px; }
+  .point-card-name {
+    font-size: 2rem;
+    font-weight: bold;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    text-shadow: 0 0 20px currentColor;
+    margin-bottom: 4px;
+  }
+  .point-card-msg {
+    color: #c0a060;
+    font-size: 0.85rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+  .point-card-score {
+    color: #e8c97a;
+    font-size: 0.95rem;
+    letter-spacing: 3px;
+    font-family: monospace;
+  }
 </style>
 </head>
 <body>
+
+<button class="back-arrow" style="display:none;" id="backToStartArrow" onclick="gameActive=false; showStartScreen();" title="Back to Start">&#8678;</button>
 
 <h1>⛩ Sumo Wrestling</h1>
 <p class="subtitle">Push opponents beyond the ring line</p>
@@ -407,12 +493,25 @@
   </div>
 
   <button class="btn" id="ovBtn">Start Game</button>
+  <a href="https://arnonmaya.github.io/games/" class="home-btn">🏠 Back to Home Page</a>
 </div>
 
 <!-- Controls popup shown briefly at round start -->
 <div class="controls-popup" id="controlsPopup"></div>
 
+<!-- Point scored card -->
+<div class="point-card" id="pointCard">
+  <div class="point-card-emoji">👊</div>
+  <div class="point-card-name" id="pointCardName">P1</div>
+  <div class="point-card-msg" id="pointCardMsg">scores a point!</div>
+  <div class="point-card-score" id="pointCardScore"></div>
+</div>
+
+</div><!-- end #gamePage -->
+
 <script>
+// ── Page navigation ───────────────────────────────────────────────
+
 const canvas = document.getElementById('c');
 const ctx = canvas.getContext('2d');
 const CX = 220, CY = 220;
@@ -560,6 +659,7 @@ document.getElementById('ovBtn').onclick = () => {
   scores = [0,0,0,0]; round = 1;
   buildUI();
   hideOverlay();
+  document.getElementById('backToStartArrow').style.display = 'flex';
   startRound();
 };
 
@@ -780,6 +880,9 @@ function pickSkin(brightness) {
 }
 
 // ── Update ───────────────────────────────────────────────────────
+// AI state for imperfect behaviour
+let aiHesitateTimer = 0;
+
 function getInput(p) {
   if (p.isAI) {
     let target = null, best = Infinity;
@@ -789,8 +892,30 @@ function getInput(p) {
       if (d<best) { best=d; target=o; }
     }
     if (!target) return {dx:0,dy:0};
+
+    // Occasionally pause (hesitation)
+    if (aiHesitateTimer > 0) {
+      aiHesitateTimer--;
+      return {dx:0, dy:0};
+    }
+    if (Math.random() < 0.012) {
+      aiHesitateTimer = 28 + Math.floor(Math.random() * 30);
+      return {dx:0, dy:0};
+    }
+
     const dx=target.x-p.x, dy=target.y-p.y, m=Math.sqrt(dx*dx+dy*dy)||1;
-    return {dx:dx/m, dy:dy/m};
+    let nx = dx/m, ny = dy/m;
+
+    // Occasionally drift in a slightly wrong direction
+    if (Math.random() < 0.04) {
+      const angle = (Math.random() - 0.5) * Math.PI * 0.8;
+      const cos = Math.cos(angle), sin = Math.sin(angle);
+      nx = nx*cos - ny*sin;
+      ny = nx*sin + ny*cos;
+    }
+
+    // Move at 65% of full speed
+    return {dx: nx * 0.65, dy: ny * 0.65};
   }
 
   // Touch joystick input (takes priority on touch devices)
@@ -863,7 +988,23 @@ function update() {
     const winner=remaining[0]||null;
     if (winner && winner.index < numPlayers) scores[winner.index]++;
     updateDots();
-    setTimeout(()=>endRound(winner), 500);
+
+    // After a short pause, visibly reset players to start positions, then show overlay
+    setTimeout(() => {
+      // Snap all players back to start positions (un-eliminate them visually)
+      const total = numPlayers === 1 ? 2 : numPlayers;
+      const pos = spawnPositions(total);
+      for (let i = 0; i < players.length; i++) {
+        players[i].x = pos[i].x;
+        players[i].y = pos[i].y;
+        players[i].vx = 0;
+        players[i].vy = 0;
+        players[i].eliminated = false;
+        players[i].pushing = false;
+      }
+      // Show them at start for a beat, then open overlay
+      setTimeout(() => endRound(winner), 900);
+    }, 600);
   }
 }
 
@@ -882,21 +1023,71 @@ function endRound(winner) {
     startMatchCountdown();
     document.getElementById('ovBtn').onclick = () => {
       stopMatchCountdown();
-      location.reload();
+      showStartScreen();
     };
   } else {
-    const sub = winner
-      ? `${winner.name} scores! First to ${POINTS_TO_WIN} points wins the match.`
-      : `Double elimination — no point this round!`;
-    showOverlay(
-      winner ? `${winner.name} Scores!` : 'Draw!',
-      sub,
-      winner ? '👊' : '🤝',
-      winner ? CONFIGS[winner.index].color : '#e8c97a',
-      'Next Round'
-    );
-    document.getElementById('ovBtn').onclick=()=>{ hideOverlay(); startRound(); };
+    // Show a big unmissable point card, then auto-continue after 2.5s
+    showPointCard(winner);
   }
+}
+
+function showPointCard(winner) {
+  const card = document.getElementById('pointCard');
+  const cardName = document.getElementById('pointCardName');
+  const cardMsg  = document.getElementById('pointCardMsg');
+  const cardScore = document.getElementById('pointCardScore');
+
+  if (winner) {
+    card.style.borderColor = CONFIGS[winner.index].color;
+    cardName.textContent  = winner.name;
+    cardName.style.color  = CONFIGS[winner.index].color;
+    cardMsg.textContent   = 'scores a point!';
+    // Build score summary
+    let scoreText = '';
+    for (let i = 0; i < numPlayers; i++) {
+      scoreText += `${CONFIGS[i].name}: ${'●'.repeat(scores[i])}${'○'.repeat(POINTS_TO_WIN - scores[i])}   `;
+    }
+    cardScore.textContent = scoreText.trim();
+  } else {
+    card.style.borderColor = '#e8c97a';
+    cardName.textContent  = 'Draw!';
+    cardName.style.color  = '#e8c97a';
+    cardMsg.textContent   = 'No point awarded';
+    cardScore.textContent = '';
+  }
+
+  card.classList.add('show');
+
+  setTimeout(() => {
+    card.classList.remove('show');
+    hideOverlay();
+    startRound();
+  }, 2500);
+}
+
+function showStartScreen() {
+  stopMatchCountdown();
+  scores = [0,0,0,0]; round = 1;
+  document.getElementById('backToStartArrow').style.display = 'none';
+  document.getElementById('ovEmoji').textContent = '⛩';
+  document.getElementById('ovTitle').textContent = 'Sumo Wrestling';
+  document.getElementById('ovTitle').style.color = '#e8c97a';
+  document.getElementById('ovSub').textContent = 'Push opponents outside the ring line. First to 3 points wins!';
+  document.getElementById('countdownRing').style.display = 'none';
+  document.getElementById('pickerDiv').style.display = 'block';
+  document.querySelectorAll('.pnum').forEach((b,i) => b.classList.toggle('active', i+1===numPlayers));
+  buildControlsPreview(numPlayers);
+  const btn = document.getElementById('ovBtn');
+  btn.textContent = 'Start Game';
+  btn.style.display = 'inline-block';
+  btn.onclick = () => {
+    scores = [0,0,0,0]; round = 1;
+    buildUI();
+    hideOverlay();
+    document.getElementById('backToStartArrow').style.display = 'flex';
+    startRound();
+  };
+  document.getElementById('overlay').classList.add('show');
 }
 
 let countdownInterval = null;
@@ -924,7 +1115,7 @@ function startMatchCountdown() {
 
     if (remaining <= 0) {
       stopMatchCountdown();
-      location.reload();
+      showStartScreen();
     }
   }, 1000);
 }
