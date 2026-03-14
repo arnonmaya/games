@@ -153,6 +153,27 @@
   /* GAME */
   #game-wrap { display: none; position: relative; }
 
+  #back-btn {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    z-index: 20;
+    background: rgba(20,20,30,0.75);
+    border: 2px solid rgba(200,120,60,0.4);
+    border-radius: 50%;
+    width: 44px; height: 44px;
+    font-size: 1.4rem;
+    color: #c87840;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+  }
+  #back-btn:hover {
+    border-color: #c87840;
+    background: rgba(200,120,60,0.15);
+    transform: scale(1.1);
+  }
+
   #timer-bar {
     position: absolute;
     top: 8px;
@@ -162,17 +183,24 @@
     display: flex;
     align-items: center;
     gap: 10px;
+    pointer-events: none;
   }
 
   #timer-display {
     font-family: 'Zen Dots', cursive;
-    font-size: 2rem;
+    font-size: 3rem;
     color: #f5e6c8;
-    text-shadow: 0 0 20px rgba(220,80,40,0.8);
+    text-shadow: 0 0 30px rgba(220,80,40,0.9);
     min-width: 3ch;
     text-align: center;
+    transition: font-size 0.3s, color 0.3s;
   }
-  #timer-display.urgent { color: #ff4444; animation: pulse 0.5s infinite alternate; }
+  #timer-display.urgent {
+    font-size: 6rem;
+    color: #ff2222;
+    text-shadow: 0 0 40px rgba(255,30,30,1);
+    animation: pulse 0.5s infinite alternate;
+  }
   @keyframes pulse { from { opacity: 1; } to { opacity: 0.5; } }
 
   #game-canvas {
@@ -257,6 +285,7 @@
   <div id="timer-bar">
     <div id="timer-display">60</div>
   </div>
+  <button id="back-btn" title="Back to menu">&#8592;</button>
   <canvas id="game-canvas"></canvas>
 </div>
 
@@ -1345,6 +1374,13 @@ document.getElementById('mute-btn').addEventListener('click', () => {
 });
 
 document.getElementById('start-btn').addEventListener('click', startGame);
+document.getElementById('back-btn').addEventListener('click', () => {
+  gameRunning = false;
+  gameOver = true;
+  if (animFrame) { cancelAnimationFrame(animFrame); animFrame = null; }
+  stopBGM();
+  showMenu();
+});
 
 window.addEventListener('resize', () => {
   if (gameRunning) {
