@@ -85,7 +85,7 @@ body{background:#06060f;display:flex;flex-direction:column;align-items:center;ju
   <div id="lobby">
     <h1>👾 ALIEN</h1>
     <p class="sub">Survive the alien's attacks on the ring!</p>
-    <a id="homepageBtn" href="https://arnonmaya.github.io/games/" >🏠 Back to Home Page</a>
+    <a id="homepageBtn" href="https://arnonmaya.github.io/games/" target="_blank">🏠 Back to Home Page</a>
     <div id="playerBtns">
       <button class="pBtn" data-n="1">1</button>
       <button class="pBtn selected" data-n="2">2</button>
@@ -560,7 +560,8 @@ function spawnMine(){
   } else if(t==='circlelaser'){
     playSound('circlelaser_warn');
     const safeW=Math.max(0.35,0.85-stage*0.07);
-    mines.push({type:'circlelaser',safeAngle:Math.random()*Math.PI*2,safeWidth:safeW,life:230,warningLife:150,dodged:[...dodged],fireSounded:false});
+    // warningLife=150 frames warn, then 480 frames (8s) grace before killing, total life=150+480+60
+    mines.push({type:'circlelaser',safeAngle:Math.random()*Math.PI*2,safeWidth:safeW,life:700,warningLife:150,killLife:480,dodged:[...dodged],fireSounded:false,killSounded:false});
   }
 }
 
@@ -585,7 +586,7 @@ function checkHit(m,p){
     }
     return false;
   }
-  if(m.type==='circlelaser'&&m.warningLife<=0){
+  if(m.type==='circlelaser'&&m.warningLife<=0&&m.killLife<=0){
     let d=p.angle-m.safeAngle;while(d>Math.PI)d-=2*Math.PI;while(d<-Math.PI)d+=2*Math.PI;
     return Math.abs(d)>m.safeWidth/2;
   }
@@ -691,6 +692,11 @@ function update(){
       if(m.warningLife>0){
         m.warningLife--;
         if(m.warningLife===0&&!m.fireSounded){m.fireSounded=true;playSound('laser_fire');}
+      } else if(m.killLife>0){
+        m.killLife--;
+        // Play urgent sound at 3 seconds left
+        if(m.killLife===180&&!m.killSounded){m.killSounded=true;playSound('laser_warn');}
+        if(m.killLife<=0){m.life=Math.min(m.life,60);} // expire shortly after killing starts
       }
     }
 
@@ -796,13 +802,60 @@ function drawMine(m){
     }
   }
   if(m.type==='circlelaser'){
-    const warn=m.warningLife>0,h=m.safeWidth/2;
-    ctx.globalAlpha=warn?0.25+0.2*Math.sin(frameCount*0.25):0.85;
-    ctx.strokeStyle=warn?'#ff8844':'#ff4400';ctx.lineWidth=warn?3:7;
+    const warn=m.warningLife>0;
+    const grace=!warn&&m.killLife>0;  // warning done, not yet lethal
+    const lethal=!warn&&m.killLife<=0;
+    const h=m.safeWidth/2;
+
+    // Progress through grace period 0→1
+    const graceProgress = grace ? 1-(m.killLife/480) : (lethal?1:0);
+
+    // Danger arc colour: orange during grace, red when lethal
+    let arcColor, arcAlpha, arcWidth;
+    if(warn){
+      arcColor='#ff8844'; arcAlpha=0.25+0.2*Math.sin(frameCount*0.25); arcWidth=3;
+    } else if(grace){
+      // Slowly shifts orange→red as countdown progresses; pulses faster near end
+      const pulse=Math.sin(frameCount*(0.15+graceProgress*0.35));
+      arcAlpha=0.5+0.35*pulse;
+      arcWidth=4+3*graceProgress;
+      // interpolate #ff8800 → #ff2200
+      const r=255, g=Math.round(136*(1-graceProgress)), b=0;
+      arcColor=`rgb(${r},${g},${b})`;
+    } else {
+      arcColor='#ff2200'; arcAlpha=0.9; arcWidth=8;
+    }
+
+    ctx.globalAlpha=arcAlpha;
+    ctx.strokeStyle=arcColor; ctx.lineWidth=arcWidth;
     ctx.beginPath();ctx.arc(CX,CY,RING_R,m.safeAngle+h,m.safeAngle-h+Math.PI*2);ctx.stroke();
-    ctx.globalAlpha=warn?0.4:0.78;
-    const a1=m.safeAngle-h,a2=m.safeAngle+h;
-    ctx.beginPath();ctx.moveTo(CX+Math.cos(a1)*RING_R,CY+Math.sin(a1)*RING_R);ctx.lineTo(CX+Math.cos(a2)*RING_R,CY+Math.sin(a2)*RING_R);ctx.lineTo(CX+Math.cos(m.safeAngle)*(RING_R-30),CY+Math.sin(m.safeAngle)*(RING_R-30));ctx.closePath();ctx.fillStyle='rgba(80,255,110,0.28)';ctx.fill();ctx.strokeStyle='#66ff88';ctx.lineWidth=2;ctx.stroke();
+
+    // Safe triangle
+    const a1=m.safeAngle-h, a2=m.safeAngle+h;
+    ctx.globalAlpha=warn?0.4:grace?0.7:0.85;
+    ctx.beginPath();
+    ctx.moveTo(CX+Math.cos(a1)*RING_R,CY+Math.sin(a1)*RING_R);
+    ctx.lineTo(CX+Math.cos(a2)*RING_R,CY+Math.sin(a2)*RING_R);
+    ctx.lineTo(CX+Math.cos(m.safeAngle)*(RING_R-30),CY+Math.sin(m.safeAngle)*(RING_R-30));
+    ctx.closePath();
+    ctx.fillStyle='rgba(80,255,110,0.28)';ctx.fill();
+    ctx.strokeStyle='#66ff88';ctx.lineWidth=2;ctx.stroke();
+
+    // Grace period: draw a shrinking countdown arc outside the ring
+    if(grace){
+      const countdownAngle=m.killLife/480*Math.PI*2;
+      ctx.globalAlpha=0.55;
+      ctx.strokeStyle='#ffcc00';ctx.lineWidth=3;
+      ctx.setLineDash([6,4]);
+      ctx.beginPath();ctx.arc(CX,CY,RING_R+16,-Math.PI/2,-Math.PI/2+countdownAngle);ctx.stroke();
+      ctx.setLineDash([]);
+      // Countdown seconds text
+      const secsLeft=Math.ceil(m.killLife/60);
+      ctx.globalAlpha=0.7+0.3*Math.sin(frameCount*0.25);
+      ctx.fillStyle='#ffcc00';ctx.font='bold 13px system-ui';ctx.textAlign='center';
+      ctx.fillText(`${secsLeft}s`,CX,CY-RING_R-22);
+    }
+
     ctx.globalAlpha=1;
   }
   ctx.restore();
