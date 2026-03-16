@@ -21,6 +21,7 @@
   .sv{font-size:13px;font-weight:500;color:var(--text);}
   .sl{font-size:9px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-top:1px;}
   .game-area{display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap;justify-content:center;}
+  .board-and-tray{display:flex;gap:14px;align-items:flex-start;}
   .side-panel{display:flex;flex-direction:column;gap:10px;min-width:120px;}
   .panel-label{font-size:10px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;}
   #prev{display:block;border-radius:8px;border:1px solid var(--border);transition:opacity .3s;}
@@ -29,9 +30,9 @@
   .slot:hover{background:rgba(200,169,110,.07);border-color:rgba(200,169,110,.5);}
   .slot.filled{border:none;cursor:default;pointer-events:none;}
   .slot canvas{display:block;position:absolute;top:0;left:0;}
-  #tray-wrap{width:100%;max-width:800px;}
-  #tray{display:flex;flex-direction:row;gap:6px;padding:10px 14px;background:var(--surface);border-radius:12px;border:1px solid var(--border);overflow-x:auto;overflow-y:hidden;align-items:center;min-height:72px;}
-  #tray::-webkit-scrollbar{height:4px;}
+  #tray-wrap{flex-shrink:0;}
+  #tray{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;padding:8px;background:var(--surface);border-radius:12px;border:1px solid var(--border);overflow-y:auto;overflow-x:hidden;align-content:start;}
+  #tray::-webkit-scrollbar{width:4px;}
   #tray::-webkit-scrollbar-track{background:transparent;}
   #tray::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:2px;}
   .piece{cursor:pointer;border-radius:4px;border:2px solid var(--piece-border);overflow:hidden;transition:border-color .15s,transform .1s;flex-shrink:0;}
@@ -94,13 +95,16 @@
     <div class="panel-label">Reference</div>
     <canvas id="prev" width="110" height="110"></canvas>
   </div>
-  <div>
-    <div class="panel-label" style="margin-bottom:5px;">Board — select a piece, then click a slot</div>
-    <div id="board"></div>
+  <div class="board-and-tray">
+    <div>
+      <div class="panel-label" style="margin-bottom:5px;">Board — select a piece, then click a slot</div>
+      <div id="board"></div>
+    </div>
+    <div id="tray-wrap">
+      <div class="panel-label" style="margin-bottom:5px;">Pieces</div>
+      <div id="tray"></div>
+    </div>
   </div>
-</div>
-<div id="tray-wrap">
-  <div id="tray"></div>
 </div>
 
 <div class="win-msg" id="wm"></div>
@@ -1585,8 +1589,12 @@ function renderTray(){
   const tr=document.getElementById('tray');
   tr.innerHTML='';
   const rem=pieces.filter(p=>!bState.includes(p));
-  const tsz=Math.min(70, Math.max(44, SZ));
-  tr.style.width='';
+  // Size pieces so 3 cols x 6 rows fills the board height (SZ*N)
+  const boardPx=SZ*N;
+  const tsz=Math.floor((boardPx-7*5)/6); // 6 rows with gaps
+  const trayW=tsz*3+5*2+16; // 3 cols + gaps + padding
+  tr.style.maxHeight=boardPx+'px';
+  tr.style.width=trayW+'px';
   rem.forEach(pi=>{
     const wrap=document.createElement('div');
     wrap.className='piece'+(sel===pi?' sel':'');
@@ -1595,7 +1603,7 @@ function renderTray(){
     wrap.addEventListener('click',()=>selPiece(pi));
     tr.appendChild(wrap);
   });
-  if(!rem.length)tr.innerHTML='<span style="font-size:11px;color:rgba(240,237,232,.4);padding:8px 16px;">All pieces placed!</span>';
+  if(!rem.length)tr.innerHTML='<span style="font-size:11px;color:rgba(240,237,232,.4);padding:8px;">All placed!</span>';
 }
 
 function selPiece(pi){
