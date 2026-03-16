@@ -95,7 +95,7 @@
     justify-content: center;
     align-items: stretch;
     gap: 14px;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
     padding: 40px 40px 60px;
     max-width: 1100px;
     margin: 0 auto;
@@ -114,6 +114,8 @@
   .game-card:nth-child(1) { animation-delay: 0.1s; }
   .game-card:nth-child(2) { animation-delay: 0.2s; }
   .game-card:nth-child(3) { animation-delay: 0.3s; }
+  .game-card:nth-child(4) { animation-delay: 0.4s; }
+  .game-card:nth-child(5) { animation-delay: 0.5s; }
 
   @keyframes cardIn {
     from { opacity: 0; transform: translateY(60px) scale(0.85); }
@@ -125,6 +127,8 @@
   }
   .game-card:nth-child(2):hover { transform: translateY(-12px) scale(1.03) rotate(0deg); }
   .game-card:nth-child(3):hover { transform: translateY(-12px) scale(1.03) rotate(1deg); }
+  .game-card:nth-child(4):hover { transform: translateY(-12px) scale(1.03) rotate(-1deg); }
+  .game-card:nth-child(5):hover { transform: translateY(-12px) scale(1.03) rotate(1deg); }
 
   .card-inner {
     position: relative;
@@ -160,6 +164,11 @@
   .card-sumo .card-bg { background: linear-gradient(145deg, #f7971e 0%, #FFE66D 100%); }
   .card-sumo { box-shadow: 0 12px 40px rgba(255,230,109,0.35); }
   .card-sumo:hover { box-shadow: 0 24px 60px rgba(255,230,109,0.55); }
+
+  /* Alien card */
+  .card-alien .card-bg { background: linear-gradient(145deg, #0a2e0a 0%, #39ff14 100%); }
+  .card-alien { box-shadow: 0 12px 40px rgba(57,255,20,0.35); }
+  .card-alien:hover { box-shadow: 0 24px 60px rgba(57,255,20,0.55); }
 
   /* Card scene illustration */
   .card-scene {
@@ -565,6 +574,22 @@
             <div class="card-cta">Tap to play →</div>
           </div>
           <div class="badge">🏆 Champion</div>
+        </div>
+      </div>
+    </a>
+
+    <!-- Alien Card -->
+    <a class="game-card card-alien" href="https://arnonmaya.github.io/games/alien.html" >
+      <div class="card-inner">
+        <div class="card-bg">
+          <div class="card-circle card-circle-1"></div>
+          <div class="card-circle card-circle-2"></div>
+          <div class="card-scene">👾</div>
+          <div class="card-label">
+            <div class="card-title">Alien</div>
+            <div class="card-cta">Tap to play →</div>
+          </div>
+          <div class="badge">🛸 Invasion</div>
         </div>
       </div>
     </a>
