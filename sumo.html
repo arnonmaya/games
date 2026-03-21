@@ -564,6 +564,7 @@ let lang = 'en';
 
 const T = {
   en: {
+    title:          'Sumo Wrestling',
     subtitle:       'Push opponents beyond the ring line',
     ovSub:          'Push opponents outside the ring line. First to 3 points wins!',
     numPlayers:     'NUMBER OF PLAYERS',
@@ -584,6 +585,7 @@ const T = {
     round:          'Round',
   },
   he: {
+    title:          'קרב התאבקות',
     subtitle:       'דחוף את היריבים מחוץ לטבעת',
     ovSub:          'דחוף יריבים מחוץ לקו הטבעת. הראשון ל-3 נקודות מנצח!',
     numPlayers:     'מספר שחקנים',
@@ -616,6 +618,8 @@ function setLang(l) {
     const key = el.getAttribute('data-i18n');
     if (T[l][key]) el.textContent = T[l][key];
   });
+  document.querySelector('h1').textContent = '⛩ ' + T[l].title;
+  document.getElementById('ovTitle').textContent = T[l].title;
   document.querySelector('.subtitle').textContent = T[l].subtitle;
   document.getElementById('ovSub').textContent = T[l].ovSub;
   document.getElementById('ovBtn').textContent = T[l].startGame;
@@ -1166,7 +1170,7 @@ function showStartScreen() {
   scores = [0,0,0,0]; round = 1;
   document.getElementById('backToStartArrow').style.display = 'none';
   document.getElementById('ovEmoji').textContent = '⛩';
-  document.getElementById('ovTitle').textContent = 'Sumo Wrestling';
+  document.getElementById('ovTitle').textContent = T[lang].title;
   document.getElementById('ovTitle').style.color = '#e8c97a';
   document.getElementById('ovSub').textContent = t('ovSub');
   document.getElementById('countdownRing').style.display = 'none';
