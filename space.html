@@ -45,10 +45,42 @@
             color: #fbbf24;
             padding: 40px 30px;
             text-align: center;
+            position: relative;
         }
 
         .header.hide {
             display: none;
+        }
+
+        .header-lang-selector {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            display: flex;
+            gap: 6px;
+        }
+
+        .header-lang-btn {
+            padding: 6px 12px;
+            border: 1.5px solid rgba(251, 191, 36, 0.5);
+            background: rgba(0, 0, 0, 0.3);
+            color: #fbbf24;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .header-lang-btn:hover {
+            background: rgba(251, 191, 36, 0.2);
+            border-color: #fbbf24;
+        }
+
+        .header-lang-btn.active {
+            background: #fbbf24;
+            color: #000000;
+            border-color: #fbbf24;
         }
 
         .header h1 {
@@ -78,8 +110,36 @@
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 1px;
-            color: #666;
+            color: #fbbf24;
             margin-bottom: 12px;
+        }
+
+        .language-selector {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .lang-btn {
+            padding: 8px 16px;
+            border: 2px solid #fbbf24;
+            background: #000000;
+            color: #fbbf24;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .lang-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .lang-btn.active {
+            background: #fbbf24;
+            color: #000000;
         }
 
         .player-selector {
@@ -396,6 +456,10 @@
 <body>
     <div class="container">
         <div class="header">
+            <div class="header-lang-selector">
+                <button class="header-lang-btn active" data-lang="en">EN</button>
+                <button class="header-lang-btn" data-lang="he">עב</button>
+            </div>
             <h1>🚀 Space Defender</h1>
             <p>Destroy enemy ships and survive!</p>
         </div>
@@ -403,7 +467,7 @@
         <div class="page active" id="menuPage">
             <div class="content">
                 <div class="section">
-                    <div class="section-title">Number of Players</div>
+                    <div class="section-title" id="playersTitle">Number of Players</div>
                     <div class="player-selector">
                         <button class="player-btn active" data-players="1">1</button>
                         <button class="player-btn" data-players="2">2</button>
@@ -414,24 +478,24 @@
 
                 <button class="start-btn" id="startBtn">Start Game</button>
 
-                <button class="back-home-btn" onclick="window.location.href='https://arnonmaya.github.io/games/'">Back to Home Page</button>
+                <button class="back-home-btn" id="backHomeBtn" onclick="window.location.href='https://arnonmaya.github.io/games/'">Back to Home Page</button>
 
                 <div class="controls-info">
                     <div class="control-row" id="c1">
                         <span class="p1">Player 1:</span>
-                        <span>Arrow Keys ← → to move, Spacebar to shoot</span>
+                        <span id="controls1Text">Arrow Keys ← → to move, Spacebar to shoot</span>
                     </div>
                     <div class="control-row" id="c2" style="display: none;">
                         <span class="p2">Player 2:</span>
-                        <span>A D to move, W to shoot</span>
+                        <span id="controls2Text">A D to move, W to shoot</span>
                     </div>
                     <div class="control-row" id="c3" style="display: none;">
                         <span class="p3">Player 3:</span>
-                        <span>J L to move, I to shoot</span>
+                        <span id="controls3Text">J L to move, I to shoot</span>
                     </div>
                     <div class="control-row" id="c4" style="display: none;">
                         <span class="p4">Player 4:</span>
-                        <span>Numpad 4 6 to move, 8 to shoot</span>
+                        <span id="controls4Text">Numpad 4 6 to move, 8 to shoot</span>
                     </div>
                 </div>
             </div>
@@ -487,6 +551,81 @@
         let touchState = { active: false, direction: 0, shooting: false };
         let autoMenuTimer = null;
         let isTouchDevice = false;
+        let currentLang = 'en';
+
+        const translations = {
+            en: {
+                title: '🚀 Space Defender',
+                subtitle: 'Destroy enemy ships and survive!',
+                langTitle: 'Language / שפה',
+                playersTitle: 'Number of Players',
+                startBtn: 'Start Game',
+                backHomeBtn: 'Back to Home Page',
+                controls1: 'Arrow Keys ← → to move, Spacebar to shoot',
+                controls2: 'A D to move, W to shoot',
+                controls3: 'J L to move, I to shoot',
+                controls4: 'Numpad 4 6 to move, 8 to shoot',
+                gameOver: 'Game Over',
+                finalScore: 'Final Score',
+                wins: 'Wins! 🏆',
+                tieGame: 'Tie Game!',
+                playAgain: 'Play Again'
+            },
+            he: {
+                title: '🚀 מגן החלל',
+                subtitle: 'השמד ספינות אויב ושרוד!',
+                langTitle: 'Language / שפה',
+                playersTitle: 'מספר שחקנים',
+                startBtn: 'התחל משחק',
+                backHomeBtn: 'חזרה לדף הבית',
+                controls1: 'חצים ← → להזזה, רווח לירי',
+                controls2: 'A D להזזה, W לירי',
+                controls3: 'J L להזזה, I לירי',
+                controls4: 'Numpad 4 6 להזזה, 8 לירי',
+                gameOver: 'המשחק נגמר',
+                finalScore: 'ניקוד סופי',
+                wins: 'ניצח! 🏆',
+                tieGame: 'תיקו!',
+                playAgain: 'שחק שוב'
+            }
+        };
+
+        function updateLanguage(lang) {
+            currentLang = lang;
+            const t = translations[lang];
+            
+            // Update header
+            document.querySelector('.header h1').textContent = t.title;
+            document.querySelector('.header p').textContent = t.subtitle;
+            
+            // Update menu
+            document.getElementById('playersTitle').textContent = t.playersTitle;
+            document.getElementById('startBtn').textContent = t.startBtn;
+            document.getElementById('backHomeBtn').textContent = t.backHomeBtn;
+            
+            // Update controls
+            document.getElementById('controls1Text').textContent = t.controls1;
+            document.getElementById('controls2Text').textContent = t.controls2;
+            document.getElementById('controls3Text').textContent = t.controls3;
+            document.getElementById('controls4Text').textContent = t.controls4;
+            
+            // Update direction for Hebrew
+            if (lang === 'he') {
+                document.body.style.direction = 'rtl';
+            } else {
+                document.body.style.direction = 'ltr';
+            }
+        }
+
+        // Language selection
+        const langBtns = document.querySelectorAll('.header-lang-btn');
+        langBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                langBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                updateLanguage(btn.dataset.lang);
+            });
+        });
 
         // Detect touch device
         function checkTouchDevice() {
@@ -949,21 +1088,22 @@
         function endGame(winner) {
             gameState.running = false;
             const sorted = [...gameState.players].sort((a, b) => b.score - a.score);
+            const t = translations[currentLang];
             
             if (numPlayers === 1) {
-                winnerTitleEl.textContent = 'Game Over';
-                finalScoresEl.innerHTML = `<div style="font-size: 24px;">Final Score: ${sorted[0].score}</div>`;
+                winnerTitleEl.textContent = t.gameOver;
+                finalScoresEl.innerHTML = `<div style="font-size: 24px;">${t.finalScore}: ${sorted[0].score}</div>`;
             } else {
                 if (winner && gameState.timeRemaining > 0) {
-                    winnerTitleEl.textContent = `${winner.color.name} Wins! 🏆`;
+                    winnerTitleEl.textContent = `${winner.color.name} ${t.wins}`;
                 } else if (sorted[0].score > sorted[1].score) {
-                    winnerTitleEl.textContent = `${sorted[0].color.name} Wins! 🏆`;
+                    winnerTitleEl.textContent = `${sorted[0].color.name} ${t.wins}`;
                 } else {
-                    winnerTitleEl.textContent = 'Tie Game!';
+                    winnerTitleEl.textContent = t.tieGame;
                 }
                 
                 finalScoresEl.innerHTML = sorted.map(p => 
-                    `<div><span class="${p.color.class}">${p.color.name}:</span> ${p.score} points</div>`
+                    `<div><span class="${p.color.class}">${p.color.name}:</span> ${p.score} ${currentLang === 'he' ? 'נקודות' : 'points'}</div>`
                 ).join('');
             }
             
@@ -971,13 +1111,13 @@
             
             // Start 5 second countdown
             let countdown = 5;
-            replayBtn.textContent = `Play Again (${countdown}s)`;
+            replayBtn.textContent = `${t.playAgain} (${countdown}s)`;
             
             if (autoMenuTimer) clearInterval(autoMenuTimer);
             autoMenuTimer = setInterval(() => {
                 countdown--;
                 if (countdown > 0) {
-                    replayBtn.textContent = `Play Again (${countdown}s)`;
+                    replayBtn.textContent = `${t.playAgain} (${countdown}s)`;
                 } else {
                     clearInterval(autoMenuTimer);
                     backToMenu();
