@@ -186,6 +186,29 @@
   }
   .home-btn:hover { color: #e8c97a; }
 
+  .lang-toggle {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 16px;
+  }
+  .lang-btn {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: #a08050;
+    font-size: 0.7rem;
+    font-family: 'Georgia', serif;
+    letter-spacing: 1px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .lang-btn.active {
+    background: rgba(232,201,122,0.2);
+    border-color: #e8c97a;
+    color: #e8c97a;
+  }
+
   /* ── Back arrow (returns to start screen) ── */
   .back-arrow {
     position: fixed;
@@ -458,7 +481,7 @@
 <button class="back-arrow" style="display:none;" id="backToStartArrow" onclick="gameActive=false; showStartScreen();" title="Back to Start">&#8678;</button>
 
 <h1>⛩ Sumo Wrestling</h1>
-<p class="subtitle">Push opponents beyond the ring line</p>
+<p class="subtitle" data-i18n="subtitle">Push opponents beyond the ring line</p>
 
 <div class="scoreboard" id="scoreboard"></div>
 <canvas id="c" width="440" height="440"></canvas>
@@ -468,6 +491,12 @@
   <div class="overlay-emoji" id="ovEmoji">⛩</div>
   <div class="overlay-title" id="ovTitle" style="color:#e8c97a">Sumo Wrestling</div>
   <div class="overlay-sub" id="ovSub">Push opponents outside the ring line. First to 3 points wins!</div>
+
+  <!-- Language toggle -->
+  <div class="lang-toggle">
+    <button class="lang-btn active" id="langEN" onclick="setLang('en')">EN</button>
+    <button class="lang-btn" id="langHE" onclick="setLang('he')">עב</button>
+  </div>
 
   <!-- Countdown ring (shown only after match winner) -->
   <div class="countdown-ring" id="countdownRing">
@@ -482,7 +511,7 @@
   <div id="devicePickerDiv" style="display:none;"></div>
 
   <div class="picker" id="pickerDiv">
-    <p>NUMBER OF PLAYERS</p>
+    <p data-i18n="numPlayers">NUMBER OF PLAYERS</p>
     <div class="picker-btns">
       <button class="pnum" onclick="selectCount(1)">1</button>
       <button class="pnum active" onclick="selectCount(2)">2</button>
@@ -492,8 +521,8 @@
     <div class="controls-preview" id="controlsPreview"></div>
   </div>
 
-  <button class="btn" id="ovBtn">Start Game</button>
-  <a href="https://arnonmaya.github.io/games/" class="home-btn">🏠 Back to Home Page</a>
+  <button class="btn" id="ovBtn" data-i18n="startGame">Start Game</button>
+  <a href="https://arnonmaya.github.io/games/" class="home-btn" data-i18n="backHome">🏠 Back to Home Page</a>
 </div>
 
 <!-- Controls popup shown briefly at round start -->
@@ -529,6 +558,75 @@ const CONFIGS = [
   { color: '#6bff9e', shadow: '#00cc5555', name: 'P3', keys: { up:'i',  down:'k',         left:'j',         right:'l'          }, label: 'J / I / K / L' },
   { color: '#ffcc44', shadow: '#cc880055', name: 'P4', keys: { up:'t',  down:'g',         left:'f',         right:'h'          }, label: 'F / T / G / H' },
 ];
+
+// ── Translations ──────────────────────────────────────────────────
+let lang = 'en';
+
+const T = {
+  en: {
+    subtitle:       'Push opponents beyond the ring line',
+    ovSub:          'Push opponents outside the ring line. First to 3 points wins!',
+    numPlayers:     'NUMBER OF PLAYERS',
+    startGame:      'Start Game',
+    backHome:       '🏠 Back to Home Page',
+    backToStart:    'Back to Start',
+    aiControlled:   'AI controlled',
+    aiOpponent:     'AI opponent',
+    scoresPoint:    'scores a point!',
+    draw:           'Draw!',
+    noPoint:        'No point awarded',
+    winsMatch:      'Wins!',
+    champion:       'Match champion — 3 points reached! Returning to start…',
+    playAgainNow:   'Play Again Now',
+    nextRound:      'Next Round',
+    scoresMsg:      (name) => `${name} scores! First to 3 points wins the match.`,
+    drawMsg:        'Double elimination — no point this round!',
+    round:          'Round',
+  },
+  he: {
+    subtitle:       'דחוף את היריבים מחוץ לטבעת',
+    ovSub:          'דחוף יריבים מחוץ לקו הטבעת. הראשון ל-3 נקודות מנצח!',
+    numPlayers:     'מספר שחקנים',
+    startGame:      'התחל משחק',
+    backHome:       '🏠 חזרה לדף הבית',
+    backToStart:    'חזרה להתחלה',
+    aiControlled:   'בשליטת מחשב',
+    aiOpponent:     'יריב מחשב',
+    scoresPoint:    'מבקיע נקודה!',
+    draw:           'תיקו!',
+    noPoint:        'אין נקודה',
+    winsMatch:      'מנצח!',
+    champion:       'אלוף המשחק — הגיע ל-3 נקודות! חוזרים להתחלה…',
+    playAgainNow:   'שחק שוב עכשיו',
+    nextRound:      'סיבוב הבא',
+    scoresMsg:      (name) => `${name} מבקיע! הראשון ל-3 נקודות מנצח.`,
+    drawMsg:        'שני שחקנים יצאו — אין נקודה!',
+    round:          'סיבוב',
+  }
+};
+
+function setLang(l) {
+  lang = l;
+  document.getElementById('langEN').classList.toggle('active', l === 'en');
+  document.getElementById('langHE').classList.toggle('active', l === 'he');
+  // Set page direction
+  document.body.dir = l === 'he' ? 'rtl' : 'ltr';
+  // Update all static i18n elements
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (T[l][key]) el.textContent = T[l][key];
+  });
+  document.querySelector('.subtitle').textContent = T[l].subtitle;
+  document.getElementById('ovSub').textContent = T[l].ovSub;
+  document.getElementById('ovBtn').textContent = T[l].startGame;
+  // Rebuild controls preview in new language
+  buildControlsPreview(numPlayers);
+}
+
+function t(key, ...args) {
+  const val = T[lang][key];
+  return typeof val === 'function' ? val(...args) : val;
+}
 
 let numPlayers = 2;
 let deviceType = 'computer'; // 'computer' | 'tablet' | 'phone'
@@ -612,7 +710,7 @@ function buildControlsPreview(n) {
     const ai = document.createElement('div');
     ai.className = 'ctrl-card';
     ai.style.borderColor = '#88888855';
-    ai.innerHTML = `<div class="ctrl-card-name" style="color:#aaa">CPU</div><div style="color:#666;font-size:0.65rem;margin-top:8px">AI controlled</div>`;
+    ai.innerHTML = `<div class="ctrl-card-name" style="color:#aaa">CPU</div><div style="color:#666;font-size:0.65rem;margin-top:8px">${t('aiControlled')}</div>`;
     container.appendChild(ai);
   }
 }
@@ -645,7 +743,7 @@ function showControlsPopup() {
   if (numPlayers === 1) {
     const ai = document.createElement('div');
     ai.className = 'popup-card';
-    ai.innerHTML = `<div class="popup-card-name" style="color:#aaa">CPU</div><div style="color:#666;font-size:0.6rem;margin-top:6px">AI opponent</div>`;
+    ai.innerHTML = `<div class="popup-card-name" style="color:#aaa">CPU</div><div style="color:#666;font-size:0.6rem;margin-top:6px">${t('aiOpponent')}</div>`;
     popup.appendChild(ai);
   }
 
@@ -712,7 +810,7 @@ function updateDots() {
     }
   }
   const ri = document.getElementById('roundInfo');
-  if (ri) ri.textContent = 'Round ' + round;
+  if (ri) ri.textContent = t('round') + ' ' + round;
 }
 
 function spawnPositions(total) {
@@ -1015,10 +1113,10 @@ function endRound(winner) {
 
   if (matchWinner>=0) {
     showOverlay(
-      `${CONFIGS[matchWinner].name} Wins!`,
-      `Match champion — ${POINTS_TO_WIN} points reached! Returning to start…`,
+      `${CONFIGS[matchWinner].name} ${t('winsMatch')}`,
+      t('champion'),
       '🏆', CONFIGS[matchWinner].color,
-      'Play Again Now'
+      t('playAgainNow')
     );
     startMatchCountdown();
     document.getElementById('ovBtn').onclick = () => {
@@ -1026,7 +1124,6 @@ function endRound(winner) {
       showStartScreen();
     };
   } else {
-    // Show a big unmissable point card, then auto-continue after 2.5s
     showPointCard(winner);
   }
 }
@@ -1041,8 +1138,7 @@ function showPointCard(winner) {
     card.style.borderColor = CONFIGS[winner.index].color;
     cardName.textContent  = winner.name;
     cardName.style.color  = CONFIGS[winner.index].color;
-    cardMsg.textContent   = 'scores a point!';
-    // Build score summary
+    cardMsg.textContent   = t('scoresPoint');
     let scoreText = '';
     for (let i = 0; i < numPlayers; i++) {
       scoreText += `${CONFIGS[i].name}: ${'●'.repeat(scores[i])}${'○'.repeat(POINTS_TO_WIN - scores[i])}   `;
@@ -1050,9 +1146,9 @@ function showPointCard(winner) {
     cardScore.textContent = scoreText.trim();
   } else {
     card.style.borderColor = '#e8c97a';
-    cardName.textContent  = 'Draw!';
+    cardName.textContent  = t('draw');
     cardName.style.color  = '#e8c97a';
-    cardMsg.textContent   = 'No point awarded';
+    cardMsg.textContent   = t('noPoint');
     cardScore.textContent = '';
   }
 
@@ -1072,13 +1168,17 @@ function showStartScreen() {
   document.getElementById('ovEmoji').textContent = '⛩';
   document.getElementById('ovTitle').textContent = 'Sumo Wrestling';
   document.getElementById('ovTitle').style.color = '#e8c97a';
-  document.getElementById('ovSub').textContent = 'Push opponents outside the ring line. First to 3 points wins!';
+  document.getElementById('ovSub').textContent = t('ovSub');
   document.getElementById('countdownRing').style.display = 'none';
   document.getElementById('pickerDiv').style.display = 'block';
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (T[lang][key] && typeof T[lang][key] === 'string') el.textContent = T[lang][key];
+  });
   document.querySelectorAll('.pnum').forEach((b,i) => b.classList.toggle('active', i+1===numPlayers));
   buildControlsPreview(numPlayers);
   const btn = document.getElementById('ovBtn');
-  btn.textContent = 'Start Game';
+  btn.textContent = t('startGame');
   btn.style.display = 'inline-block';
   btn.onclick = () => {
     scores = [0,0,0,0]; round = 1;
