@@ -32,159 +32,107 @@
     z-index: 0;
   }
 
-  /* ── Language toggle ── */
   #lang-toggle {
-    position: fixed;
-    top: 18px;
-    right: 20px;
-    z-index: 200;
-    background: rgba(255,255,255,0.12);
-    border: 2px solid rgba(255,255,255,0.28);
-    border-radius: 100px;
-    padding: 8px 18px;
-    color: #fff;
-    font-family: 'Nunito', sans-serif;
-    font-weight: 900;
-    font-size: 0.9rem;
-    letter-spacing: 1px;
-    cursor: pointer;
-    backdrop-filter: blur(10px);
+    position: fixed; top: 18px; right: 20px; z-index: 200;
+    background: rgba(255,255,255,0.12); border: 2px solid rgba(255,255,255,0.28);
+    border-radius: 100px; padding: 8px 18px; color: #fff;
+    font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 0.9rem;
+    letter-spacing: 1px; cursor: pointer; backdrop-filter: blur(10px);
     transition: background 0.2s, transform 0.15s;
-    display: flex;
-    align-items: center;
-    gap: 7px;
+    display: flex; align-items: center; gap: 7px;
   }
   #lang-toggle:hover { background: rgba(255,255,255,0.26); transform: scale(1.05); }
 
-  header {
-    position: relative;
-    z-index: 10;
-    text-align: center;
-    padding: 52px 20px 20px;
-  }
-
-  .title-wrap {
-    display: inline-block;
-    position: relative;
-  }
+  header { position: relative; z-index: 10; text-align: center; padding: 52px 20px 20px; }
+  .title-wrap { display: inline-block; position: relative; }
 
   h1 {
     font-family: 'Boogaloo', cursive;
     font-size: clamp(3.5rem, 9vw, 7rem);
-    color: #fff;
-    letter-spacing: 2px;
-    line-height: 1;
+    color: #fff; letter-spacing: 2px; line-height: 1;
     text-shadow: 4px 4px 0 var(--accent), 8px 8px 0 rgba(233,69,96,0.3);
     animation: titleBounce 3s ease-in-out infinite;
   }
-
-  .star {
-    position: absolute;
-    font-size: 2rem;
-    animation: spin 4s linear infinite;
-  }
+  .star { position: absolute; font-size: 2rem; animation: spin 4s linear infinite; }
   .star:nth-child(1) { top: -10px; left: -50px; }
   .star:nth-child(2) { top: -15px; right: -50px; animation-delay: -2s; }
-
   .subtitle {
-    color: rgba(255,255,255,0.45);
-    font-size: 1.1rem;
-    font-weight: 700;
-    letter-spacing: 4px;
-    text-transform: uppercase;
-    margin-top: 8px;
+    color: rgba(255,255,255,0.45); font-size: 1.1rem; font-weight: 700;
+    letter-spacing: 4px; text-transform: uppercase; margin-top: 8px;
   }
-
-  @keyframes titleBounce {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-8px); }
-  }
-  @keyframes spin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-  }
+  @keyframes titleBounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+  @keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
 
   .games-grid {
-    position: relative;
-    z-index: 10;
-    display: flex;
-    justify-content: center;
-    align-items: stretch;
-    gap: 14px;
-    flex-wrap: wrap;
+    position: relative; z-index: 10;
+    display: flex; justify-content: center; align-items: stretch;
+    gap: 14px; flex-wrap: wrap;
     padding: 40px 40px 60px;
-    max-width: 1100px;
-    margin: 0 auto;
+    max-width: 1200px; margin: 0 auto;
   }
 
   .game-card {
-    position: relative;
-    width: 150px;
-    border-radius: 20px;
-    overflow: hidden;
-    cursor: pointer;
-    text-decoration: none;
+    position: relative; width: 150px; border-radius: 20px;
+    overflow: hidden; cursor: pointer; text-decoration: none;
     transition: transform 0.25s cubic-bezier(.34,1.56,.64,1), box-shadow 0.25s ease;
     animation: cardIn 0.6s cubic-bezier(.34,1.56,.64,1) both;
   }
-  .game-card:nth-child(1) { animation-delay: 0.1s; }
-  .game-card:nth-child(2) { animation-delay: 0.2s; }
-  .game-card:nth-child(3) { animation-delay: 0.3s; }
-  .game-card:nth-child(4) { animation-delay: 0.4s; }
-  .game-card:nth-child(5) { animation-delay: 0.5s; }
-  .game-card:nth-child(6) { animation-delay: 0.6s; }
-  .game-card:nth-child(7) { animation-delay: 0.7s; }
-  .game-card:nth-child(8) { animation-delay: 0.8s; }
-
-  @keyframes cardIn {
-    from { opacity: 0; transform: translateY(60px) scale(0.85); }
-    to   { opacity: 1; transform: translateY(0) scale(1); }
-  }
-
+  .game-card:nth-child(1)  { animation-delay: 0.1s; }
+  .game-card:nth-child(2)  { animation-delay: 0.2s; }
+  .game-card:nth-child(3)  { animation-delay: 0.3s; }
+  .game-card:nth-child(4)  { animation-delay: 0.4s; }
+  .game-card:nth-child(5)  { animation-delay: 0.5s; }
+  .game-card:nth-child(6)  { animation-delay: 0.6s; }
+  .game-card:nth-child(7)  { animation-delay: 0.7s; }
+  .game-card:nth-child(8)  { animation-delay: 0.8s; }
+  .game-card:nth-child(9)  { animation-delay: 0.9s; }
+  .game-card:nth-child(10) { animation-delay: 1.0s; }
+  @keyframes cardIn { from{opacity:0;transform:translateY(60px) scale(0.85)} to{opacity:1;transform:translateY(0) scale(1)} }
   .game-card:nth-child(odd):hover  { transform: translateY(-12px) scale(1.03) rotate(-1deg); }
   .game-card:nth-child(even):hover { transform: translateY(-12px) scale(1.03) rotate(1deg); }
 
   .card-inner { position: relative; width: 100%; padding-bottom: 115%; }
-  .card-bg {
-    position: absolute; inset: 0;
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-  }
+  .card-bg { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
 
-  .card-sushi   .card-bg { background: linear-gradient(145deg, #FF6B6B 0%, #FF8E53 100%); }
+  .card-sushi   .card-bg { background: linear-gradient(145deg,#FF6B6B,#FF8E53); }
   .card-sushi   { box-shadow: 0 12px 40px rgba(255,107,107,0.4); }
   .card-sushi:hover { box-shadow: 0 24px 60px rgba(255,107,107,0.6); }
 
-  .card-shooting .card-bg { background: linear-gradient(145deg, #0f3460 0%, #4ECDC4 100%); }
+  .card-shooting .card-bg { background: linear-gradient(145deg,#0f3460,#4ECDC4); }
   .card-shooting { box-shadow: 0 12px 40px rgba(78,205,196,0.35); }
   .card-shooting:hover { box-shadow: 0 24px 60px rgba(78,205,196,0.55); }
 
-  .card-space   .card-bg { background: linear-gradient(145deg, #0d0d2b 0%, #6a0dad 100%); }
+  .card-space   .card-bg { background: linear-gradient(145deg,#0d0d2b,#6a0dad); }
   .card-space   { box-shadow: 0 12px 40px rgba(106,13,173,0.4); }
   .card-space:hover { box-shadow: 0 24px 60px rgba(106,13,173,0.6); }
 
-  .card-sumo    .card-bg { background: linear-gradient(145deg, #f7971e 0%, #FFE66D 100%); }
+  .card-sumo    .card-bg { background: linear-gradient(145deg,#f7971e,#FFE66D); }
   .card-sumo    { box-shadow: 0 12px 40px rgba(255,230,109,0.35); }
   .card-sumo:hover { box-shadow: 0 24px 60px rgba(255,230,109,0.55); }
 
-  .card-alien   .card-bg { background: linear-gradient(145deg, #0a2e0a 0%, #39ff14 100%); }
+  .card-alien   .card-bg { background: linear-gradient(145deg,#0a2e0a,#39ff14); }
   .card-alien   { box-shadow: 0 12px 40px rgba(57,255,20,0.35); }
   .card-alien:hover { box-shadow: 0 24px 60px rgba(57,255,20,0.55); }
 
-  .card-puzzle  .card-bg { background: linear-gradient(145deg, #1a0533 0%, #a855f7 100%); }
+  .card-puzzle  .card-bg { background: linear-gradient(145deg,#1a0533,#a855f7); }
   .card-puzzle  { box-shadow: 0 12px 40px rgba(168,85,247,0.35); }
   .card-puzzle:hover { box-shadow: 0 24px 60px rgba(168,85,247,0.55); }
 
-  .card-target  .card-bg { background: linear-gradient(145deg, #3d0000 0%, #ff2d2d 100%); }
+  .card-target  .card-bg { background: linear-gradient(145deg,#3d0000,#ff2d2d); }
   .card-target  { box-shadow: 0 12px 40px rgba(255,45,45,0.35); }
   .card-target:hover { box-shadow: 0 24px 60px rgba(255,45,45,0.6); }
 
-  .card-trivia  .card-bg { background: linear-gradient(145deg, #0a1a3d 0%, #f59e0b 100%); }
+  .card-trivia  .card-bg { background: linear-gradient(145deg,#0a1a3d,#f59e0b); }
   .card-trivia  { box-shadow: 0 12px 40px rgba(245,158,11,0.35); }
   .card-trivia:hover { box-shadow: 0 24px 60px rgba(245,158,11,0.6); }
 
-  .card-memory  .card-bg { background: linear-gradient(145deg, #003333 0%, #00e5cc 100%); }
+  .card-memory  .card-bg { background: linear-gradient(145deg,#003333,#00e5cc); }
   .card-memory  { box-shadow: 0 12px 40px rgba(0,229,204,0.35); }
   .card-memory:hover { box-shadow: 0 24px 60px rgba(0,229,204,0.6); }
+
+  .card-kicks   .card-bg { background: linear-gradient(145deg,#064e3b,#34d399); }
+  .card-kicks   { box-shadow: 0 12px 40px rgba(52,211,153,0.35); }
+  .card-kicks:hover { box-shadow: 0 24px 60px rgba(52,211,153,0.6); }
 
   .card-scene {
     font-size: 3.5rem; line-height: 1;
@@ -195,230 +143,108 @@
 
   .card-circle { position: absolute; border-radius: 50%; opacity: 0.15; }
   .card-circle-1 { width: 160px; height: 160px; background: #fff; top: -40px; right: -40px; }
-  .card-circle-2 { width: 80px;  height: 80px;  background: #fff; bottom: 60px; left: -20px; }
+  .card-circle-2 { width: 80px; height: 80px; background: #fff; bottom: 60px; left: -20px; }
 
   .card-label {
     position: absolute; bottom: 0; left: 0; right: 0;
     padding: 20px 16px 22px; text-align: center;
     background: linear-gradient(transparent, rgba(0,0,0,0.45));
   }
-  .card-title {
-    font-family: 'Boogaloo', cursive; font-size: 2.2rem; color: #fff;
-    letter-spacing: 1px; text-shadow: 0 2px 8px rgba(0,0,0,0.3);
-  }
-  .card-cta {
-    display: inline-block; margin-top: 4px; font-size: 0.75rem;
-    font-weight: 900; letter-spacing: 3px; text-transform: uppercase;
-    color: rgba(255,255,255,0.75);
-  }
-  .badge {
-    position: absolute; top: 14px; left: 14px;
-    background: rgba(255,255,255,0.92); border-radius: 100px;
-    padding: 4px 12px; font-size: 0.65rem; font-weight: 900;
-    letter-spacing: 2px; text-transform: uppercase; color: #333;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
-  }
+  .card-title { font-family: 'Boogaloo',cursive; font-size: 2.2rem; color: #fff; letter-spacing: 1px; text-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+  .card-cta { display: inline-block; margin-top: 4px; font-size: 0.75rem; font-weight: 900; letter-spacing: 3px; text-transform: uppercase; color: rgba(255,255,255,0.75); }
+  .badge { position: absolute; top: 14px; left: 14px; background: rgba(255,255,255,0.92); border-radius: 100px; padding: 4px 12px; font-size: 0.65rem; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; color: #333; box-shadow: 0 2px 8px rgba(0,0,0,0.12); }
 
-  /* Game pages */
-  .game-page {
-    display: none; position: fixed; inset: 0; z-index: 100;
-    flex-direction: column; align-items: center; justify-content: center;
-    animation: pageIn 0.4s ease both;
-  }
+  .game-page { display: none; position: fixed; inset: 0; z-index: 100; flex-direction: column; align-items: center; justify-content: center; animation: pageIn 0.4s ease both; }
   .game-page.active { display: flex; }
-  @keyframes pageIn {
-    from { opacity: 0; transform: scale(0.95); }
-    to   { opacity: 1; transform: scale(1); }
-  }
+  @keyframes pageIn { from{opacity:0;transform:scale(0.95)} to{opacity:1;transform:scale(1)} }
 
   .back-btn {
     position: absolute; top: 24px; left: 24px;
     background: rgba(255,255,255,0.15); border: 2px solid rgba(255,255,255,0.3);
     border-radius: 100px; padding: 10px 22px; color: #fff;
-    font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 0.9rem;
-    cursor: pointer; transition: background 0.2s, transform 0.2s;
-    backdrop-filter: blur(8px);
+    font-family: 'Nunito',sans-serif; font-weight: 900; font-size: 0.9rem;
+    cursor: pointer; transition: background 0.2s, transform 0.2s; backdrop-filter: blur(8px);
   }
   .back-btn:hover { background: rgba(255,255,255,0.3); transform: translateX(-3px); }
 
-  .game-title-banner {
-    font-family: 'Boogaloo', cursive; font-size: clamp(3rem, 7vw, 5.5rem);
-    color: #fff; text-shadow: 4px 4px 0 rgba(0,0,0,0.2); margin-bottom: 16px;
-  }
-  .game-emoji-big {
-    font-size: 8rem;
-    animation: gameBounce 1s ease-in-out infinite alternate;
-    filter: drop-shadow(0 16px 24px rgba(0,0,0,0.3));
-  }
-  @keyframes gameBounce {
-    from { transform: translateY(0) scale(1); }
-    to   { transform: translateY(-18px) scale(1.07); }
-  }
-  .game-desc {
-    color: rgba(255,255,255,0.8); font-size: 1.15rem; font-weight: 700;
-    margin-top: 20px; max-width: 340px; text-align: center; line-height: 1.5;
-  }
+  .game-title-banner { font-family: 'Boogaloo',cursive; font-size: clamp(3rem,7vw,5.5rem); color: #fff; text-shadow: 4px 4px 0 rgba(0,0,0,0.2); margin-bottom: 16px; }
   .deco-shape { position: absolute; border-radius: 50%; opacity: 0.1; pointer-events: none; }
   .deco-shape-1 { width: 400px; height: 400px; background: #fff; top: -150px; right: -100px; }
   .deco-shape-2 { width: 250px; height: 250px; background: #fff; bottom: -80px; left: -60px; }
 
-  #page-sushi    { background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%); }
-  #page-shooting { background: linear-gradient(135deg, #0f3460 0%, #16213e 50%, #4ECDC4 100%); }
-  #page-sumo     { background: linear-gradient(135deg, #f7971e 0%, #FFE66D 100%); }
+  /* ── KICKS GAME ── */
+  #page-kicks { background: linear-gradient(135deg,#064e3b,#065f46 50%,#34d399); }
 
-  #shooting-canvas-wrap {
-    position: relative; width: min(560px, 90vw); height: min(320px, 55vw);
-    background: rgba(0,0,0,0.35); border-radius: 16px; overflow: hidden;
-    border: 2px solid rgba(78,205,196,0.4); box-shadow: 0 0 40px rgba(78,205,196,0.2);
-    cursor: crosshair; margin-top: 12px;
+  #kicks-wrap { width: min(520px,95vw); display: flex; flex-direction: column; align-items: center; gap: 10px; margin-top: 6px; }
+
+  #kicks-field {
+    position: relative; width: 100%; height: 230px;
+    background: linear-gradient(180deg,#166534,#15803d 40%,#16a34a);
+    border-radius: 16px; overflow: hidden;
+    border: 3px solid rgba(255,255,255,0.2);
+    box-shadow: inset 0 0 40px rgba(0,0,0,0.3);
+    cursor: pointer; user-select: none;
   }
-  .target {
-    position: absolute; width: 52px; height: 52px; border-radius: 50%;
-    background: radial-gradient(circle at 35% 35%, #FFE66D, #FF6B6B);
-    border: 3px solid rgba(255,255,255,0.7); box-shadow: 0 0 12px rgba(255,100,100,0.6);
-    cursor: crosshair; transition: transform 0.1s;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1.6rem; user-select: none;
+  #kicks-field::before {
+    content:''; position:absolute; left:50%; top:0; bottom:0;
+    width:2px; background:rgba(255,255,255,0.12); transform:translateX(-50%);
   }
-  .target:hover { transform: scale(1.1); }
-  .score-display {
-    position: absolute; top: 10px; right: 14px;
-    font-family: 'Boogaloo', cursive; font-size: 1.4rem;
-    color: #4ECDC4; text-shadow: 0 0 8px rgba(78,205,196,0.6);
+  #kicks-goal {
+    position: absolute; top: 20px; left: 50%; transform: translateX(-50%);
+    width: 140px; height: 72px;
+    border: 4px solid rgba(255,255,255,0.85); border-bottom: none;
+    border-radius: 4px 4px 0 0; background: rgba(255,255,255,0.07);
   }
-  .time-display {
-    position: absolute; top: 10px; left: 14px;
-    font-family: 'Boogaloo', cursive; font-size: 1.4rem; color: #FFE66D;
+  #kicks-goal::after {
+    content:''; position:absolute; inset:0;
+    background-image:
+      repeating-linear-gradient(90deg,rgba(255,255,255,0.15) 0,rgba(255,255,255,0.15) 1px,transparent 1px,transparent 20px),
+      repeating-linear-gradient(0deg,rgba(255,255,255,0.15) 0,rgba(255,255,255,0.15) 1px,transparent 1px,transparent 14px);
   }
-  .pop-text {
-    position: absolute; font-family: 'Boogaloo', cursive; font-size: 1.4rem;
-    color: #fff; pointer-events: none; animation: popUp 0.6s ease forwards;
+  #kicks-keeper {
+    position: absolute; font-size: 2rem; top: 28px; left: 50%;
+    transform: translateX(-50%); filter: drop-shadow(0 4px 6px rgba(0,0,0,0.4));
+    transition: left 0.12s linear;
   }
-  @keyframes popUp {
-    0%   { opacity: 1; transform: translateY(0) scale(1); }
-    100% { opacity: 0; transform: translateY(-40px) scale(1.4); }
+  #kicks-ball {
+    position: absolute; font-size: 2.2rem; bottom: 18px; left: 50%;
+    transform: translateX(-50%); filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4));
+    cursor: grab; transition: left 0.08s;
   }
 
-  #sushi-game-wrap {
-    width: min(560px, 90vw); margin-top: 10px;
-    display: flex; flex-direction: column; align-items: center; gap: 12px;
-  }
-  .sushi-conveyor {
-    position: relative; width: 100%; height: 90px;
-    background: rgba(0,0,0,0.25); border-radius: 14px; overflow: hidden;
-    border: 2px solid rgba(255,255,255,0.2);
-  }
-  .sushi-item {
-    position: absolute; font-size: 2.6rem; top: 50%;
-    transform: translateY(-50%); cursor: pointer; transition: transform 0.1s; user-select: none;
-  }
-  .sushi-item:hover { transform: translateY(-50%) scale(1.2); }
-  .sushi-score { font-family: 'Boogaloo', cursive; font-size: 1.4rem; color: #fff; }
-  .sushi-instructions { color: rgba(255,255,255,0.75); font-size: 0.9rem; font-weight: 700; }
+  #kicks-power-wrap { width:100%; height:14px; background:rgba(0,0,0,0.3); border-radius:100px; overflow:hidden; border:1px solid rgba(255,255,255,0.15); }
+  #kicks-power-bar  { height:100%; width:0%; border-radius:100px; background:linear-gradient(90deg,#34d399,#fbbf24,#ef4444); transition:width 0.04s linear; }
 
-  #sumo-game-wrap {
-    width: min(500px, 90vw); margin-top: 10px;
-    display: flex; flex-direction: column; align-items: center; gap: 10px;
-  }
-  .sumo-arena {
-    position: relative; width: 300px; height: 300px; border-radius: 50%;
-    background: radial-gradient(circle at 50% 45%, #e8d5a3 0%, #c9a96e 60%, #8b6914 100%);
-    border: 8px solid #5c4a1e;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.4), inset 0 -4px 12px rgba(0,0,0,0.2);
-    overflow: hidden;
-  }
-  .sumo-ring-line { position: absolute; inset: 16px; border-radius: 50%; border: 3px solid rgba(92,74,30,0.5); }
-  .sumo-fighter {
-    position: absolute; font-size: 3rem; transform: translate(-50%, -50%);
-    transition: left 0.1s, top 0.1s; user-select: none; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
-  }
-  .sumo-score-wrap { display: flex; gap: 30px; align-items: center; }
-  .sumo-score-item { text-align: center; color: #fff; }
-  .sumo-score-item .label { font-size: 0.75rem; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; opacity: 0.7; }
-  .sumo-score-item .val { font-family: 'Boogaloo', cursive; font-size: 2rem; }
-  .sumo-instructions { color: rgba(255,255,255,0.7); font-size: 0.85rem; font-weight: 700; text-align: center; }
+  .kicks-stats { display:flex; gap:28px; font-family:'Boogaloo',cursive; font-size:1.3rem; color:#fff; }
+  .kicks-stats strong { color:#34d399; }
 
-  /* Memory game */
-  #page-memory { background: linear-gradient(135deg, #003333 0%, #006655 50%, #00e5cc 100%); }
-  #memory-game-wrap {
-    width: min(520px, 95vw);
-    margin-top: 8px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 12px;
-  }
-  #memory-stats {
-    display: flex;
-    gap: 28px;
-    font-family: 'Boogaloo', cursive;
-    font-size: 1.3rem;
-    color: #fff;
-  }
-  #memory-stats span { opacity: 0.8; }
-  #memory-stats strong { color: #00e5cc; }
-  #memory-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
-    width: 100%;
-  }
-  .mem-card {
-    aspect-ratio: 1;
-    border-radius: 12px;
-    cursor: pointer;
-    position: relative;
-    transform-style: preserve-3d;
-    transition: transform 0.45s cubic-bezier(.4,0,.2,1);
-    user-select: none;
-  }
-  .mem-card.flipped  { transform: rotateY(180deg); }
-  .mem-card.matched  { transform: rotateY(180deg); cursor: default; }
-  .mem-card.matched .mem-front { box-shadow: 0 0 18px rgba(0,229,204,0.7); }
-  .mem-front, .mem-back {
-    position: absolute; inset: 0;
-    border-radius: 12px;
-    backface-visibility: hidden;
-    display: flex; align-items: center; justify-content: center;
-  }
-  .mem-back {
-    background: linear-gradient(135deg, #0a3a3a, #005544);
-    border: 2px solid rgba(0,229,204,0.3);
-    font-size: 1.6rem;
-    color: rgba(0,229,204,0.4);
-  }
-  .mem-front {
-    background: linear-gradient(135deg, #004444, #007766);
-    border: 2px solid rgba(0,229,204,0.6);
-    transform: rotateY(180deg);
-    font-size: 2rem;
-  }
-  #memory-msg {
-    font-family: 'Boogaloo', cursive;
-    font-size: 1.2rem;
-    color: rgba(255,255,255,0.85);
-    min-height: 1.6rem;
-    text-align: center;
-  }
-  #memory-restart {
-    background: #fff;
-    border: none;
-    border-radius: 100px;
-    padding: 10px 32px;
-    font-family: 'Boogaloo', cursive;
-    font-size: 1.3rem;
-    color: #005544;
-    cursor: pointer;
-    transition: transform 0.2s cubic-bezier(.34,1.56,.64,1), box-shadow 0.2s;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.2);
-    display: none;
-  }
-  #memory-restart:hover { transform: scale(1.08); box-shadow: 0 12px 30px rgba(0,0,0,0.3); }
+  #kicks-msg { font-family:'Boogaloo',cursive; font-size:1.5rem; color:#fff; min-height:2rem; text-shadow:0 2px 8px rgba(0,0,0,0.3); text-align:center; }
+  #kicks-instructions { color:rgba(255,255,255,0.7); font-size:0.88rem; font-weight:700; text-align:center; }
+
+  .goal-flash { position:absolute; inset:0; background:rgba(255,255,0,0.3); animation:flashOut 0.5s ease forwards; pointer-events:none; border-radius:13px; }
+  .save-flash { position:absolute; inset:0; background:rgba(255,0,0,0.2); animation:flashOut 0.5s ease forwards; pointer-events:none; border-radius:13px; }
+  @keyframes flashOut { from{opacity:1} to{opacity:0} }
+
+  /* ── MEMORY GAME ── */
+  #page-memory { background: linear-gradient(135deg,#003333,#006655 50%,#00e5cc); }
+  #memory-game-wrap { width:min(520px,95vw); margin-top:8px; display:flex; flex-direction:column; align-items:center; gap:12px; }
+  #memory-stats { display:flex; gap:28px; font-family:'Boogaloo',cursive; font-size:1.3rem; color:#fff; }
+  #memory-stats strong { color:#00e5cc; }
+  #memory-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; width:100%; }
+  .mem-card { aspect-ratio:1; border-radius:12px; cursor:pointer; position:relative; transform-style:preserve-3d; transition:transform 0.45s cubic-bezier(.4,0,.2,1); user-select:none; }
+  .mem-card.flipped,.mem-card.matched { transform:rotateY(180deg); }
+  .mem-card.matched { cursor:default; }
+  .mem-card.matched .mem-front { box-shadow:0 0 18px rgba(0,229,204,0.7); }
+  .mem-front,.mem-back { position:absolute; inset:0; border-radius:12px; backface-visibility:hidden; display:flex; align-items:center; justify-content:center; }
+  .mem-back { background:linear-gradient(135deg,#0a3a3a,#005544); border:2px solid rgba(0,229,204,0.3); font-size:1.6rem; color:rgba(0,229,204,0.4); }
+  .mem-front { background:linear-gradient(135deg,#004444,#007766); border:2px solid rgba(0,229,204,0.6); transform:rotateY(180deg); font-size:2rem; }
+  #memory-msg { font-family:'Boogaloo',cursive; font-size:1.2rem; color:rgba(255,255,255,0.85); min-height:1.6rem; text-align:center; }
+  #memory-restart { background:#fff; border:none; border-radius:100px; padding:10px 32px; font-family:'Boogaloo',cursive; font-size:1.3rem; color:#005544; cursor:pointer; transition:transform 0.2s cubic-bezier(.34,1.56,.64,1),box-shadow 0.2s; box-shadow:0 6px 20px rgba(0,0,0,0.2); display:none; }
+  #memory-restart:hover { transform:scale(1.08); box-shadow:0 12px 30px rgba(0,0,0,0.3); }
 </style>
 </head>
 <body>
 
-<!-- Language Toggle -->
 <button id="lang-toggle" onclick="toggleLang()">
   <span id="lang-flag">🇺🇸</span>
   <span id="lang-label">English</span>
@@ -437,7 +263,7 @@
 
   <div class="games-grid">
 
-    <a class="game-card card-sushi" href="https://arnonmaya.github.io/games/sushi.html">
+    <a class="game-card card-sushi" href="https://arnonmaya.github.io/games/sushi.html" target="_blank">
       <div class="card-inner"><div class="card-bg">
         <div class="card-circle card-circle-1"></div><div class="card-circle card-circle-2"></div>
         <div class="card-scene">🍣</div>
@@ -449,7 +275,7 @@
       </div></div>
     </a>
 
-    <a class="game-card card-shooting" href="https://arnonmaya.github.io/games/shoot.html">
+    <a class="game-card card-shooting" href="https://arnonmaya.github.io/games/shoot.html" target="_blank">
       <div class="card-inner"><div class="card-bg">
         <div class="card-circle card-circle-1"></div><div class="card-circle card-circle-2"></div>
         <div class="card-scene">🔫</div>
@@ -461,7 +287,7 @@
       </div></div>
     </a>
 
-    <a class="game-card card-space" href="https://arnonmaya.github.io/games/space.html">
+    <a class="game-card card-space" href="https://arnonmaya.github.io/games/space.html" target="_blank">
       <div class="card-inner"><div class="card-bg">
         <div class="card-circle card-circle-1"></div><div class="card-circle card-circle-2"></div>
         <div class="card-scene">🚀</div>
@@ -473,7 +299,7 @@
       </div></div>
     </a>
 
-    <a class="game-card card-sumo" href="https://arnonmaya.github.io/games/sumo.html">
+    <a class="game-card card-sumo" href="https://arnonmaya.github.io/games/sumo.html" target="_blank">
       <div class="card-inner"><div class="card-bg">
         <div class="card-circle card-circle-1"></div><div class="card-circle card-circle-2"></div>
         <div class="card-scene">🤼</div>
@@ -485,7 +311,7 @@
       </div></div>
     </a>
 
-    <a class="game-card card-alien" href="https://arnonmaya.github.io/games/alien.html">
+    <a class="game-card card-alien" href="https://arnonmaya.github.io/games/alien.html" target="_blank">
       <div class="card-inner"><div class="card-bg">
         <div class="card-circle card-circle-1"></div><div class="card-circle card-circle-2"></div>
         <div class="card-scene">👾</div>
@@ -497,7 +323,7 @@
       </div></div>
     </a>
 
-    <a class="game-card card-puzzle" href="https://arnonmaya.github.io/games/puzzle.html">
+    <a class="game-card card-puzzle" href="https://arnonmaya.github.io/games/puzzle.html" target="_blank">
       <div class="card-inner"><div class="card-bg">
         <div class="card-circle card-circle-1"></div><div class="card-circle card-circle-2"></div>
         <div class="card-scene">🧩</div>
@@ -509,7 +335,7 @@
       </div></div>
     </a>
 
-    <a class="game-card card-target" href="https://arnonmaya.github.io/games/target.html">
+    <a class="game-card card-target" href="https://arnonmaya.github.io/games/target.html" target="_blank">
       <div class="card-inner"><div class="card-bg">
         <div class="card-circle card-circle-1"></div><div class="card-circle card-circle-2"></div>
         <div class="card-scene">🎯</div>
@@ -521,7 +347,7 @@
       </div></div>
     </a>
 
-    <a class="game-card card-trivia" href="https://arnonmaya.github.io/games/Trivia.html">
+    <a class="game-card card-trivia" href="https://arnonmaya.github.io/games/Trivia.html" target="_blank">
       <div class="card-inner"><div class="card-bg">
         <div class="card-circle card-circle-1"></div><div class="card-circle card-circle-2"></div>
         <div class="card-scene">🤔</div>
@@ -533,7 +359,7 @@
       </div></div>
     </a>
 
-    <a class="game-card card-memory" href="https://arnonmaya.github.io/games/memory.html">
+    <a class="game-card card-memory" href="https://arnonmaya.github.io/games/memory.html" target="_blank">
       <div class="card-inner"><div class="card-bg">
         <div class="card-circle card-circle-1"></div><div class="card-circle card-circle-2"></div>
         <div class="card-scene">🧠</div>
@@ -545,57 +371,42 @@
       </div></div>
     </a>
 
+    <!-- KICKS CARD -->
+    <a class="game-card card-kicks" href="https://arnonmaya.github.io/games/kicks.html" target="_blank">
+      <div class="card-inner"><div class="card-bg">
+        <div class="card-circle card-circle-1"></div><div class="card-circle card-circle-2"></div>
+        <div class="card-scene">⚽</div>
+        <div class="card-label">
+          <div class="card-title" data-he="בעיטות" data-en="Kicks">בעיטות</div>
+          <div class="card-cta" data-he="← לחץ לשחק" data-en="Tap to play →">← לחץ לשחק</div>
+        </div>
+        <div class="badge" data-he="⚽ שער!" data-en="⚽ Goal!">⚽ שער!</div>
+      </div></div>
+    </a>
+
   </div>
 </div>
 
-<!-- SUSHI GAME PAGE -->
-<div id="page-sushi" class="game-page">
-  <div class="deco-shape deco-shape-1"></div><div class="deco-shape deco-shape-2"></div>
+<!-- KICKS GAME PAGE -->
+<div id="page-kicks" class="game-page">
+  <div class="deco-shape deco-shape-1"></div>
+  <div class="deco-shape deco-shape-2"></div>
   <button class="back-btn" onclick="goBack()" data-he="→ חזרה" data-en="← Back">→ חזרה</button>
-  <div class="game-emoji-big">🍣</div>
-  <div class="game-title-banner" data-he="!תפוס סושי" data-en="Sushi Catch!">!תפוס סושי</div>
-  <div id="sushi-game-wrap">
-    <div class="sushi-score"><span data-he="ניקוד:" data-en="Score:">ניקוד:</span> <span id="sushi-score">0</span></div>
-    <div class="sushi-conveyor" id="sushi-belt"></div>
-    <div class="sushi-instructions" data-he="לחץ על הסושי כשהוא עובר! 🎌" data-en="Click the sushi as it rolls by! 🎌">לחץ על הסושי כשהוא עובר! 🎌</div>
-  </div>
-</div>
-
-<!-- SHOOTING GAME PAGE -->
-<div id="page-shooting" class="game-page">
-  <div class="deco-shape deco-shape-1"></div><div class="deco-shape deco-shape-2"></div>
-  <button class="back-btn" onclick="goBack()" data-he="→ חזרה" data-en="← Back">→ חזרה</button>
-  <div class="game-title-banner" data-he="!יורה מטרות" data-en="Target Blaster!">!יורה מטרות</div>
-  <div id="shooting-canvas-wrap" onclick="handleShootClick(event)">
-    <div class="time-display">⏱ <span id="shoot-time">30</span>s</div>
-    <div class="score-display"><span data-he="ניקוד:" data-en="Score:">ניקוד:</span> <span id="shoot-score">0</span></div>
-  </div>
-  <div class="game-desc" style="font-size:0.9rem;margin-top:10px;" data-he="לחץ על המטרות לפני שייגמר הזמן! 🎯" data-en="Click the targets before time runs out! 🎯">לחץ על המטרות לפני שייגמר הזמן! 🎯</div>
-</div>
-
-<!-- SUMO GAME PAGE -->
-<div id="page-sumo" class="game-page">
-  <div class="deco-shape deco-shape-1"></div><div class="deco-shape deco-shape-2"></div>
-  <button class="back-btn" onclick="goBack()" data-he="→ חזרה" data-en="← Back">→ חזרה</button>
-  <div class="game-title-banner" data-he="!קרב סומו" data-en="Sumo Clash!">!קרב סומו</div>
-  <div id="sumo-game-wrap">
-    <div class="sumo-score-wrap">
-      <div class="sumo-score-item">
-        <div class="label" data-he="אתה 🧑" data-en="🧑 You">אתה 🧑</div>
-        <div class="val" id="sumo-p1-score">0</div>
-      </div>
-      <div style="color:rgba(255,255,255,0.4);font-size:1.5rem;font-weight:900;" data-he="נגד" data-en="VS">נגד</div>
-      <div class="sumo-score-item">
-        <div class="label" data-he="מחשב 🤖" data-en="CPU 🤖">מחשב 🤖</div>
-        <div class="val" id="sumo-cpu-score">0</div>
-      </div>
+  <div class="game-title-banner" data-he="!בעיטות" data-en="Kicks!">!בעיטות</div>
+  <div id="kicks-wrap">
+    <div class="kicks-stats">
+      <span data-he="שערים:" data-en="Goals:">שערים:</span>&nbsp;<strong id="kicks-goals">0</strong>
+      &nbsp;&nbsp;
+      <span data-he="בעיטות:" data-en="Shots:">בעיטות:</span>&nbsp;<strong id="kicks-shots">0</strong>
     </div>
-    <div class="sumo-arena" id="sumo-ring">
-      <div class="sumo-ring-line"></div>
-      <div class="sumo-fighter" id="fighter-p1" style="left:35%;top:50%">🧑</div>
-      <div class="sumo-fighter" id="fighter-cpu" style="left:65%;top:50%">🤖</div>
+    <div id="kicks-field">
+      <div id="kicks-goal"></div>
+      <div id="kicks-keeper">🧤</div>
+      <div id="kicks-ball">⚽</div>
     </div>
-    <div class="sumo-instructions" data-he="מקשי חצים (או WASD) כדי לדחוף את המחשב מהזירה!" data-en="Arrow keys (or WASD) to push the CPU out of the ring!">מקשי חצים (או WASD) כדי לדחוף את המחשב מהזירה!</div>
+    <div id="kicks-power-wrap"><div id="kicks-power-bar"></div></div>
+    <div id="kicks-msg"></div>
+    <div id="kicks-instructions" data-he="לחץ וגרור את הכדור לכיוון הרצוי, ושחרר לבעיטה! ⚽" data-en="Click & drag the ball to aim, release to kick! ⚽">לחץ וגרור את הכדור לכיוון הרצוי, ושחרר לבעיטה! ⚽</div>
   </div>
 </div>
 
@@ -618,7 +429,6 @@
 <script>
 // ===================== LANGUAGE =====================
 let currentLang = 'he';
-
 function toggleLang() {
   currentLang = currentLang === 'he' ? 'en' : 'he';
   const isHe = currentLang === 'he';
@@ -634,21 +444,181 @@ function toggleLang() {
 // ===================== NAVIGATION =====================
 let currentGame = null;
 
-function openMemoryGame() {
+function openKicks() {
   document.getElementById('start-page').style.display = 'none';
-  document.getElementById('page-memory').classList.add('active');
-  currentGame = 'memory';
-  initMemory();
+  document.getElementById('page-kicks').classList.add('active');
+  currentGame = 'kicks';
+  initKicks();
 }
 
 function goBack() {
   if (currentGame) {
     document.getElementById('page-' + currentGame).classList.remove('active');
-    stopSushi(); stopShooting(); stopSumo();
+    if (currentGame === 'kicks')  stopKicks();
     if (currentGame === 'memory') stopMemory();
   }
   document.getElementById('start-page').style.display = '';
   currentGame = null;
+}
+
+// ===================== KICKS GAME =====================
+let kicksGoals = 0, kicksShots = 0;
+let kicksDragging = false;
+let kicksPowerInterval = null, kicksPower = 0, kicksPowerDir = 1;
+let keeperInterval = null, keeperDir = 1, keeperPos = 50;
+let kicksBusy = false;
+
+function initKicks() {
+  kicksGoals = 0; kicksShots = 0; kicksBusy = false;
+  document.getElementById('kicks-goals').textContent = 0;
+  document.getElementById('kicks-shots').textContent = 0;
+  document.getElementById('kicks-msg').textContent = '';
+  document.getElementById('kicks-power-bar').style.width = '0%';
+  resetBall();
+  startKeeper();
+
+  const ball  = document.getElementById('kicks-ball');
+  const field = document.getElementById('kicks-field');
+  ball.addEventListener('mousedown',  onBallDown);
+  ball.addEventListener('touchstart', onBallTouchStart, {passive:true});
+  field.addEventListener('mousemove',  onFieldMove);
+  field.addEventListener('touchmove',  onFieldTouchMove, {passive:true});
+  field.addEventListener('mouseup',    onFieldUp);
+  field.addEventListener('touchend',   onFieldUp);
+}
+
+function stopKicks() {
+  clearInterval(keeperInterval);
+  clearInterval(kicksPowerInterval);
+  kicksDragging = false;
+  const ball  = document.getElementById('kicks-ball');
+  const field = document.getElementById('kicks-field');
+  ball.removeEventListener('mousedown',  onBallDown);
+  ball.removeEventListener('touchstart', onBallTouchStart);
+  field.removeEventListener('mousemove',  onFieldMove);
+  field.removeEventListener('touchmove',  onFieldTouchMove);
+  field.removeEventListener('mouseup',    onFieldUp);
+  field.removeEventListener('touchend',   onFieldUp);
+}
+
+function resetBall() {
+  const ball = document.getElementById('kicks-ball');
+  ball.style.transition = 'none';
+  ball.style.top = '';
+  ball.style.bottom = '18px';
+  ball.style.left = '50%';
+  ball.style.transform = 'translateX(-50%) scale(1)';
+  ball.style.fontSize = '2.2rem';
+  kicksDragging = false; kicksPower = 0;
+  document.getElementById('kicks-power-bar').style.width = '0%';
+}
+
+function startKeeper() {
+  clearInterval(keeperInterval);
+  keeperPos = 50; keeperDir = 1;
+  keeperInterval = setInterval(() => {
+    if (currentGame !== 'kicks') return;
+    keeperPos += keeperDir * (1.8 + Math.random() * 0.8);
+    if (keeperPos > 83) keeperDir = -1;
+    if (keeperPos < 17) keeperDir =  1;
+    const k = document.getElementById('kicks-keeper');
+    k.style.left = keeperPos + '%';
+    k.style.transform = 'translateX(-50%)';
+  }, 75);
+}
+
+function onBallDown(e) {
+  if (kicksBusy) return;
+  kicksDragging = true;
+  startPowerBar();
+  e.preventDefault();
+}
+function onBallTouchStart(e) { onBallDown(e); }
+
+function startPowerBar() {
+  clearInterval(kicksPowerInterval);
+  kicksPower = 0; kicksPowerDir = 1;
+  kicksPowerInterval = setInterval(() => {
+    kicksPower += kicksPowerDir * 3;
+    if (kicksPower >= 100) kicksPowerDir = -1;
+    if (kicksPower <= 0)   kicksPowerDir =  1;
+    document.getElementById('kicks-power-bar').style.width = kicksPower + '%';
+  }, 28);
+}
+
+function getClientX(e) { return e.clientX ?? e.changedTouches?.[0]?.clientX ?? e.touches?.[0]?.clientX; }
+
+function onFieldMove(e) {
+  if (!kicksDragging || kicksBusy) return;
+  const rect = document.getElementById('kicks-field').getBoundingClientRect();
+  const x = getClientX(e) - rect.left;
+  const ball = document.getElementById('kicks-ball');
+  ball.style.transition = 'none';
+  ball.style.left = Math.max(16, Math.min(rect.width - 16, x)) + 'px';
+  ball.style.transform = 'translateX(-50%)';
+}
+function onFieldTouchMove(e) { onFieldMove(e.touches[0]); }
+
+function onFieldUp(e) {
+  if (!kicksDragging || kicksBusy) return;
+  kicksDragging = false;
+  kicksBusy = true;
+  clearInterval(kicksPowerInterval);
+
+  const field = document.getElementById('kicks-field');
+  const ball  = document.getElementById('kicks-ball');
+  const rect  = field.getBoundingClientRect();
+  const power = kicksPower;
+
+  const ballLeftPx = parseFloat(ball.style.left) || rect.width / 2;
+  const ballLeftPct = (ballLeftPx / rect.width) * 100;
+
+  kicksShots++;
+  document.getElementById('kicks-shots').textContent = kicksShots;
+
+  // Animate ball flying up
+  ball.style.transition = 'left 0.38s ease-out, top 0.38s ease-out, bottom 0.38s ease-out, transform 0.38s ease-out';
+  ball.style.bottom = '';
+  ball.style.top = '24px';
+  ball.style.left = ballLeftPx + 'px';
+  ball.style.transform = 'translateX(-50%) scale(0.55) rotate(360deg)';
+
+  setTimeout(() => {
+    // Goal area: center ± 70px
+    const goalLeft  = rect.width / 2 - 70;
+    const goalRight = rect.width / 2 + 70;
+    const inGoal = ballLeftPx >= goalLeft && ballLeftPx <= goalRight;
+
+    // Keeper blocks if close enough AND power < 75
+    const keeperPx = (keeperPos / 100) * rect.width;
+    const keeperBlocks = Math.abs(ballLeftPx - keeperPx) < 40 && power < 75;
+
+    if (inGoal && !keeperBlocks) {
+      kicksGoals++;
+      document.getElementById('kicks-goals').textContent = kicksGoals;
+      document.getElementById('kicks-msg').textContent = currentLang === 'he' ? '⚽ שער!!! 🎉' : '⚽ GOAL!!! 🎉';
+      addFlash('goal-flash');
+    } else if (!inGoal) {
+      document.getElementById('kicks-msg').textContent = currentLang === 'he' ? '😬 פספסת!' : '😬 Missed!';
+    } else {
+      document.getElementById('kicks-msg').textContent = currentLang === 'he' ? '🧤 הגולמן עצר!' : '🧤 Saved!';
+      addFlash('save-flash');
+    }
+
+    setTimeout(() => {
+      document.getElementById('kicks-msg').textContent = '';
+      resetBall();
+      kicksBusy = false;
+    }, 1300);
+  }, 390);
+}
+
+function addFlash(cls) {
+  const field = document.getElementById('kicks-field');
+  const f = document.createElement('div');
+  f.className = cls;
+  field.appendChild(f);
+  setTimeout(() => f.remove(), 500);
 }
 
 // ===================== MEMORY GAME =====================
@@ -663,251 +633,47 @@ function initMemory() {
   document.getElementById('mem-total').textContent = memEmojis.length;
   document.getElementById('memory-msg').textContent = '';
   document.getElementById('memory-restart').style.display = 'none';
-
-  const cards = [...memEmojis, ...memEmojis]
-    .sort(() => Math.random() - 0.5);
-
+  const cards = [...memEmojis, ...memEmojis].sort(() => Math.random() - 0.5);
   const grid = document.getElementById('memory-grid');
   grid.innerHTML = '';
-  cards.forEach((emoji, i) => {
+  cards.forEach(emoji => {
     const card = document.createElement('div');
     card.className = 'mem-card';
     card.dataset.emoji = emoji;
-    card.innerHTML = `
-      <div class="mem-back">🎴</div>
-      <div class="mem-front">${emoji}</div>`;
+    card.innerHTML = `<div class="mem-back">🎴</div><div class="mem-front">${emoji}</div>`;
     card.addEventListener('click', () => onMemCardClick(card));
     grid.appendChild(card);
   });
 }
 
 function onMemCardClick(card) {
-  if (memLocked) return;
-  if (card.classList.contains('flipped') || card.classList.contains('matched')) return;
-
+  if (memLocked || card.classList.contains('flipped') || card.classList.contains('matched')) return;
   card.classList.add('flipped');
   memFlipped.push(card);
-
   if (memFlipped.length === 2) {
-    memLocked = true;
-    memMoves++;
+    memLocked = true; memMoves++;
     document.getElementById('mem-moves').textContent = memMoves;
-
     const [a, b] = memFlipped;
     if (a.dataset.emoji === b.dataset.emoji) {
-      a.classList.add('matched');
-      b.classList.add('matched');
+      a.classList.add('matched'); b.classList.add('matched');
       memMatched++;
       document.getElementById('mem-pairs').textContent = memMatched;
-      memFlipped = [];
-      memLocked = false;
+      memFlipped = []; memLocked = false;
       if (memMatched === memEmojis.length) {
-        const win1 = currentLang === 'he' ? `!כל הכבוד! סיימת ב־${memMoves} ניסיונות 🎉` : `Amazing! You won in ${memMoves} moves! 🎉`;
-        document.getElementById('memory-msg').textContent = win1;
-        document.getElementById('memory-restart').style.display = 'inline-block';
-        // apply lang to restart btn
+        document.getElementById('memory-msg').textContent = currentLang === 'he' ? `!כל הכבוד! סיימת ב־${memMoves} ניסיונות 🎉` : `Amazing! You won in ${memMoves} moves! 🎉`;
         const btn = document.getElementById('memory-restart');
+        btn.style.display = 'inline-block';
         btn.textContent = currentLang === 'he' ? 'שחק שוב 🔄' : 'Play Again 🔄';
       }
     } else {
       memTimer = setTimeout(() => {
-        a.classList.remove('flipped');
-        b.classList.remove('flipped');
-        memFlipped = [];
-        memLocked = false;
+        a.classList.remove('flipped'); b.classList.remove('flipped');
+        memFlipped = []; memLocked = false;
       }, 900);
     }
   }
 }
-
-function stopMemory() {
-  clearTimeout(memTimer);
-  memFlipped = []; memLocked = false;
-}
-
-// ===================== SUSHI GAME =====================
-const sushiEmojis = ['🍣','🍱','🍤','🍙','🍘','🦐','🥟','🍚'];
-let sushiScore = 0, sushiInterval = null, sushiItemTimers = [];
-
-function startSushi() {
-  sushiScore = 0;
-  document.getElementById('sushi-score').textContent = 0;
-  document.getElementById('sushi-belt').innerHTML = '';
-  clearInterval(sushiInterval);
-  sushiItemTimers = [];
-  sushiInterval = setInterval(spawnSushi, 1100);
-}
-function spawnSushi() {
-  if (currentGame !== 'sushi') return;
-  const belt = document.getElementById('sushi-belt');
-  const item = document.createElement('div');
-  item.className = 'sushi-item';
-  item.textContent = sushiEmojis[Math.floor(Math.random() * sushiEmojis.length)];
-  const beltW = belt.clientWidth;
-  item.style.left = beltW + 'px';
-  let pos = beltW;
-  const speed = 1.8 + Math.random() * 1.2;
-  item.addEventListener('click', e => {
-    e.stopPropagation();
-    sushiScore += 10;
-    document.getElementById('sushi-score').textContent = sushiScore;
-    item.style.transform = 'translateY(-50%) scale(2)';
-    item.style.opacity = '0';
-    item.style.transition = 'all 0.3s';
-    setTimeout(() => item.remove(), 300);
-  });
-  belt.appendChild(item);
-  function move() {
-    if (currentGame !== 'sushi') { item.remove(); return; }
-    pos -= speed;
-    item.style.left = pos + 'px';
-    if (pos < -60) { item.remove(); return; }
-    requestAnimationFrame(move);
-  }
-  requestAnimationFrame(move);
-}
-function stopSushi() { clearInterval(sushiInterval); sushiItemTimers = []; }
-
-// ===================== SHOOTING GAME =====================
-let shootScore = 0, shootTimeLeft = 30, shootTimer = null, shootTargets = [], shootActive = false;
-
-function startShooting() {
-  shootScore = 0; shootTimeLeft = 30; shootActive = true;
-  document.getElementById('shoot-score').textContent = 0;
-  document.getElementById('shoot-time').textContent = 30;
-  const wrap = document.getElementById('shooting-canvas-wrap');
-  wrap.querySelectorAll('.target').forEach(t => t.remove());
-  shootTargets = [];
-  clearInterval(shootTimer);
-  spawnTarget(); spawnTarget();
-  shootTimer = setInterval(() => {
-    if (!shootActive) return;
-    shootTimeLeft--;
-    document.getElementById('shoot-time').textContent = shootTimeLeft;
-    if (shootTimeLeft <= 0) {
-      shootActive = false;
-      clearInterval(shootTimer);
-      shootTargets.forEach(t => t.remove());
-      const res = document.createElement('div');
-      res.style.cssText = 'position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,0.6);border-radius:14px;';
-      const t1 = currentLang === 'he' ? '!נגמר הזמן' : "Time's Up!";
-      const t2 = currentLang === 'he' ? `ניקוד: ${shootScore}` : `Score: ${shootScore}`;
-      const t3 = currentLang === 'he' ? 'שחק שוב' : 'Play Again';
-      res.innerHTML = `<div style="font-family:Boogaloo,cursive;font-size:2.5rem;color:#FFE66D">${t1}</div>
-        <div style="font-family:Boogaloo,cursive;font-size:1.6rem;color:#4ECDC4;margin-top:8px">${t2}</div>
-        <button onclick="restartShooting()" style="margin-top:20px;padding:10px 28px;background:#4ECDC4;border:none;border-radius:100px;font-family:Boogaloo,cursive;font-size:1.3rem;cursor:pointer;color:#0f3460">${t3}</button>`;
-      wrap.appendChild(res);
-    }
-  }, 1000);
-}
-function restartShooting() {
-  const wrap = document.getElementById('shooting-canvas-wrap');
-  wrap.querySelectorAll('div:not(.score-display):not(.time-display)').forEach(d => d.remove());
-  startShooting();
-}
-function spawnTarget() {
-  if (!shootActive) return;
-  const wrap = document.getElementById('shooting-canvas-wrap');
-  const t = document.createElement('div');
-  t.className = 'target';
-  t.textContent = ['🎯','💥','⭐','🔴'][Math.floor(Math.random()*4)];
-  t.style.left = (20 + Math.random() * (wrap.clientWidth - 60)) + 'px';
-  t.style.top  = (20 + Math.random() * (wrap.clientHeight - 60)) + 'px';
-  t.addEventListener('click', e => {
-    e.stopPropagation();
-    if (!shootActive) return;
-    shootScore++;
-    document.getElementById('shoot-score').textContent = shootScore;
-    const pop = document.createElement('div');
-    pop.className = 'pop-text';
-    pop.textContent = '+1';
-    pop.style.left = t.style.left; pop.style.top = t.style.top;
-    wrap.appendChild(pop);
-    setTimeout(() => pop.remove(), 600);
-    t.remove();
-    shootTargets = shootTargets.filter(x => x !== t);
-    setTimeout(spawnTarget, 300 + Math.random() * 400);
-  });
-  wrap.appendChild(t);
-  shootTargets.push(t);
-  setTimeout(() => {
-    if (!t.parentNode) return;
-    t.style.left = (20 + Math.random() * (wrap.clientWidth - 60)) + 'px';
-    t.style.top  = (20 + Math.random() * (wrap.clientHeight - 60)) + 'px';
-  }, 1500);
-}
-function handleShootClick(e) {
-  if (!shootActive) return;
-  const wrap = document.getElementById('shooting-canvas-wrap');
-  const miss = document.createElement('div');
-  miss.className = 'pop-text';
-  miss.style.color = 'rgba(255,100,100,0.7)';
-  miss.textContent = currentLang === 'he' ? '!החטאת' : 'Miss!';
-  miss.style.left = (e.offsetX - 16) + 'px';
-  miss.style.top  = (e.offsetY - 16) + 'px';
-  wrap.appendChild(miss);
-  setTimeout(() => miss.remove(), 500);
-}
-function stopShooting() { shootActive = false; clearInterval(shootTimer); }
-
-// ===================== SUMO GAME =====================
-let p1x = 35, p1y = 50, cpux = 65, cpuy = 50;
-let p1Score = 0, cpuScore = 0, sumoLoop = null, keysHeld = {};
-const RING_CX = 50, RING_CY = 50, RING_R = 42, FIGHTER_R = 7;
-
-function startSumo() {
-  p1x = 35; p1y = 50; cpux = 65; cpuy = 50;
-  p1Score = 0; cpuScore = 0;
-  updateSumoUI();
-  document.addEventListener('keydown', sumoKeyDown);
-  document.addEventListener('keyup', sumoKeyUp);
-  clearInterval(sumoLoop);
-  sumoLoop = setInterval(sumoStep, 50);
-}
-function stopSumo() {
-  document.removeEventListener('keydown', sumoKeyDown);
-  document.removeEventListener('keyup', sumoKeyUp);
-  clearInterval(sumoLoop); keysHeld = {};
-}
-function sumoKeyDown(e) { keysHeld[e.key] = true; if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].includes(e.key)) e.preventDefault(); }
-function sumoKeyUp(e)   { keysHeld[e.key] = false; }
-function sumoStep() {
-  if (currentGame !== 'sumo') return;
-  const speed = 1.8; let dx = 0, dy = 0;
-  if (keysHeld['ArrowUp']    || keysHeld['w'] || keysHeld['W']) dy -= speed;
-  if (keysHeld['ArrowDown']  || keysHeld['s'] || keysHeld['S']) dy += speed;
-  if (keysHeld['ArrowLeft']  || keysHeld['a'] || keysHeld['A']) dx -= speed;
-  if (keysHeld['ArrowRight'] || keysHeld['d'] || keysHeld['D']) dx += speed;
-  p1x += dx; p1y += dy;
-  const dist = Math.hypot(p1x - cpux, p1y - cpuy);
-  if (dist < FIGHTER_R * 2) {
-    const ang = Math.atan2(cpuy - p1y, cpux - p1x);
-    const push = (FIGHTER_R * 2 - dist) / 2 + 1.5;
-    cpux += Math.cos(ang) * push; cpuy += Math.sin(ang) * push;
-    p1x -= Math.cos(ang) * (push * 0.4); p1y -= Math.sin(ang) * (push * 0.4);
-  }
-  const cpuToP1Ang = Math.atan2(p1y - cpuy, p1x - cpux);
-  const cpuToCenter = Math.atan2(RING_CY - cpuy, RING_CX - cpux);
-  const cpuDistCenter = Math.hypot(cpux - RING_CX, cpuy - RING_CY);
-  let cDx, cDy;
-  if (cpuDistCenter > 15) { cDx = Math.cos(cpuToCenter)*0.7; cDy = Math.sin(cpuToCenter)*0.7; }
-  else { cDx = Math.cos(cpuToP1Ang)*0.55; cDy = Math.sin(cpuToP1Ang)*0.55; }
-  cpux += cDx; cpuy += cDy;
-  if (Math.hypot(p1x - RING_CX, p1y - RING_CY) > RING_R - FIGHTER_R) { cpuScore++; updateSumoScores(); resetFighters(); return; }
-  if (Math.hypot(cpux - RING_CX, cpuy - RING_CY) > RING_R - FIGHTER_R) { p1Score++; updateSumoScores(); resetFighters(); return; }
-  updateSumoUI();
-}
-function resetFighters() { p1x = 35; p1y = 50; cpux = 65; cpuy = 50; updateSumoUI(); }
-function updateSumoUI() {
-  document.getElementById('fighter-p1').style.left  = p1x + '%';
-  document.getElementById('fighter-p1').style.top   = p1y + '%';
-  document.getElementById('fighter-cpu').style.left = cpux + '%';
-  document.getElementById('fighter-cpu').style.top  = cpuy + '%';
-}
-function updateSumoScores() {
-  document.getElementById('sumo-p1-score').textContent  = p1Score;
-  document.getElementById('sumo-cpu-score').textContent = cpuScore;
-}
+function stopMemory() { clearTimeout(memTimer); memFlipped = []; memLocked = false; }
 </script>
 </body>
 </html>
