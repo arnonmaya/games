@@ -62,6 +62,11 @@
 
   /* Home button */
   .home-btn{display:inline-flex;align-items:center;gap:6px;font-family:'DM Mono',monospace;font-size:12px;padding:7px 16px;border-radius:8px;border:1px solid rgba(255,255,255,.15);background:var(--surface2);color:var(--text);cursor:pointer;letter-spacing:.05em;text-decoration:none;transition:background .15s,border-color .15s,transform .1s;}
+  .lang-btn{font-family:'DM Mono',monospace;font-size:12px;padding:6px 14px;border-radius:20px;border:1.5px solid rgba(200,169,110,.4);background:transparent;color:var(--accent);cursor:pointer;letter-spacing:.08em;font-weight:500;transition:all .15s;}
+  .lang-btn:hover{background:rgba(200,169,110,.12);}
+  body.rtl{direction:rtl;}
+  body.rtl .img-picker{justify-content:flex-end;}
+  body.rtl .board-and-tray{flex-direction:row-reverse;}
   .home-btn:hover{background:var(--surface);border-color:var(--accent);}
   .home-btn:active{transform:scale(.97);}
   /* Music toggle */
@@ -79,11 +84,12 @@
 </head>
 <body>
 <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:center;">
-  <a href="https://arnonmaya.github.io/games/" class="home-btn">🏠 Back to Home Page</a>
+  <a href="https://arnonmaya.github.io/games/" class="home-btn" id="home-link">🏠 Back to Home Page</a>
+  <button class="lang-btn" id="lang-btn" onclick="toggleLang()">עב</button>
   <button class="music-btn" id="music-btn" onclick="toggleMusic()" title="Toggle music">🎵</button>
 </div>
-<h1>Picture Puzzle</h1>
-<p class="subtitle">Assemble the fragments</p>
+<h1 id="t-title">Picture Puzzle</h1>
+<p class="subtitle" id="t-subtitle">Assemble the fragments</p>
 
 
 
@@ -92,16 +98,16 @@
 
 <div class="game-area">
   <div class="side-panel">
-    <div class="panel-label">Reference</div>
+    <div class="panel-label" id="t-ref">Reference</div>
     <canvas id="prev" width="110" height="110"></canvas>
   </div>
   <div class="board-and-tray">
     <div>
-      <div class="panel-label" style="margin-bottom:5px;">Board — select a piece, then click a slot</div>
+      <div class="panel-label" id="t-board" style="margin-bottom:5px;">Board — select a piece, then click a slot</div>
       <div id="board"></div>
     </div>
     <div id="tray-wrap">
-      <div class="panel-label" style="margin-bottom:5px;">Pieces</div>
+      <div class="panel-label" id="t-pieces" style="margin-bottom:5px;">Pieces</div>
       <div id="tray"></div>
     </div>
   </div>
@@ -111,15 +117,15 @@
 <div class="hint" id="ht">Select a piece from the tray, then click a slot on the board.</div>
 
 <div class="controls">
-  <button onclick="ng()">↺ New game</button>
-  <button onclick="togPrev()">◑ Toggle preview</button>
+  <button onclick="ng()" id="t-newgame">↺ New game</button>
+  <button onclick="togPrev()" id="t-preview">◑ Toggle preview</button>
   <div style="display:flex;gap:5px;">
     <button class="diff-btn" onclick="setN(3)">3×3</button>
     <button class="diff-btn on" onclick="setN(4)">4×4</button>
     <button class="diff-btn" onclick="setN(5)">5×5</button>
   </div>
 </div>
-<p class="kb-hint" id="kb-hint" style="display:none;">⌨️ Arrow keys: navigate tray &nbsp;|&nbsp; Enter / Space: select &amp; place &nbsp;|&nbsp; N: new game &nbsp;|&nbsp; P: preview</p>
+<p class="kb-hint" id="kb-hint" style="display:none;"></p>
 
 <div id="touch-controls">
   <div class="touch-row">
@@ -1543,7 +1549,7 @@ function ng(){
   
   
   document.getElementById('wm').textContent='';
-  document.getElementById('ht').textContent='Select a piece from the tray, then click a slot on the board.';
+  document.getElementById('ht').textContent=t('hint_start');
   mkCanvas();drawPrev();
   SZ=Math.floor(CS/N);
   bState=Array(N*N).fill(null);
@@ -1603,17 +1609,17 @@ function renderTray(){
     wrap.addEventListener('click',()=>selPiece(pi));
     tr.appendChild(wrap);
   });
-  if(!rem.length)tr.innerHTML='<span style="font-size:11px;color:rgba(240,237,232,.4);padding:8px;">All placed!</span>';
+  if(!rem.length)tr.innerHTML='<span style="font-size:11px;color:rgba(240,237,232,.4);padding:8px;">'+t('all_placed')+'</span>';
 }
 
 function selPiece(pi){
   sel=sel===pi?null:pi;
-  document.getElementById('ht').textContent=sel!==null?'Now click a board slot to place it.':'Select a piece from the tray.';
+  document.getElementById('ht').textContent=sel!==null?t('hint_select'):t('hint_desel');
   renderTray();
 }
 
 function slotClick(idx){
-  if(sel===null){document.getElementById('ht').textContent='Select a piece from the tray first!';return;}
+  if(sel===null){document.getElementById('ht').textContent=t('hint_need');return;}
   if(bState[idx]!==null)return;
   bState[idx]=sel;
   if(!going){going=true;tInt=setInterval(()=>{secs++;},1000);}
@@ -1622,7 +1628,7 @@ function slotClick(idx){
   const correct=bState[idx]===idx;
   
   if(correct){
-    document.getElementById('ht').textContent='Correct! Select another piece.';
+    document.getElementById('ht').textContent=t('hint_correct');
     renderBoard();renderTray();checkWin();
   } else {
     renderBoard();renderTray();
@@ -1632,17 +1638,119 @@ function slotClick(idx){
       slot.style.background='rgba(220,60,60,.3)';
       const pc=slot.querySelector('canvas');
       if(pc){pc.style.transition='transform 0.15s ease-in';pc.style.transform='scale(1.1)';setTimeout(()=>{pc.style.transform='scale(0)';pc.style.transition='transform 0.2s ease-in';},150);}
-      setTimeout(()=>{bState[idx]=null;document.getElementById('ht').textContent='Not quite — piece bounced back to tray.';renderBoard();renderTray();},400);
+      setTimeout(()=>{bState[idx]=null;document.getElementById('ht').textContent=t('hint_wrong');renderBoard();renderTray();},400);
     }
   }
 }
 
 function checkWin(){
-  if(bState.every((v,i)=>v===i)){clearInterval(tInt);const wm=Math.floor(secs/60),ws=secs%60;document.getElementById('wm').textContent='✦ Puzzle complete — '+moves+' moves in '+wm+':'+(ws<10?'0':'')+ws+' ✦';}
+  if(bState.every((v,i)=>v===i)){clearInterval(tInt);const wm=Math.floor(secs/60),ws=secs%60;document.getElementById('wm').textContent=t('win',moves,wm+':'+(ws<10?'0':'')+ws);}
 }
 
 function togPrev(){showPrev=!showPrev;drawPrev();}
 function setN(n){N=n;document.querySelectorAll('.diff-btn').forEach((b,i)=>b.classList.toggle('on',[3,4,5][i]===n));ng();}
+
+
+// ── Language System ───────────────────────────────────────────────────
+let lang = 'en';
+
+const SCENE_NAMES_HE = {
+  'Mountain Lake':'אגם ההרים','Forest Path':'שביל ביער','Ocean Night':'לילה על האוקיינוס',
+  'Desert Dunes':'דיונות מדבר','Snowy Valley':'עמק שלג','Autumn Park':'פארק סתיו',
+  'Tropical Beach':'חוף טרופי','Waterfall':'מפל מים','Volcano':'הר געש',
+  'Night City':'עיר לילה','Rainy Street':'רחוב גשום','Harbor Dusk':'נמל בשקיעה',
+  'Ancient Ruins':'חורבות עתיקות','Japanese Temple':'מקדש יפני','Lighthouse':'מגדלור',
+  'Hot Air Balloons':'בלוני אוויר','Starfield':'שדה כוכבים','Nebula':'ערפילית',
+  'Aurora':'זוהר הצפון','Alien Planet':'כוכב לכת זר','Solar System':'מערכת השמש',
+  'Black Hole':'חור שחור','Koi Pond':'בריכת קוי','Arctic Scene':'נוף ארקטי',
+  'Jungle':'ג\'ונגל','Savanna':'סוואנה','Coral Reef':'שונית אלמוגים','Bird Migration':'נדידת ציפורים',
+};
+
+const CAT_NAMES_HE = {
+  'Nature':'טבע','Cities':'ערים','Space':'חלל','Animals':'בעלי חיים'
+};
+
+const T = {
+  en: {
+    title: 'Picture Puzzle',
+    subtitle: 'Assemble the fragments',
+    ref: 'Reference',
+    board: 'Board — select a piece, then click a slot',
+    pieces: 'Pieces',
+    newgame: '↺ New game',
+    preview: '◑ Toggle preview',
+    hint_start: 'Select a piece from the tray, then click a slot on the board.',
+    hint_select: 'Now click a board slot to place it.',
+    hint_desel: 'Select a piece from the tray.',
+    hint_need: 'Select a piece from the tray first!',
+    hint_correct: 'Correct! Select another piece.',
+    hint_wrong: 'Not quite — piece bounced back to tray.',
+    all_placed: 'All placed!',
+    win: (moves, time) => `✦ Puzzle complete — ${moves} moves in ${time} ✦`,
+    home: '🏠 Back to Home Page',
+    kb: '⌨️ Arrow keys: navigate tray | Enter / Space: select & place | N: new game | P: preview',
+    size3: '3×3', size4: '4×4', size5: '5×5',
+  },
+  he: {
+    title: 'פאזל תמונות',
+    subtitle: 'הרכב את החלקים',
+    ref: 'תצוגה',
+    board: 'לוח — בחר חלק ולחץ על משבצת',
+    pieces: 'חלקים',
+    newgame: '↺ משחק חדש',
+    preview: '◑ הצג / הסתר',
+    hint_start: 'בחר חלק מהמגש, ואז לחץ על משבצת בלוח.',
+    hint_select: 'עכשיו לחץ על משבצת בלוח להנחת החלק.',
+    hint_desel: 'בחר חלק מהמגש.',
+    hint_need: '!בחר קודם חלק מהמגש',
+    hint_correct: '!נכון! בחר חלק נוסף',
+    hint_wrong: 'לא מתאים — החלק חזר למגש.',
+    all_placed: '!כל החלקים הונחו',
+    win: (moves, time) => `✦ הפאזל הושלם — ${moves} מהלכים ב-${time} ✦`,
+    home: '🏠 חזרה לדף הבית',
+    kb: '⌨️ חצים: ניווט | Enter / Space: בחר והנח | N: משחק חדש | P: תצוגה',
+    size3: '3×3', size4: '4×4', size5: '5×5',
+  }
+};
+
+function t(key, ...args) {
+  const val = T[lang][key];
+  return typeof val === 'function' ? val(...args) : val;
+}
+
+function applyLang() {
+  const isHe = lang === 'he';
+  document.body.classList.toggle('rtl', isHe);
+  document.getElementById('lang-btn').textContent = isHe ? 'EN' : 'עב';
+  document.getElementById('t-title').textContent = t('title');
+  document.getElementById('t-subtitle').textContent = t('subtitle');
+  document.getElementById('t-ref').textContent = t('ref');
+  document.getElementById('t-board').textContent = t('board');
+  document.getElementById('t-pieces').textContent = t('pieces');
+  document.getElementById('t-newgame').textContent = t('newgame');
+  document.getElementById('t-preview').textContent = t('preview');
+  document.getElementById('ht').textContent = t('hint_start');
+  document.getElementById('home-link').textContent = t('home');
+  const kb = document.getElementById('kb-hint');
+  if(kb) kb.textContent = t('kb');
+  // Re-render category tabs and image picker with translated names
+  renderCatTabs();
+  renderImgPicker();
+  // Update diff buttons
+  document.querySelectorAll('.diff-btn').forEach((b,i)=>{b.textContent=[t('size3'),t('size4'),t('size5')][i];});
+}
+
+function toggleLang() {
+  lang = lang === 'en' ? 'he' : 'en';
+  applyLang();
+}
+
+function getSceneName(s) {
+  return lang === 'he' && SCENE_NAMES_HE[s.name] ? SCENE_NAMES_HE[s.name] : s.name;
+}
+function getCatName(cat) {
+  return lang === 'he' && CAT_NAMES_HE[cat] ? CAT_NAMES_HE[cat] : cat;
+}
 
 // ── Build UI ─────────────────────────────────────────────────────────
 const CATS=[...new Set(SCENES.map(s=>s.cat))];
@@ -1653,9 +1761,19 @@ function switchCat(cat){
   curCat=cat;
   document.querySelectorAll('.cat-btn').forEach(b=>b.classList.toggle('on',b.dataset.cat===cat));
   renderImgPicker();
-  // Pick first scene in category
   const first=SCENES.findIndex(s=>s.cat===cat);
   if(first>=0){imgIdx=first;ng();}
+}
+
+function renderCatTabs(){
+  catTabsEl.innerHTML='';
+  CATS.forEach(cat=>{
+    const b=document.createElement('button');
+    b.className='cat-btn'+(cat===curCat?' on':'');
+    b.dataset.cat=cat;b.textContent=getCatName(cat);
+    b.onclick=()=>switchCat(cat);
+    catTabsEl.appendChild(b);
+  });
 }
 
 function renderImgPicker(){
@@ -1664,22 +1782,16 @@ function renderImgPicker(){
     if(s.cat!==curCat)return;
     const b=document.createElement('button');
     b.className='img-btn'+(i===imgIdx?' on':'');
-    b.textContent=s.name;
+    b.textContent=getSceneName(s);
     b.onclick=()=>{imgIdx=i;document.querySelectorAll('.img-btn').forEach((x,j)=>x.classList.toggle('on',j===i));ng();};
     imgPickerEl.appendChild(b);
   });
 }
 
-CATS.forEach(cat=>{
-  const b=document.createElement('button');
-  b.className='cat-btn'+(cat===curCat?' on':'');
-  b.dataset.cat=cat;b.textContent=cat;
-  b.onclick=()=>switchCat(cat);
-  catTabsEl.appendChild(b);
-});
-
+renderCatTabs();
 renderImgPicker();
 ng();
+applyLang();
 
 // ── Audio Engine (Web Audio API) ────────────────────────────────────
 let audioCtx = null, musicGain = null, sfxGain = null;
