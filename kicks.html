@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="he">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Penalty Kick / בעיטות לשער</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Heebo:wght@400;500;700&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:#0d1a0e;color:#f0f0e8;font-family:'Heebo',sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1rem;}
+  body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 50% 0%,#1a3d1c 0%,#0d1a0e 65%);z-index:-1;}
+
+  #setup{text-align:center;padding:2rem 1rem;}
+  #setup h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.5rem,7vw,4rem);color:#e8d44d;letter-spacing:0.08em;margin-bottom:0.3rem;text-shadow:0 0 30px rgba(232,212,77,0.3);}
+  #setup p.sub{font-size:14px;color:rgba(240,240,232,0.45);margin-bottom:2rem;letter-spacing:0.05em;}
+  .setup-section{margin-bottom:1.5rem;}
+  .setup-label{font-size:12px;color:rgba(240,240,232,0.5);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:0.6rem;}
+  .btn-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;}
+  .opt-btn{padding:8px 22px;font-family:'Heebo',sans-serif;font-size:13px;border:0.5px solid rgba(255,255,255,0.2);border-radius:8px;background:rgba(255,255,255,0.07);color:#f0f0e8;cursor:pointer;transition:background 0.15s;}
+  .opt-btn:hover{background:rgba(255,255,255,0.14);}
+  .opt-btn.active{background:rgba(232,212,77,0.18);border-color:rgba(232,212,77,0.5);color:#e8d44d;}
+  #start-btn{margin-top:1.5rem;padding:12px 40px;font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:0.1em;border:1px solid rgba(232,212,77,0.4);border-radius:10px;background:rgba(232,212,77,0.12);color:#e8d44d;cursor:pointer;transition:background 0.2s;}
+  #start-btn:hover{background:rgba(232,212,77,0.22);}
+
+  #game{display:none;width:100%;max-width:620px;}
+  h1.game-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(1.6rem,5vw,2.4rem);color:#e8d44d;letter-spacing:0.08em;text-align:center;margin-bottom:0.5rem;}
+  #turn-label{text-align:center;font-size:13px;color:rgba(240,240,232,0.45);margin-bottom:0.4rem;min-height:18px;}
+  .hud{display:flex;gap:10px;justify-content:center;margin-bottom:0.8rem;flex-wrap:wrap;}
+  .player-stat{text-align:center;background:rgba(255,255,255,0.06);border:0.5px solid rgba(255,255,255,0.12);border-radius:10px;padding:0.4rem 0.9rem;min-width:70px;transition:border-color 0.2s,background 0.2s;}
+  .player-stat.current-player{border-color:#e8d44d;background:rgba(232,212,77,0.1);}
+  .p-name{font-size:11px;color:rgba(240,240,232,0.5);letter-spacing:0.05em;}
+  .p-score{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;color:#e8d44d;line-height:1;}
+  #canvas-wrap{border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,0.1);cursor:crosshair;width:100%;}
+  canvas{display:block;width:100%;}
+  #msg{text-align:center;font-size:15px;color:rgba(240,240,232,0.65);min-height:22px;margin:0.7rem 0;letter-spacing:0.02em;}
+  #msg.goal-msg{color:#e8d44d;font-weight:700;font-size:17px;}
+  #msg.save-msg{color:#e05050;font-size:17px;}
+  .controls{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:0.5rem;}
+  .ctrl-btn{padding:7px 16px;font-family:'Heebo',sans-serif;font-size:12px;border:0.5px solid rgba(255,255,255,0.2);border-radius:8px;background:rgba(255,255,255,0.07);color:#f0f0e8;cursor:pointer;transition:background 0.15s;}
+  .ctrl-btn:hover{background:rgba(255,255,255,0.14);}
+  .ctrl-btn.active{background:rgba(232,212,77,0.18);border-color:rgba(232,212,77,0.5);color:#e8d44d;}
+  #lang-corner{position:fixed;top:12px;right:12px;display:flex;gap:6px;z-index:100;}
+  #lang-corner button{padding:5px 12px;font-family:'Heebo',sans-serif;font-size:12px;border:0.5px solid rgba(255,255,255,0.25);border-radius:6px;background:rgba(0,0,0,0.4);color:#f0f0e8;cursor:pointer;transition:background 0.15s;}
+  #lang-corner button:hover{background:rgba(255,255,255,0.14);}
+  #lang-corner button.active{background:rgba(232,212,77,0.18);border-color:rgba(232,212,77,0.5);color:#e8d44d;}
+</style>
+</head>
+<body>
+
+<div id="lang-corner">
+  <button id="lang-he" class="active" onclick="setLang('he')">עב</button>
+  <button id="lang-en" onclick="setLang('en')">EN</button>
+</div>
+
+<div id="setup">
+  <h1 id="title-txt">בעיטות לשער</h1>
+  <p class="sub" id="sub-txt">בחר הגדרות לפני המשחק</p>
+
+  <div class="setup-section">
+    <div class="setup-label" id="players-label">מספר שחקנים</div>
+    <div class="btn-row">
+      <button class="opt-btn active" id="p-1" onclick="setPlayers(1)">1</button>
+      <button class="opt-btn" id="p-2" onclick="setPlayers(2)">2</button>
+      <button class="opt-btn" id="p-3" onclick="setPlayers(3)">3</button>
+      <button class="opt-btn" id="p-4" onclick="setPlayers(4)">4</button>
+    </div>
+  </div>
+  <div class="setup-section">
+    <div class="setup-label" id="diff-setup-label">רמת קושי</div>
+    <div class="btn-row">
+      <button class="opt-btn active" id="ds-easy" onclick="setDiffSetup('easy')">קל</button>
+      <button class="opt-btn" id="ds-med" onclick="setDiffSetup('med')">בינוני</button>
+      <button class="opt-btn" id="ds-hard" onclick="setDiffSetup('hard')">קשה</button>
+    </div>
+  </div>
+  <button id="start-btn" onclick="startGame()">התחל</button>
+  <br>
+  <a href="https://arnonmaya.github.io/games/" style="display:inline-block;margin-top:0.8rem;padding:9px 28px;font-family:'Heebo',sans-serif;font-size:13px;border:0.5px solid rgba(255,255,255,0.2);border-radius:8px;background:rgba(255,255,255,0.07);color:rgba(240,240,232,0.65);text-decoration:none;transition:background 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.14)'" onmouseout="this.style.background='rgba(255,255,255,0.07)'">← חזרה לדף הבית</a>
+</div>
+
+<div id="game">
+  <h1 class="game-title" id="game-title">בעיטות לשער</h1>
+  <div id="turn-label"></div>
+  <div class="hud" id="hud"></div>
+  <div id="canvas-wrap"><canvas id="c" height="320"></canvas></div>
+  <div id="msg"></div>
+  <div class="controls">
+    <button class="ctrl-btn active" id="d-easy" onclick="setDiff('easy')">קל</button>
+    <button class="ctrl-btn" id="d-med" onclick="setDiff('med')">בינוני</button>
+    <button class="ctrl-btn" id="d-hard" onclick="setDiff('hard')">קשה</button>
+    <button class="ctrl-btn" id="back-btn" onclick="goBack()">חזרה</button>
+  </div>
+</div>
+
+<script>
+const T={
+  he:{title:'בעיטות לשער',sub:'בחר הגדרות לפני המשחק',players:'מספר שחקנים',diff:'רמת קושי',easy:'קל',med:'בינוני',hard:'קשה',start:'התחל',player:'שחקן',turn:'תור של',shoot:'הזז את העכבר מעל השער ולחץ לבעוט',goal:'גוול! כדור בתוך הרשת!',saved:'השוער עצר!',miss:'החטאת!',back:'חזרה',reset:'אתחול',gameover:'המשחק נגמר!',winner:'מנצח',score:'שערים',playAgain:'שחק שוב'},
+  en:{title:'Penalty Kick',sub:'Choose settings before the game',players:'Number of Players',diff:'Difficulty',easy:'Easy',med:'Medium',hard:'Hard',start:'Start',player:'Player',turn:"It's",shoot:'Aim at the goal and click to shoot',goal:'GOAL! Ball in the net!',saved:'Saved! Great keeper!',miss:'Miss! Ball went wide!',back:'Back',reset:'Reset',gameover:'Game Over!',winner:'Winner',score:'Goals',playAgain:'Play Again'}
+};
+
+let lang='he', numPlayers=1, difficulty='easy', setupDiff='easy';
+
+function setLang(l){
+  lang=l;
+  document.getElementById('lang-he').classList.toggle('active',l==='he');
+  document.getElementById('lang-en').classList.toggle('active',l==='en');
+  document.documentElement.lang=l;
+  document.documentElement.dir=l==='he'?'rtl':'ltr';
+  applySetupText();
+  const gameVisible = document.getElementById('game').style.display==='block';
+  if(gameVisible){
+    applyGameText();
+    updateHUD();
+    updateTurnLabel();
+    document.getElementById('msg').textContent=T[lang].shoot;
+  }
+}
+
+function applySetupText(){
+  const t=T[lang];
+  document.getElementById('title-txt').textContent=t.title;
+  document.getElementById('sub-txt').textContent=t.sub;
+  document.getElementById('players-label').textContent=t.players;
+  document.getElementById('diff-setup-label').textContent=t.diff;
+  document.getElementById('start-btn').textContent=t.start;
+  document.getElementById('ds-easy').textContent=t.easy;
+  document.getElementById('ds-med').textContent=t.med;
+  document.getElementById('ds-hard').textContent=t.hard;
+}
+
+function setPlayers(n){
+  numPlayers=n;
+  [1,2,3,4].forEach(i=>document.getElementById('p-'+i).classList.toggle('active',i===n));
+}
+
+function setDiffSetup(d){
+  setupDiff=d;
+  ['easy','med','hard'].forEach(x=>document.getElementById('ds-'+x).classList.toggle('active',x===d));
+}
+
+function startGame(){
+  difficulty=setupDiff;
+  document.getElementById('setup').style.display='none';
+  document.getElementById('game').style.display='block';
+  initGame();
+}
+
+function goBack(){
+  document.getElementById('game').style.display='none';
+  document.getElementById('setup').style.display='block';
+  if(animId) cancelAnimationFrame(animId);
+  applySetupText();
+}
+
+const canvas=document.getElementById('c');
+const ctx=canvas.getContext('2d');
+const W=600,H=320;
+canvas.width=W;canvas.height=H;
+
+const GOAL_L=W/2-180,GOAL_R=W/2+180;
+const GOAL_TOP=30,GOAL_BOT=145;
+const KEEPER_BASE=GOAL_BOT-18;
+
+// Keeper padding from goal posts (just enough not to clip through the post)
+const KEEPER_MARGIN = 20;
+
+const diffMap={
+  easy:{reactDelay:38,maxSpeed:2.5,catchRange:14,swayAmplitude:0.85,swaySpeed:0.008},
+  med:{reactDelay:28,maxSpeed:4,catchRange:18,swayAmplitude:1.0,swaySpeed:0.013},
+  hard:{reactDelay:18,maxSpeed:6.5,catchRange:22,swayAmplitude:1.0,swaySpeed:0.018}
+};
+
+const JERSEY_COLORS=['#f5c800','#e84040','#4080f5','#30c060'];
+const JERSEY_DARK=['#c8a000','#b02020','#1850c0','#108040'];
+
+let players=[], currentPlayer=0;
+let phase='aim';
+let ballX=W/2,ballY=H-55;
+let targetX=W/2,targetY=GOAL_TOP+40;
+let aimX=W/2,aimY=GOAL_TOP+40;
+let keeperX=W/2;
+let keeperSwayT=0;
+// Direction +1 or -1 for keeper sway
+let keeperSwayDir=1;
+let animFrame=0,animMax=45;
+let animId=null;
+let particles=[];
+
+function initGame(){
+  players=Array.from({length:numPlayers},()=>({goals:0,shots:0}));
+  currentPlayer=0;
+  phase='aim';ballX=W/2;ballY=H-55;keeperX=W/2;keeperSwayT=0;keeperSwayDir=1;
+  aimX=W/2;aimY=GOAL_TOP+40;particles=[];
+  applyGameText();
+  buildHUD();
+  updateTurnLabel();
+  document.getElementById('msg').textContent=T[lang].shoot;
+  document.getElementById('msg').className='';
+  draw();
+  startIdleSway();
+}
+
+function applyGameText(){
+  const t=T[lang];
+  document.getElementById('game-title').textContent=t.title;
+  document.getElementById('d-easy').textContent=t.easy;
+  document.getElementById('d-med').textContent=t.med;
+  document.getElementById('d-hard').textContent=t.hard;
+  document.getElementById('back-btn').textContent=t.back;
+  ['easy','med','hard'].forEach(d=>document.getElementById('d-'+d).classList.toggle('active',d===difficulty));
+}
+
+function buildHUD(){
+  const hud=document.getElementById('hud');
+  hud.innerHTML='';
+  players.forEach((p,i)=>{
+    const div=document.createElement('div');
+    div.className='player-stat'+(i===currentPlayer?' current-player':'');
+    div.id='pstat-'+i;
+    div.innerHTML=`<div class="p-name">${T[lang].player} ${i+1}</div><div class="p-score" id="pscore-${i}">${p.goals}</div>`;
+    hud.appendChild(div);
+  });
+}
+
+function updateHUD(){
+  players.forEach((p,i)=>{
+    const el=document.getElementById('pscore-'+i);
+    if(el) el.textContent=p.goals;
+    const stat=document.getElementById('pstat-'+i);
+    if(stat) stat.className='player-stat'+(i===currentPlayer?' current-player':'');
+  });
+}
+
+function updateTurnLabel(){
+  if(numPlayers===1){document.getElementById('turn-label').textContent='';return;}
+  const t=T[lang];
+  document.getElementById('turn-label').textContent=`${t.turn} ${t.player} ${currentPlayer+1}`;
+}
+
+function setDiff(d){
+  difficulty=d;
+  ['easy','med','hard'].forEach(x=>document.getElementById('d-'+x).classList.toggle('active',x===d));
+}
+
+function resetGame(){
+  if(animId) cancelAnimationFrame(animId);
+  if(idleAnimId) cancelAnimationFrame(idleAnimId);
+  if(window._cdInterval) clearInterval(window._cdInterval);
+  const ov=document.getElementById('gameover-overlay');
+  if(ov) ov.remove();
+  document.getElementById('game').style.display='none';
+  document.getElementById('setup').style.display='block';
+  applySetupText();
+}
+
+function spawnParticles(x,y,color,count){
+  for(let i=0;i<count;i++){
+    const a=Math.random()*Math.PI*2,s=1.5+Math.random()*3;
+    particles.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,life:1,color,size:3+Math.random()*4});
+  }
+}
+function updateParticles(){
+  particles=particles.filter(p=>p.life>0.05);
+  particles.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=0.1;p.life*=0.9;p.size*=0.97;});
+}
+function drawParticles(){
+  particles.forEach(p=>{ctx.globalAlpha=p.life;ctx.fillStyle=p.color;ctx.beginPath();ctx.arc(p.x,p.y,p.size,0,Math.PI*2);ctx.fill();});
+  ctx.globalAlpha=1;
+}
+
+function drawField(){
+  ctx.fillStyle='#1e5e20';ctx.fillRect(0,0,W,H);
+  const sw=W/12;
+  for(let i=0;i<12;i++){ctx.fillStyle=i%2===0?'#1e5e20':'#1a5a1c';ctx.fillRect(i*sw,0,sw,H);}
+  ctx.strokeStyle='rgba(255,255,255,0.2)';ctx.lineWidth=1.5;
+  ctx.strokeRect(18,18,W-36,H-36);
+  ctx.beginPath();ctx.moveTo(W/2,18);ctx.lineTo(W/2,H-18);ctx.stroke();
+  ctx.beginPath();ctx.arc(W/2,H/2,55,0,Math.PI*2);ctx.stroke();
+  ctx.beginPath();ctx.arc(W/2,H-18,25,Math.PI,0);ctx.stroke();
+}
+
+function drawGoal(){
+  ctx.strokeStyle='#e8e8e8';ctx.lineWidth=4;
+  ctx.strokeRect(GOAL_L,GOAL_TOP,GOAL_R-GOAL_L,GOAL_BOT-GOAL_TOP);
+  ctx.strokeStyle='rgba(255,255,255,0.1)';ctx.lineWidth=1;
+  for(let i=1;i<5;i++){const x=GOAL_L+(GOAL_R-GOAL_L)/5*i;ctx.beginPath();ctx.moveTo(x,GOAL_TOP);ctx.lineTo(x,GOAL_BOT);ctx.stroke();}
+  for(let i=1;i<3;i++){const y=GOAL_TOP+(GOAL_BOT-GOAL_TOP)/3*i;ctx.beginPath();ctx.moveTo(GOAL_L,y);ctx.lineTo(GOAL_R,y);ctx.stroke();}
+  ctx.fillStyle='rgba(100,200,100,0.06)';
+  ctx.fillRect(GOAL_L,GOAL_TOP,GOAL_R-GOAL_L,GOAL_BOT-GOAL_TOP);
+}
+
+function drawKeeper(kx){
+  const ky=KEEPER_BASE;
+  ctx.strokeStyle='#1a3a8a';ctx.lineWidth=7;ctx.lineCap='round';
+  ctx.beginPath();ctx.moveTo(kx-7,ky);ctx.lineTo(kx-9,ky+22);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(kx+7,ky);ctx.lineTo(kx+9,ky+22);ctx.stroke();
+  ctx.fillStyle='#111';
+  ctx.beginPath();ctx.ellipse(kx-10,ky+23,7,4,0,0,Math.PI*2);ctx.fill();
+  ctx.beginPath();ctx.ellipse(kx+10,ky+23,7,4,0,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#f5c800';
+  ctx.beginPath();ctx.moveTo(kx-14,ky-2);ctx.lineTo(kx-16,ky-30);ctx.lineTo(kx+16,ky-30);ctx.lineTo(kx+14,ky-2);ctx.closePath();ctx.fill();
+  ctx.strokeStyle='#c8a000';ctx.lineWidth=1;ctx.stroke();
+  ctx.strokeStyle='#f5c800';ctx.lineWidth=6;ctx.lineCap='round';
+  ctx.beginPath();ctx.moveTo(kx-14,ky-24);ctx.lineTo(kx-30,ky-14);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(kx+14,ky-24);ctx.lineTo(kx+30,ky-14);ctx.stroke();
+  ctx.fillStyle='#ff4400';
+  ctx.beginPath();ctx.arc(kx-30,ky-14,5,0,Math.PI*2);ctx.fill();
+  ctx.beginPath();ctx.arc(kx+30,ky-14,5,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#f5c09a';
+  ctx.beginPath();ctx.rect(kx-4,ky-34,8,7);ctx.fill();
+  ctx.beginPath();ctx.arc(kx,ky-42,12,0,Math.PI*2);ctx.fill();
+  ctx.strokeStyle='#d4956a';ctx.lineWidth=0.8;ctx.stroke();
+  ctx.fillStyle='#3a2010';
+  ctx.beginPath();ctx.arc(kx,ky-42,12,Math.PI,0);ctx.fill();
+  ctx.beginPath();ctx.rect(kx-12,ky-48,24,8);ctx.fill();
+  ctx.fillStyle='#222';
+  ctx.beginPath();ctx.arc(kx-4,ky-41,2,0,Math.PI*2);ctx.fill();
+  ctx.beginPath();ctx.arc(kx+4,ky-41,2,0,Math.PI*2);ctx.fill();
+  ctx.strokeStyle='#a0604a';ctx.lineWidth=1.2;
+  ctx.beginPath();ctx.arc(kx,ky-36,3,0.2,Math.PI-0.2);ctx.stroke();
+  ctx.fillStyle='#1a3a8a';ctx.font='bold 8px sans-serif';ctx.textAlign='center';
+  ctx.fillText('1',kx,ky-18);
+}
+
+function drawShooter(px,py,pi){
+  const jc=JERSEY_COLORS[pi%4], jd=JERSEY_DARK[pi%4];
+  ctx.strokeStyle='#333';ctx.lineWidth=6;ctx.lineCap='round';
+  ctx.beginPath();ctx.moveTo(px-6,py);ctx.lineTo(px-8,py+18);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(px+6,py);ctx.lineTo(px+8,py+18);ctx.stroke();
+  ctx.fillStyle='#222';
+  ctx.beginPath();ctx.ellipse(px-9,py+19,6,3.5,0,0,Math.PI*2);ctx.fill();
+  ctx.beginPath();ctx.ellipse(px+9,py+19,6,3.5,0,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle=jc;
+  ctx.beginPath();ctx.moveTo(px-12,py-2);ctx.lineTo(px-14,py-26);ctx.lineTo(px+14,py-26);ctx.lineTo(px+12,py-2);ctx.closePath();ctx.fill();
+  ctx.strokeStyle=jd;ctx.lineWidth=1;ctx.stroke();
+  ctx.strokeStyle=jc;ctx.lineWidth=5;ctx.lineCap='round';
+  ctx.beginPath();ctx.moveTo(px-12,py-20);ctx.lineTo(px-22,py-12);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(px+12,py-20);ctx.lineTo(px+22,py-12);ctx.stroke();
+  ctx.fillStyle='#f5c09a';
+  ctx.beginPath();ctx.rect(px-3,py-30,6,6);ctx.fill();
+  ctx.beginPath();ctx.arc(px,py-38,10,0,Math.PI*2);ctx.fill();
+  ctx.strokeStyle='#d4956a';ctx.lineWidth=0.7;ctx.stroke();
+  ctx.fillStyle='#222';
+  ctx.beginPath();ctx.arc(px,py-42,10,Math.PI,0);ctx.fill();
+  ctx.fillStyle='#333';
+  ctx.beginPath();ctx.arc(px-3,py-37,1.5,0,Math.PI*2);ctx.fill();
+  ctx.beginPath();ctx.arc(px+3,py-37,1.5,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle=jd;ctx.font='bold 7px sans-serif';ctx.textAlign='center';
+  ctx.fillText(pi+1,px,py-14);
+}
+
+function drawBall(bx,by,scale){
+  scale=scale||1;
+  const r=10*scale;
+  ctx.save();ctx.beginPath();ctx.arc(bx,by,r,0,Math.PI*2);ctx.clip();
+  ctx.fillStyle='white';ctx.fillRect(bx-r,by-r,r*2,r*2);
+  ctx.fillStyle='#111';
+  drawPentagon(bx,by,r*0.38);
+  [[0,-r*0.62],[r*0.59,-r*0.19],[r*0.365,r*0.5],[-r*0.365,r*0.5],[-r*0.59,-r*0.19]].forEach(function(o){drawPentagon(bx+o[0],by+o[1],r*0.3);});
+  ctx.restore();
+  ctx.beginPath();ctx.arc(bx,by,r,0,Math.PI*2);ctx.strokeStyle='#888';ctx.lineWidth=0.8;ctx.stroke();
+}
+
+function drawPentagon(cx,cy,r){
+  ctx.beginPath();
+  for(let i=0;i<5;i++){const a=-Math.PI/2+(Math.PI*2/5)*i;i===0?ctx.moveTo(cx+Math.cos(a)*r,cy+Math.sin(a)*r):ctx.lineTo(cx+Math.cos(a)*r,cy+Math.sin(a)*r);}
+  ctx.closePath();ctx.fill();
+}
+
+function drawAimLine(){
+  if(phase!=='aim') return;
+  const inGoal=aimX>GOAL_L&&aimX<GOAL_R&&aimY>GOAL_TOP&&aimY<GOAL_BOT;
+  ctx.strokeStyle=inGoal?'rgba(232,212,77,0.7)':'rgba(255,100,100,0.5)';
+  ctx.lineWidth=1.5;ctx.setLineDash([8,5]);
+  ctx.beginPath();ctx.moveTo(ballX,ballY);ctx.lineTo(aimX,aimY);ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle=inGoal?'rgba(232,212,77,0.8)':'rgba(255,100,100,0.7)';
+  ctx.beginPath();ctx.arc(aimX,aimY,7,0,Math.PI*2);ctx.fill();
+}
+
+function draw(){
+  ctx.clearRect(0,0,W,H);
+  drawField();drawGoal();drawKeeper(keeperX);
+  updateParticles();drawParticles();
+  const bScale=phase==='flying'?1-0.3*(animFrame/animMax):1;
+  drawBall(ballX,ballY,bScale);
+  drawShooter(W/2,H-35,currentPlayer);
+  drawAimLine();
+}
+
+let idleAnimId=null;
+
+function easeInOut(t){return t<0.5?2*t*t:-1+(4-2*t)*t;}
+
+function startIdleSway(){
+  if(idleAnimId) cancelAnimationFrame(idleAnimId);
+
+  // Keeper moves wall-to-wall using a ping-pong style
+  const minX = GOAL_L + KEEPER_MARGIN;
+  const maxX = GOAL_R - KEEPER_MARGIN;
+
+  function swayLoop(){
+    if(phase!=='aim'){idleAnimId=null;return;}
+    const cfg = diffMap[difficulty];
+    // Speed proportional to goal width so keeper traverses the whole goal
+    const step = (maxX - minX) * cfg.swaySpeed * cfg.swayAmplitude;
+
+    keeperX += keeperSwayDir * step;
+
+    // Bounce off the goal posts
+    if(keeperX >= maxX){
+      keeperX = maxX;
+      keeperSwayDir = -1;
+    } else if(keeperX <= minX){
+      keeperX = minX;
+      keeperSwayDir = 1;
+    }
+
+    draw();
+    idleAnimId=requestAnimationFrame(swayLoop);
+  }
+  idleAnimId=requestAnimationFrame(swayLoop);
+}
+
+function animateFly(){
+  if(phase!=='flying') return;
+  const t=easeInOut(animFrame/animMax);
+  ballX=W/2+(targetX-W/2)*t;
+  ballY=(H-55)+(targetY-(H-55))*t;
+  const rd=diffMap[difficulty].reactDelay, ms=diffMap[difficulty].maxSpeed;
+  const minX=GOAL_L+KEEPER_MARGIN, maxX=GOAL_R-KEEPER_MARGIN;
+  // Always move toward ball, but speed ramps up from 0 -> full after reactDelay
+  const progress = Math.min(animFrame / rd, 1);
+  const curSpeed = ms * progress;
+  if(keeperX < targetX) keeperX = Math.min(keeperX + curSpeed, targetX);
+  else if(keeperX > targetX) keeperX = Math.max(keeperX - curSpeed, targetX);
+  keeperX=Math.max(minX,Math.min(maxX,keeperX));
+  animFrame++;draw();
+  if(animFrame>animMax){resolveShot();return;}
+  animId=requestAnimationFrame(animateFly);
+}
+
+function resolveShot(){
+  const t=T[lang];
+  const inGoal=targetX>GOAL_L&&targetX<GOAL_R&&targetY>GOAL_TOP&&targetY<GOAL_BOT;
+  const caught=Math.abs(keeperX-targetX)<diffMap[difficulty].catchRange&&inGoal;
+  const msgEl=document.getElementById('msg');
+  if(inGoal&&!caught){
+    players[currentPlayer].goals++;
+    spawnParticles(targetX,targetY,'#e8d44d',30);
+    spawnParticles(targetX,targetY,'#ffffff',15);
+    msgEl.textContent=t.goal;msgEl.className='goal-msg';
+  } else if(caught){
+    spawnParticles(keeperX,KEEPER_BASE,'#e05050',20);
+    msgEl.textContent=t.saved;msgEl.className='save-msg';
+  } else {
+    msgEl.textContent=t.miss;msgEl.className='save-msg';
+  }
+  players[currentPlayer].shots++;
+  updateHUD();
+  phase='result';
+
+  // Check if game is over (each player has taken 5 shots)
+  const totalShots = players.reduce((sum,p)=>sum+p.shots,0);
+  const shotsPerPlayer = 5;
+  const gameOver = players[currentPlayer].shots >= shotsPerPlayer &&
+    (numPlayers===1 || players.every(p=>p.shots>=shotsPerPlayer));
+
+  setTimeout(function(){
+    if(gameOver){
+      showGameOver();
+    } else {
+      if(numPlayers>1){
+        // advance to next player who still has shots left
+        let next=(currentPlayer+1)%numPlayers;
+        let tries=0;
+        while(players[next].shots>=shotsPerPlayer && tries<numPlayers){next=(next+1)%numPlayers;tries++;}
+        currentPlayer=next;
+      }
+      phase='aim';ballX=W/2;ballY=H-55;keeperX=W/2;
+      keeperSwayDir=Math.random()<0.5?1:-1;
+      msgEl.textContent=T[lang].shoot;msgEl.className='';
+      updateHUD();updateTurnLabel();
+      startIdleSway();
+    }
+  },1400);
+}
+
+function showGameOver(){
+  const t=T[lang];
+  // Build overlay
+  let html='<div style="position:absolute;inset:0;background:rgba(0,0,0,0.82);display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:14px;gap:12px;z-index:10;">';
+  html+=`<div style="font-family:'Bebas Neue',sans-serif;font-size:2.2rem;color:#e8d44d;letter-spacing:0.1em;">${t.gameover}</div>`;
+  // Scores
+  players.forEach((p,i)=>{
+    html+=`<div style="font-size:14px;color:#f0f0e8;">${t.player} ${i+1}: ${p.goals} ${t.score}</div>`;
+  });
+  // Winner (multi-player)
+  if(numPlayers>1){
+    const maxGoals=Math.max(...players.map(p=>p.goals));
+    const winners=players.map((p,i)=>p.goals===maxGoals?i:-1).filter(i=>i>=0);
+    if(winners.length===1){
+      html+=`<div style="font-size:15px;color:#e8d44d;font-weight:700;">${t.winner}: ${t.player} ${winners[0]+1} 🏆</div>`;
+    } else {
+      html+=`<div style="font-size:15px;color:#e8d44d;font-weight:700;">🤝 ${winners.map(i=>t.player+' '+(i+1)).join(' / ')}</div>`;
+    }
+  }
+  html+=`<button id="play-again-btn" style="margin-top:8px;padding:10px 32px;font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:0.1em;border:1px solid rgba(232,212,77,0.4);border-radius:10px;background:rgba(232,212,77,0.14);color:#e8d44d;cursor:pointer;">${t.playAgain}</button>`;
+  html+=`<div id="countdown-txt" style="font-size:12px;color:rgba(240,240,232,0.4);margin-top:4px;">5</div>`;
+  html+='</div>';
+  const wrap=document.getElementById('canvas-wrap');
+  wrap.style.position='relative';
+  const overlay=document.createElement('div');
+  overlay.id='gameover-overlay';
+  overlay.innerHTML=html;
+  wrap.appendChild(overlay);
+
+  // Attach play again button properly after DOM insertion
+  document.getElementById('play-again-btn').addEventListener('click', function(){
+    if(animId) cancelAnimationFrame(animId);
+    if(idleAnimId) cancelAnimationFrame(idleAnimId);
+    if(window._cdInterval) clearInterval(window._cdInterval);
+    const ov=document.getElementById('gameover-overlay');
+    if(ov) ov.remove();
+    initGame();
+  });
+
+  // Countdown 5 seconds then go back to setup
+  let secs = 5;
+  const cdEl = document.getElementById('countdown-txt');
+  const cdInterval = setInterval(function(){
+    secs--;
+    if(cdEl) cdEl.textContent = secs;
+    if(secs <= 0){
+      clearInterval(cdInterval);
+      const ov2 = document.getElementById('gameover-overlay');
+      if(ov2) ov2.remove();
+      document.getElementById('game').style.display='none';
+      document.getElementById('setup').style.display='block';
+      applySetupText();
+    }
+  }, 1000);
+  // Store so resetGame can clear it
+  window._cdInterval = cdInterval;
+}
+
+function getPos(e){
+  const r=canvas.getBoundingClientRect();
+  return{x:(e.clientX-r.left)*(W/r.width),y:(e.clientY-r.top)*(H/r.height)};
+}
+
+canvas.addEventListener('mousemove',function(e){
+  if(phase!=='aim') return;
+  const p=getPos(e);
+  aimX=Math.max(GOAL_L-30,Math.min(GOAL_R+30,p.x));
+  aimY=Math.max(GOAL_TOP-10,Math.min(GOAL_BOT+10,p.y));
+  draw();
+});
+canvas.addEventListener('click',function(e){
+  if(phase!=='aim') return;
+  const p=getPos(e);
+  targetX=Math.max(GOAL_L-40,Math.min(GOAL_R+40,p.x));
+  targetY=Math.max(GOAL_TOP-15,Math.min(GOAL_BOT+15,p.y));
+  phase='flying';animFrame=0;ballX=W/2;ballY=H-55;
+  if(idleAnimId){cancelAnimationFrame(idleAnimId);idleAnimId=null;}
+  if(animId) cancelAnimationFrame(animId);
+  animateFly();
+});
+canvas.addEventListener('touchmove',function(e){
+  e.preventDefault();if(phase!=='aim') return;
+  const p=getPos(e.touches[0]);
+  aimX=Math.max(GOAL_L-30,Math.min(GOAL_R+30,p.x));
+  aimY=Math.max(GOAL_TOP-10,Math.min(GOAL_BOT+10,p.y));
+},{passive:false});
+canvas.addEventListener('touchend',function(e){
+  if(phase!=='aim') return;
+  targetX=aimX;targetY=aimY;
+  phase='flying';animFrame=0;ballX=W/2;ballY=H-55;
+  if(idleAnimId){cancelAnimationFrame(idleAnimId);idleAnimId=null;}
+  if(animId) cancelAnimationFrame(animId);
+  animateFly();
+});
+
+applySetupText();
+</script>
+</body>
+</html>
