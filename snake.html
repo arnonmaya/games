@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>משחק נחש</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #0f0f0d; display: flex; align-items: center; justify-content: center; min-height: 100vh; font-family: 'Segoe UI', sans-serif; color: #eee; }
+  .screen { display: none; flex-direction: column; align-items: center; gap: 20px; padding: 2rem 1.5rem; max-width: 500px; width: 100%; }
+  .screen.active { display: flex; }
+  h1 { font-size: 36px; font-weight: 700; color: #5DCAA5; letter-spacing: 0.04em; text-align: center; }
+  .section-title { font-size: 11px; color: #555; text-transform: uppercase; letter-spacing: 0.1em; align-self: flex-start; }
+  .player-select { display: flex; gap: 10px; }
+  .pnum { width: 56px; height: 56px; border-radius: 10px; border: 1px solid #2a2a26; background: #1a1a18; color: #888; font-size: 20px; font-weight: 600; cursor: pointer; transition: all 0.15s; display: flex; align-items: center; justify-content: center; }
+  .pnum:hover { border-color: #5DCAA5; color: #5DCAA5; }
+  .pnum.selected { background: #1D9E75; border-color: #5DCAA5; color: #fff; }
+  .instructions { width: 100%; background: #1a1a18; border-radius: 10px; border: 1px solid #2a2a26; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; }
+  .player-row { display: flex; align-items: center; gap: 10px; }
+  .p-dot { width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0; }
+  .p-name { font-size: 13px; font-weight: 600; min-width: 68px; }
+  .p-keys { font-size: 12px; color: #888; }
+  .key { display: inline-block; background: #2a2a26; border: 1px solid #3a3a36; border-radius: 4px; padding: 1px 6px; font-size: 11px; color: #ccc; margin: 0 1px; font-family: monospace; }
+  .rules { width: 100%; background: #1a1a18; border-radius: 10px; border: 1px solid #2a2a26; padding: 14px 16px; }
+  .rules ul { list-style: none; display: flex; flex-direction: column; gap: 7px; }
+  .rules li { font-size: 13px; color: #999; padding-right: 16px; position: relative; }
+  html[dir="ltr"] .rules li { padding-right: 0; padding-left: 16px; }
+  .rules li::before { content: '•'; position: absolute; right: 0; color: #5DCAA5; }
+  html[dir="ltr"] .rules li::before { right: auto; left: 0; }
+  .start-btn { width: 100%; padding: 14px; border-radius: 10px; border: none; background: #1D9E75; color: #fff; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.15s; }
+  .start-btn:hover { background: #5DCAA5; }
+  #lang-btn { position: fixed; top: 16px; left: 16px; padding: 6px 14px; border-radius: 8px; border: 1px solid #2a2a26; background: #1a1a18; color: #888; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.15s; z-index: 100; letter-spacing: 0.05em; }
+  #lang-btn:hover { color: #5DCAA5; border-color: #5DCAA5; }
+  #home-btn { position: fixed; top: 16px; right: 16px; padding: 6px 14px; border-radius: 8px; border: 1px solid #2a2a26; background: #1a1a18; color: #888; font-size: 12px; text-decoration: none; transition: all 0.15s; z-index: 100; }
+  #home-btn:hover { color: #5DCAA5; border-color: #5DCAA5; }
+  #game-screen { gap: 12px; }
+  #score-row { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+  .stat { text-align: center; background: #1a1a18; border-radius: 8px; border: 1px solid #2a2a26; padding: 5px 14px; }
+  .stat-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.07em; }
+  .stat-value { font-size: 20px; font-weight: 600; }
+  #canvas-container { position: relative; }
+  #canvas-wrap { border-radius: 12px; overflow: hidden; border: 1px solid #2a2a26; box-shadow: 0 0 40px rgba(29,158,117,0.12); }
+  canvas { display: block; }
+  #result-overlay { display: none; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); border-radius: 12px; flex-direction: column; align-items: center; justify-content: center; gap: 10px; }
+  #result-overlay.show { display: flex; }
+  #result-title { font-size: 24px; font-weight: 700; }
+  #result-sub { font-size: 14px; color: #888; }
+  .rbtn { font-size: 13px; padding: 8px 22px; border-radius: 8px; border: 1px solid #333; background: transparent; color: #ccc; cursor: pointer; transition: all 0.15s; margin: 4px; }
+  .rbtn:hover { background: #1a1a18; color: #5DCAA5; border-color: #5DCAA5; }
+  #msg { font-size: 13px; color: #666; min-height: 18px; text-align: center; }
+  #game-btns { display: flex; gap: 10px; }
+  .gbtn { font-size: 13px; padding: 7px 20px; border-radius: 8px; border: 1px solid #333; background: transparent; color: #ccc; cursor: pointer; transition: all 0.15s; }
+  .gbtn:hover { background: #1a1a18; color: #5DCAA5; border-color: #5DCAA5; }
+</style>
+</head>
+<body>
+
+<button id="lang-btn">עב</button>
+<a id="home-btn" href="https://arnonmaya.github.io/games/" target="_blank">🏠 חזרה לדף הבית</a>
+<!-- MENU -->
+<div id="menu-screen" class="screen active">
+  <h1>🐍 <span id="t-title"></span></h1>
+  <div class="section-title" id="t-numPlayers"></div>
+  <div class="player-select">
+    <div class="pnum selected" data-n="1">1</div>
+    <div class="pnum" data-n="2">2</div>
+    <div class="pnum" data-n="3">3</div>
+    <div class="pnum" data-n="4">4</div>
+  </div>
+  <div class="section-title" id="t-controls"></div>
+  <div class="instructions" id="keys-display"></div>
+  <div class="section-title" id="t-rulesTitle"></div>
+  <div class="rules"><ul id="rules-list"></ul></div>
+  <button class="start-btn" id="menuStartBtn"></button>
+</div>
+
+<!-- GAME -->
+<div id="game-screen" class="screen">
+  <div id="score-row"></div>
+  <div id="canvas-container">
+    <div id="canvas-wrap"><canvas id="c"></canvas></div>
+    <div id="result-overlay">
+      <div id="result-title"></div>
+      <div id="result-sub"></div>
+      <div>
+        <button class="rbtn" id="playAgainBtn"></button>
+        <button class="rbtn" id="menuBtn"></button>
+      </div>
+    </div>
+  </div>
+  <div id="msg"></div>
+  <div id="game-btns">
+    <button class="gbtn" id="pauseBtn"></button>
+    <button class="gbtn" id="backBtn"></button>
+  </div>
+</div>
+
+<script>
+// ---- i18n ----
+const STRINGS = {
+  he: {
+    title: 'משחק נחש', numPlayers: 'כמה שחקנים?', controls: 'מקשי שליטה', rulesTitle: 'חוקי המשחק',
+    rules: ['אכול תפוחים כדי לגדול ולצבור נקודות','התנגשות בנחש אחר — פסילה','התנגשות בעצמך — פסילה','קירות — עוברים דרכם לצד השני','המשחק נגמר כשנשאר נחש אחד בלבד'],
+    startBtn: 'התחל משחק ▶', pause: 'השהה', resume: 'המשך', menuBack: '◀ תפריט', mainMenu: 'תפריט ראשי', playAgain: 'שחק שוב',
+    gameOver: '💀 המשחק נגמר!', finalScore: 'ניקוד סופי', wins: 'ניצח!', draw: '🤝 תיקו!', drawSub: 'כולם התנגשו בו-זמנית',
+    paused: 'משחק מושהה ⏸', goodLuck: 'בהצלחה!', battle: 'הנחשים יוצאים לקרב!',
+    playerNames: ['שחקן 1','שחקן 2','שחקן 3','שחקן 4'], langBtn: 'EN',
+  },
+  en: {
+    title: 'Snake Game', numPlayers: 'How many players?', controls: 'Controls', rulesTitle: 'Rules',
+    rules: ['Eat apples to grow and score points','Hitting another snake — eliminated','Hitting yourself — eliminated','Walls — wrap to the other side','Game ends when one snake remains'],
+    startBtn: 'Start Game ▶', pause: 'Pause', resume: 'Resume', menuBack: '◀ Menu', mainMenu: 'Main Menu', playAgain: 'Play Again',
+    gameOver: '💀 Game Over!', finalScore: 'Final Score', wins: 'wins!', draw: '🤝 Draw!', drawSub: 'All snakes crashed simultaneously',
+    paused: 'Game Paused ⏸', goodLuck: 'Good luck!', battle: 'Let the battle begin!',
+    playerNames: ['Player 1','Player 2','Player 3','Player 4'], langBtn: 'עב',
+  },
+};
+
+let lang = 'en';
+function s(key) { return STRINGS[lang][key]; }
+
+function applyLang() {
+  const isHe = lang === 'he';
+  document.documentElement.lang = lang;
+  document.documentElement.dir = isHe ? 'rtl' : 'ltr';
+  document.getElementById('lang-btn').textContent = s('langBtn');
+  document.getElementById('t-title').textContent = s('title');
+  document.getElementById('t-numPlayers').textContent = s('numPlayers');
+  document.getElementById('t-controls').textContent = s('controls');
+  document.getElementById('t-rulesTitle').textContent = s('rulesTitle');
+  document.getElementById('rules-list').innerHTML = s('rules').map(r => `<li>${r}</li>`).join('');
+  document.getElementById('menuStartBtn').textContent = s('startBtn');
+  document.getElementById('playAgainBtn').textContent = s('playAgain');
+  document.getElementById('menuBtn').textContent = s('mainMenu');
+  document.getElementById('pauseBtn').textContent = paused ? s('resume') : s('pause');
+  document.getElementById('backBtn').textContent = s('menuBack');
+  renderKeys();
+  // Update player names in PLAYERS array
+  PLAYERS.forEach((p, i) => { p.name = s('playerNames')[i]; });
+}
+
+document.getElementById('lang-btn').addEventListener('click', () => {
+  lang = lang === 'he' ? 'en' : 'he';
+  applyLang();
+});
+
+// ---- Game Config ----
+const COLS = 20, ROWS = 20, SZ = 22;
+
+const PLAYERS = [
+  { name: '', color: '#1D9E75', headColor: '#5DCAA5',
+    keys: { ArrowUp:{x:0,y:-1}, ArrowDown:{x:0,y:1}, ArrowLeft:{x:-1,y:0}, ArrowRight:{x:1,y:0} },
+    keyLabels: ['↑','↓','←','→'] },
+  { name: '', color: '#993C1D', headColor: '#F0997B',
+    keys: { w:{x:0,y:-1}, s:{x:0,y:1}, a:{x:-1,y:0}, d:{x:1,y:0} },
+    keyLabels: ['W','S','A','D'] },
+  { name: '', color: '#534AB7', headColor: '#AFA9EC',
+    keys: { i:{x:0,y:-1}, k:{x:0,y:1}, j:{x:-1,y:0}, l:{x:1,y:0} },
+    keyLabels: ['I','K','J','L'] },
+  { name: '', color: '#854F0B', headColor: '#EF9F27',
+    keys: { '8':{x:0,y:-1}, '2':{x:0,y:1}, '4':{x:-1,y:0}, '6':{x:1,y:0} },
+    keyLabels: ['8','2','4','6'] },
+];
+
+const STARTS = [
+  { pos:{x:3,y:3},   dir:{x:1,y:0}  },
+  { pos:{x:16,y:16}, dir:{x:-1,y:0} },
+  { pos:{x:3,y:16},  dir:{x:1,y:0}  },
+  { pos:{x:16,y:3},  dir:{x:-1,y:0} },
+];
+
+let numPlayers = 1, snakes, food, scores, aliveCount, running = false, paused = false, interval, speed;
+
+// ---- Menu ----
+document.querySelectorAll('.pnum').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.pnum').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    numPlayers = parseInt(btn.dataset.n);
+    renderKeys();
+  });
+});
+
+function renderKeys() {
+  document.getElementById('keys-display').innerHTML = PLAYERS.slice(0, numPlayers).map((p, i) =>
+    `<div class="player-row">
+      <div class="p-dot" style="background:${p.color}"></div>
+      <div class="p-name" style="color:${p.headColor}">${s('playerNames')[i]}</div>
+      <div class="p-keys">${p.keyLabels.map(k=>`<span class="key">${k}</span>`).join(' ')}</div>
+    </div>`
+  ).join('');
+}
+
+document.getElementById('menuStartBtn').addEventListener('click', startGame);
+document.getElementById('pauseBtn').addEventListener('click', togglePause);
+document.getElementById('backBtn').addEventListener('click', goMenu);
+document.getElementById('playAgainBtn').addEventListener('click', startGame);
+document.getElementById('menuBtn').addEventListener('click', goMenu);
+
+function goMenu() {
+  clearInterval(interval); running = false;
+  document.getElementById('game-screen').classList.remove('active');
+  document.getElementById('menu-screen').classList.add('active');
+  document.getElementById('result-overlay').classList.remove('show');
+}
+
+// ---- Game ----
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+
+function startGame() {
+  document.getElementById('menu-screen').classList.remove('active');
+  document.getElementById('game-screen').classList.add('active');
+  document.getElementById('result-overlay').classList.remove('show');
+  canvas.width = COLS * SZ; canvas.height = ROWS * SZ;
+
+  snakes = PLAYERS.slice(0, numPlayers).map((p, i) => {
+    const st = STARTS[i];
+    return {
+      body: [{x:st.pos.x,y:st.pos.y},{x:st.pos.x-st.dir.x,y:st.pos.y},{x:st.pos.x-st.dir.x*2,y:st.pos.y}],
+      dir: {...st.dir}, next: {...st.dir}, player: p, alive: true, idx: i,
+    };
+  });
+
+  scores = Array(numPlayers).fill(0);
+  aliveCount = numPlayers; speed = 160; running = true; paused = false;
+  placeFood(); buildScoreRow();
+  document.getElementById('msg').textContent = numPlayers > 1 ? s('battle') : s('goodLuck');
+  document.getElementById('pauseBtn').textContent = s('pause');
+  document.getElementById('backBtn').textContent = s('menuBack');
+  clearInterval(interval); interval = setInterval(step, speed);
+  draw();
+}
+
+function buildScoreRow() {
+  document.getElementById('score-row').innerHTML = snakes.map((sn, i) =>
+    `<div class="stat">
+      <div class="stat-label" style="color:${sn.player.color}">${s('playerNames')[i]}</div>
+      <div class="stat-value" style="color:${sn.player.headColor}" id="score-${i}">0</div>
+    </div>`
+  ).join('');
+}
+
+function placeFood() {
+  const occ = snakes.flatMap(sn => sn.body);
+  do { food = {x:Math.floor(Math.random()*COLS), y:Math.floor(Math.random()*ROWS)}; }
+  while (occ.some(c => c.x===food.x && c.y===food.y));
+}
+
+function step() {
+  const newHeads = snakes.map(sn => {
+    if (!sn.alive) return null;
+    sn.dir = {...sn.next};
+    return { x:(sn.body[0].x+sn.dir.x+COLS)%COLS, y:(sn.body[0].y+sn.dir.y+ROWS)%ROWS };
+  });
+
+  snakes.forEach((sn, i) => {
+    if (!sn.alive) return;
+    const head = newHeads[i];
+    if (sn.body.some(c => c.x===head.x && c.y===head.y)) { sn.alive=false; aliveCount--; return; }
+    snakes.forEach((other, j) => {
+      if (i===j || !other.alive || !sn.alive) return;
+      if (other.body.some(c => c.x===head.x && c.y===head.y)) { sn.alive=false; aliveCount--; }
+    });
+  });
+
+  for (let i=0;i<snakes.length;i++) for (let j=i+1;j<snakes.length;j++) {
+    if (!snakes[i].alive||!snakes[j].alive) continue;
+    if (newHeads[i]&&newHeads[j]&&newHeads[i].x===newHeads[j].x&&newHeads[i].y===newHeads[j].y) {
+      snakes[i].alive=false; snakes[j].alive=false; aliveCount-=2;
+    }
+  }
+
+  snakes.forEach((sn, i) => {
+    if (!sn.alive) return;
+    const head = newHeads[i];
+    sn.body.unshift(head);
+    if (head.x===food.x && head.y===food.y) {
+      scores[i]++; document.getElementById(`score-${i}`).textContent = scores[i];
+      placeFood();
+      const total = scores.reduce((a,b)=>a+b,0);
+      if (total%5===0) { speed=Math.max(70,speed-10); clearInterval(interval); interval=setInterval(step,speed); }
+    } else { sn.body.pop(); }
+  });
+
+  draw();
+  if (aliveCount <= (numPlayers>1?1:0)) { clearInterval(interval); running=false; setTimeout(showResult,400); }
+}
+
+function showResult() {
+  const title = document.getElementById('result-title');
+  const sub = document.getElementById('result-sub');
+  if (numPlayers===1) {
+    title.style.color='#E24B4A'; title.textContent=s('gameOver');
+    sub.textContent=`${s('finalScore')}: ${scores[0]}`;
+  } else {
+    const winner = snakes.find(sn => sn.alive);
+    if (winner) {
+      title.style.color=winner.player.headColor;
+      title.textContent=`🏆 ${s('playerNames')[winner.idx]} ${s('wins')}`;
+      sub.textContent=`${s('finalScore')}: ${scores[winner.idx]}`;
+    } else {
+      title.style.color='#888'; title.textContent=s('draw'); sub.textContent=s('drawSub');
+    }
+  }
+  document.getElementById('playAgainBtn').textContent = s('playAgain');
+  document.getElementById('menuBtn').textContent = s('mainMenu');
+  document.getElementById('result-overlay').classList.add('show');
+}
+
+function draw() {
+  ctx.fillStyle='#0f0f0d'; ctx.fillRect(0,0,canvas.width,canvas.height);
+  ctx.strokeStyle='#1a1a18'; ctx.lineWidth=0.5;
+  for(let r=0;r<=ROWS;r++){ctx.beginPath();ctx.moveTo(0,r*SZ);ctx.lineTo(COLS*SZ,r*SZ);ctx.stroke();}
+  for(let c=0;c<=COLS;c++){ctx.beginPath();ctx.moveTo(c*SZ,0);ctx.lineTo(c*SZ,ROWS*SZ);ctx.stroke();}
+  snakes.forEach(sn => {
+    sn.body.forEach((seg,i)=>{
+      ctx.fillStyle=!sn.alive?'#222':(i===0?sn.player.headColor:sn.player.color);
+      ctx.beginPath(); ctx.roundRect(seg.x*SZ+2,seg.y*SZ+2,SZ-4,SZ-4,3); ctx.fill();
+    });
+    if (sn.alive) {
+      const h=sn.body[0]; ctx.fillStyle='rgba(0,0,0,0.5)';
+      ctx.beginPath();ctx.arc(h.x*SZ+6,h.y*SZ+6,2,0,Math.PI*2);ctx.fill();
+      ctx.beginPath();ctx.arc(h.x*SZ+SZ-6,h.y*SZ+6,2,0,Math.PI*2);ctx.fill();
+    }
+  });
+  ctx.fillStyle='#D85A30'; ctx.beginPath(); ctx.arc(food.x*SZ+SZ/2,food.y*SZ+SZ/2,SZ/2-3,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle='#ff9966'; ctx.beginPath(); ctx.arc(food.x*SZ+SZ/2-3,food.y*SZ+SZ/2-3,3,0,Math.PI*2); ctx.fill();
+}
+
+function togglePause() {
+  if (!running) return;
+  if (paused) {
+    interval=setInterval(step,speed); paused=false;
+    document.getElementById('pauseBtn').textContent=s('pause');
+    document.getElementById('msg').textContent='';
+  } else {
+    clearInterval(interval); paused=true;
+    document.getElementById('pauseBtn').textContent=s('resume');
+    document.getElementById('msg').textContent=s('paused');
+  }
+}
+
+document.addEventListener('keydown', e => {
+  if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)) e.preventDefault();
+  if (!running||paused) return;
+  snakes.forEach(sn => {
+    if (!sn.alive) return;
+    const move=sn.player.keys[e.key];
+    if (!move||( move.x===-sn.dir.x && move.y===-sn.dir.y)) return;
+    sn.next=move;
+  });
+});
+
+// Init
+applyLang();
+</script>
+</body>
+</html>
