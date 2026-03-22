@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="he" dir="rtl">
+<html lang="en" dir="ltr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -176,6 +176,10 @@
   .card-million  { box-shadow: 0 12px 40px rgba(255,215,0,0.4); }
   .card-million:hover { box-shadow: 0 24px 60px rgba(255,215,0,0.65); }
 
+  .card-snake    .card-bg { background: linear-gradient(145deg,#1a4a1a,#7fff00); }
+  .card-snake    { box-shadow: 0 12px 40px rgba(127,255,0,0.35); }
+  .card-snake:hover { box-shadow: 0 24px 60px rgba(127,255,0,0.6); }
+
   /* ── KICKS GAME ── */
   #page-kicks { background: linear-gradient(135deg,#064e3b,#065f46 50%,#34d399); }
 
@@ -250,8 +254,8 @@
 <body>
 
 <button id="lang-toggle" onclick="toggleLang()">
-  <span id="lang-flag">🇺🇸</span>
-  <span id="lang-label">English</span>
+  <span id="lang-flag">🇮🇱</span>
+  <span id="lang-label">עברית</span>
 </button>
 
 <!-- START PAGE -->
@@ -267,7 +271,7 @@
 
   <div class="games-grid">
 
-    <a class="game-card card-sushi" href="https://arnonmaya.github.io/games/sushi.html" ">
+    <a class="game-card card-sushi" href="https://arnonmaya.github.io/games/sushi.html" target="_blank">
       <div class="card-inner"><div class="card-bg">
         <div class="card-circle card-circle-1"></div><div class="card-circle card-circle-2"></div>
         <div class="card-scene">🍣</div>
@@ -279,7 +283,7 @@
       </div></div>
     </a>
 
-    <a class="game-card card-shooting" href="https://arnonmaya.github.io/games/shoot.html" ">
+    <a class="game-card card-shooting" href="https://arnonmaya.github.io/games/shoot.html" target="_blank">
       <div class="card-inner"><div class="card-bg">
         <div class="card-circle card-circle-1"></div><div class="card-circle card-circle-2"></div>
         <div class="card-scene">🔫</div>
@@ -291,7 +295,7 @@
       </div></div>
     </a>
 
-    <a class="game-card card-space" href="https://arnonmaya.github.io/games/space.html" ">
+    <a class="game-card card-space" href="https://arnonmaya.github.io/games/space.html" target="_blank">
       <div class="card-inner"><div class="card-bg">
         <div class="card-circle card-circle-1"></div><div class="card-circle card-circle-2"></div>
         <div class="card-scene">🚀</div>
@@ -303,7 +307,7 @@
       </div></div>
     </a>
 
-    <a class="game-card card-sumo" href="https://arnonmaya.github.io/games/sumo.html" ">
+    <a class="game-card card-sumo" href="https://arnonmaya.github.io/games/sumo.html" target="_blank">
       <div class="card-inner"><div class="card-bg">
         <div class="card-circle card-circle-1"></div><div class="card-circle card-circle-2"></div>
         <div class="card-scene">🤼</div>
@@ -315,7 +319,7 @@
       </div></div>
     </a>
 
-    <a class="game-card card-alien" href="https://arnonmaya.github.io/games/alien.html" ">
+    <a class="game-card card-alien" href="https://arnonmaya.github.io/games/alien.html" target="_blank">
       <div class="card-inner"><div class="card-bg">
         <div class="card-circle card-circle-1"></div><div class="card-circle card-circle-2"></div>
         <div class="card-scene">👾</div>
@@ -327,7 +331,7 @@
       </div></div>
     </a>
 
-    <a class="game-card card-puzzle" href="https://arnonmaya.github.io/games/puzzle.html" ">
+    <a class="game-card card-puzzle" href="https://arnonmaya.github.io/games/puzzle.html" target="_blank">
       <div class="card-inner"><div class="card-bg">
         <div class="card-circle card-circle-1"></div><div class="card-circle card-circle-2"></div>
         <div class="card-scene">🧩</div>
@@ -339,7 +343,7 @@
       </div></div>
     </a>
 
-    <a class="game-card card-target" href="https://arnonmaya.github.io/games/target.html"  ">
+    <a class="game-card card-target" href="https://arnonmaya.github.io/games/target.html" target="_blank">
       <div class="card-inner"><div class="card-bg">
         <div class="card-circle card-circle-1"></div><div class="card-circle card-circle-2"></div>
         <div class="card-scene">🎯</div>
@@ -351,7 +355,7 @@
       </div></div>
     </a>
 
-    <a class="game-card card-trivia" href="https://arnonmaya.github.io/games/Trivia.html"  ">
+    <a class="game-card card-trivia" href="https://arnonmaya.github.io/games/Trivia.html" target="_blank">
       <div class="card-inner"><div class="card-bg">
         <div class="card-circle card-circle-1"></div><div class="card-circle card-circle-2"></div>
         <div class="card-scene">🤔</div>
@@ -363,7 +367,7 @@
       </div></div>
     </a>
 
-    <a class="game-card card-memory" href="https://arnonmaya.github.io/games/memory.html"  ">
+    <a class="game-card card-memory" href="https://arnonmaya.github.io/games/memory.html" target="_blank">
       <div class="card-inner"><div class="card-bg">
         <div class="card-circle card-circle-1"></div><div class="card-circle card-circle-2"></div>
         <div class="card-scene">🧠</div>
@@ -376,7 +380,7 @@
     </a>
 
     <!-- KICKS CARD -->
-    <a class="game-card card-kicks" href="https://arnonmaya.github.io/games/kicks.html"  ">
+    <a class="game-card card-kicks" href="https://arnonmaya.github.io/games/kicks.html" target="_blank">
       <div class="card-inner"><div class="card-bg">
         <div class="card-circle card-circle-1"></div><div class="card-circle card-circle-2"></div>
         <div class="card-scene">⚽</div>
@@ -389,7 +393,7 @@
     </a>
 
     <!-- MILLION CARD -->
-    <a class="game-card card-million" href="https://arnonmaya.github.io/games/million.html"  ">
+    <a class="game-card card-million" href="https://arnonmaya.github.io/games/million.html" target="_blank">
       <div class="card-inner"><div class="card-bg">
         <div class="card-circle card-circle-1"></div><div class="card-circle card-circle-2"></div>
         <div class="card-scene">💰</div>
@@ -398,6 +402,19 @@
           <div class="card-cta" data-he="← לחץ לשחק" data-en="Tap to play →">← לחץ לשחק</div>
         </div>
         <div class="badge" data-he="💎 עשיר!" data-en="💎 Rich!">💎 עשיר!</div>
+      </div></div>
+    </a>
+
+    <!-- SNAKE CARD -->
+    <a class="game-card card-snake" href="https://arnonmaya.github.io/games/snake.html" target="_blank">
+      <div class="card-inner"><div class="card-bg">
+        <div class="card-circle card-circle-1"></div><div class="card-circle card-circle-2"></div>
+        <div class="card-scene">🐍</div>
+        <div class="card-label">
+          <div class="card-title" data-he="נחש" data-en="Snake">Snake</div>
+          <div class="card-cta" data-he="← לחץ לשחק" data-en="Tap to play →">Tap to play →</div>
+        </div>
+        <div class="badge" data-he="🐍 היזהר!" data-en="🐍 Slither!">🐍 Slither!</div>
       </div></div>
     </a>
 
@@ -445,18 +462,27 @@
 
 <script>
 // ===================== LANGUAGE =====================
-let currentLang = 'he';
+let currentLang = 'en';
 function toggleLang() {
-  currentLang = currentLang === 'he' ? 'en' : 'he';
+  currentLang = currentLang === 'en' ? 'he' : 'en';
   const isHe = currentLang === 'he';
   document.documentElement.lang = currentLang;
   document.documentElement.dir = isHe ? 'rtl' : 'ltr';
-  document.getElementById('lang-flag').textContent  = isHe ? '🇺🇸' : '🇮🇱';
-  document.getElementById('lang-label').textContent = isHe ? 'English' : 'עברית';
-  document.querySelectorAll('[data-he]').forEach(el => {
+  document.getElementById('lang-flag').textContent  = isHe ? '🇮🇱' : '🇺🇸';
+  document.getElementById('lang-label').textContent = isHe ? 'עברית' : 'English';
+  document.querySelectorAll('[data-en]').forEach(el => {
     el.textContent = isHe ? el.dataset.he : el.dataset.en;
   });
 }
+window.addEventListener('DOMContentLoaded', () => {
+  document.documentElement.lang = 'en';
+  document.documentElement.dir = 'ltr';
+  document.getElementById('lang-flag').textContent  = '🇮🇱';
+  document.getElementById('lang-label').textContent = 'עברית';
+  document.querySelectorAll('[data-en]').forEach(el => {
+    el.textContent = el.dataset.en;
+  });
+});
 
 // ===================== NAVIGATION =====================
 let currentGame = null;
