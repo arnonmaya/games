@@ -182,6 +182,10 @@
   .card-trivia  { box-shadow: 0 12px 40px rgba(245,158,11,0.35); }
   .card-trivia:hover { box-shadow: 0 24px 60px rgba(245,158,11,0.6); }
 
+  .card-memory  .card-bg { background: linear-gradient(145deg, #003333 0%, #00e5cc 100%); }
+  .card-memory  { box-shadow: 0 12px 40px rgba(0,229,204,0.35); }
+  .card-memory:hover { box-shadow: 0 24px 60px rgba(0,229,204,0.6); }
+
   .card-scene {
     font-size: 3.5rem; line-height: 1;
     filter: drop-shadow(0 8px 16px rgba(0,0,0,0.25));
@@ -333,6 +337,83 @@
   .sumo-score-item .label { font-size: 0.75rem; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; opacity: 0.7; }
   .sumo-score-item .val { font-family: 'Boogaloo', cursive; font-size: 2rem; }
   .sumo-instructions { color: rgba(255,255,255,0.7); font-size: 0.85rem; font-weight: 700; text-align: center; }
+
+  /* Memory game */
+  #page-memory { background: linear-gradient(135deg, #003333 0%, #006655 50%, #00e5cc 100%); }
+  #memory-game-wrap {
+    width: min(520px, 95vw);
+    margin-top: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+  #memory-stats {
+    display: flex;
+    gap: 28px;
+    font-family: 'Boogaloo', cursive;
+    font-size: 1.3rem;
+    color: #fff;
+  }
+  #memory-stats span { opacity: 0.8; }
+  #memory-stats strong { color: #00e5cc; }
+  #memory-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    width: 100%;
+  }
+  .mem-card {
+    aspect-ratio: 1;
+    border-radius: 12px;
+    cursor: pointer;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.45s cubic-bezier(.4,0,.2,1);
+    user-select: none;
+  }
+  .mem-card.flipped  { transform: rotateY(180deg); }
+  .mem-card.matched  { transform: rotateY(180deg); cursor: default; }
+  .mem-card.matched .mem-front { box-shadow: 0 0 18px rgba(0,229,204,0.7); }
+  .mem-front, .mem-back {
+    position: absolute; inset: 0;
+    border-radius: 12px;
+    backface-visibility: hidden;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .mem-back {
+    background: linear-gradient(135deg, #0a3a3a, #005544);
+    border: 2px solid rgba(0,229,204,0.3);
+    font-size: 1.6rem;
+    color: rgba(0,229,204,0.4);
+  }
+  .mem-front {
+    background: linear-gradient(135deg, #004444, #007766);
+    border: 2px solid rgba(0,229,204,0.6);
+    transform: rotateY(180deg);
+    font-size: 2rem;
+  }
+  #memory-msg {
+    font-family: 'Boogaloo', cursive;
+    font-size: 1.2rem;
+    color: rgba(255,255,255,0.85);
+    min-height: 1.6rem;
+    text-align: center;
+  }
+  #memory-restart {
+    background: #fff;
+    border: none;
+    border-radius: 100px;
+    padding: 10px 32px;
+    font-family: 'Boogaloo', cursive;
+    font-size: 1.3rem;
+    color: #005544;
+    cursor: pointer;
+    transition: transform 0.2s cubic-bezier(.34,1.56,.64,1), box-shadow 0.2s;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+    display: none;
+  }
+  #memory-restart:hover { transform: scale(1.08); box-shadow: 0 12px 30px rgba(0,0,0,0.3); }
 </style>
 </head>
 <body>
@@ -452,6 +533,18 @@
       </div></div>
     </a>
 
+    <a class="game-card card-memory" href="https://arnonmaya.github.io/games/memory.html">
+      <div class="card-inner"><div class="card-bg">
+        <div class="card-circle card-circle-1"></div><div class="card-circle card-circle-2"></div>
+        <div class="card-scene">🧠</div>
+        <div class="card-label">
+          <div class="card-title" data-he="זיכרון" data-en="Memory">זיכרון</div>
+          <div class="card-cta" data-he="← לחץ לשחק" data-en="Tap to play →">← לחץ לשחק</div>
+        </div>
+        <div class="badge" data-he="🃏 התאם זוגות" data-en="🃏 Match Pairs">🃏 התאם זוגות</div>
+      </div></div>
+    </a>
+
   </div>
 </div>
 
@@ -506,6 +599,22 @@
   </div>
 </div>
 
+<!-- MEMORY GAME PAGE -->
+<div id="page-memory" class="game-page">
+  <div class="deco-shape deco-shape-1"></div><div class="deco-shape deco-shape-2"></div>
+  <button class="back-btn" onclick="goBack()" data-he="→ חזרה" data-en="← Back">→ חזרה</button>
+  <div class="game-title-banner" data-he="!משחק זיכרון" data-en="Memory Game!">!משחק זיכרון</div>
+  <div id="memory-game-wrap">
+    <div id="memory-stats">
+      <span><span data-he="ניסיונות:" data-en="Moves:">ניסיונות:</span> <strong id="mem-moves">0</strong></span>
+      <span><span data-he="זוגות:" data-en="Pairs:">זוגות:</span> <strong id="mem-pairs">0</strong> / <strong id="mem-total">8</strong></span>
+    </div>
+    <div id="memory-grid"></div>
+    <div id="memory-msg"></div>
+    <button id="memory-restart" onclick="initMemory()" data-he="שחק שוב 🔄" data-en="Play Again 🔄">שחק שוב 🔄</button>
+  </div>
+</div>
+
 <script>
 // ===================== LANGUAGE =====================
 let currentLang = 'he';
@@ -525,13 +634,95 @@ function toggleLang() {
 // ===================== NAVIGATION =====================
 let currentGame = null;
 
+function openMemoryGame() {
+  document.getElementById('start-page').style.display = 'none';
+  document.getElementById('page-memory').classList.add('active');
+  currentGame = 'memory';
+  initMemory();
+}
+
 function goBack() {
   if (currentGame) {
     document.getElementById('page-' + currentGame).classList.remove('active');
     stopSushi(); stopShooting(); stopSumo();
+    if (currentGame === 'memory') stopMemory();
   }
   document.getElementById('start-page').style.display = '';
   currentGame = null;
+}
+
+// ===================== MEMORY GAME =====================
+const memEmojis = ['🐶','🐱','🦊','🐸','🦁','🐧','🦄','🐙'];
+let memFlipped = [], memMatched = 0, memMoves = 0, memLocked = false, memTimer = null;
+
+function initMemory() {
+  memFlipped = []; memMatched = 0; memMoves = 0; memLocked = false;
+  clearTimeout(memTimer);
+  document.getElementById('mem-moves').textContent = 0;
+  document.getElementById('mem-pairs').textContent = 0;
+  document.getElementById('mem-total').textContent = memEmojis.length;
+  document.getElementById('memory-msg').textContent = '';
+  document.getElementById('memory-restart').style.display = 'none';
+
+  const cards = [...memEmojis, ...memEmojis]
+    .sort(() => Math.random() - 0.5);
+
+  const grid = document.getElementById('memory-grid');
+  grid.innerHTML = '';
+  cards.forEach((emoji, i) => {
+    const card = document.createElement('div');
+    card.className = 'mem-card';
+    card.dataset.emoji = emoji;
+    card.innerHTML = `
+      <div class="mem-back">🎴</div>
+      <div class="mem-front">${emoji}</div>`;
+    card.addEventListener('click', () => onMemCardClick(card));
+    grid.appendChild(card);
+  });
+}
+
+function onMemCardClick(card) {
+  if (memLocked) return;
+  if (card.classList.contains('flipped') || card.classList.contains('matched')) return;
+
+  card.classList.add('flipped');
+  memFlipped.push(card);
+
+  if (memFlipped.length === 2) {
+    memLocked = true;
+    memMoves++;
+    document.getElementById('mem-moves').textContent = memMoves;
+
+    const [a, b] = memFlipped;
+    if (a.dataset.emoji === b.dataset.emoji) {
+      a.classList.add('matched');
+      b.classList.add('matched');
+      memMatched++;
+      document.getElementById('mem-pairs').textContent = memMatched;
+      memFlipped = [];
+      memLocked = false;
+      if (memMatched === memEmojis.length) {
+        const win1 = currentLang === 'he' ? `!כל הכבוד! סיימת ב־${memMoves} ניסיונות 🎉` : `Amazing! You won in ${memMoves} moves! 🎉`;
+        document.getElementById('memory-msg').textContent = win1;
+        document.getElementById('memory-restart').style.display = 'inline-block';
+        // apply lang to restart btn
+        const btn = document.getElementById('memory-restart');
+        btn.textContent = currentLang === 'he' ? 'שחק שוב 🔄' : 'Play Again 🔄';
+      }
+    } else {
+      memTimer = setTimeout(() => {
+        a.classList.remove('flipped');
+        b.classList.remove('flipped');
+        memFlipped = [];
+        memLocked = false;
+      }, 900);
+    }
+  }
+}
+
+function stopMemory() {
+  clearTimeout(memTimer);
+  memFlipped = []; memLocked = false;
 }
 
 // ===================== SUSHI GAME =====================
