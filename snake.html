@@ -47,7 +47,7 @@
   #result-sub { font-size: 14px; color: #888; }
   .rbtn { font-size: 13px; padding: 8px 22px; border-radius: 8px; border: 1px solid #333; background: transparent; color: #ccc; cursor: pointer; transition: all 0.15s; margin: 4px; }
   .rbtn:hover { background: #1a1a18; color: #5DCAA5; border-color: #5DCAA5; }
-  #msg { font-size: 13px; color: #666; min-height: 18px; text-align: center; }
+  #result-countdown { font-size: 12px; color: #555; margin-top: 4px; }
   #game-btns { display: flex; gap: 10px; }
   .gbtn { font-size: 13px; padding: 7px 20px; border-radius: 8px; border: 1px solid #333; background: transparent; color: #ccc; cursor: pointer; transition: all 0.15s; }
   .gbtn:hover { background: #1a1a18; color: #5DCAA5; border-color: #5DCAA5; }
@@ -56,7 +56,7 @@
 <body>
 
 <button id="lang-btn">עב</button>
-<a id="home-btn" href="https://arnonmaya.github.io/games/" target="_blank">🏠 חזרה לדף הבית</a>
+<a id="home-btn" href="https://arnonmaya.github.io/games/" ">🏠 חזרה לדף הבית</a>
 <!-- MENU -->
 <div id="menu-screen" class="screen active">
   <h1>🐍 <span id="t-title"></span></h1>
@@ -82,10 +82,8 @@
     <div id="result-overlay">
       <div id="result-title"></div>
       <div id="result-sub"></div>
-      <div>
-        <button class="rbtn" id="playAgainBtn"></button>
-        <button class="rbtn" id="menuBtn"></button>
-      </div>
+      <button class="rbtn" id="playAgainBtn"></button>
+      <div id="result-countdown"></div>
     </div>
   </div>
   <div id="msg"></div>
@@ -105,6 +103,7 @@ const STRINGS = {
     gameOver: '💀 המשחק נגמר!', finalScore: 'ניקוד סופי', wins: 'ניצח!', draw: '🤝 תיקו!', drawSub: 'כולם התנגשו בו-זמנית',
     paused: 'משחק מושהה ⏸', goodLuck: 'בהצלחה!', battle: 'הנחשים יוצאים לקרב!',
     playerNames: ['שחקן 1','שחקן 2','שחקן 3','שחקן 4'], langBtn: 'EN',
+    goingToMenu: 'חוזר לתפריט בעוד {n} שניות...',
   },
   en: {
     title: 'Snake Game', numPlayers: 'How many players?', controls: 'Controls', rulesTitle: 'Rules',
@@ -113,6 +112,7 @@ const STRINGS = {
     gameOver: '💀 Game Over!', finalScore: 'Final Score', wins: 'wins!', draw: '🤝 Draw!', drawSub: 'All snakes crashed simultaneously',
     paused: 'Game Paused ⏸', goodLuck: 'Good luck!', battle: 'Let the battle begin!',
     playerNames: ['Player 1','Player 2','Player 3','Player 4'], langBtn: 'עב',
+    goingToMenu: 'Going to menu in {n}s...',
   },
 };
 
@@ -131,7 +131,6 @@ function applyLang() {
   document.getElementById('rules-list').innerHTML = s('rules').map(r => `<li>${r}</li>`).join('');
   document.getElementById('menuStartBtn').textContent = s('startBtn');
   document.getElementById('playAgainBtn').textContent = s('playAgain');
-  document.getElementById('menuBtn').textContent = s('mainMenu');
   document.getElementById('pauseBtn').textContent = paused ? s('resume') : s('pause');
   document.getElementById('backBtn').textContent = s('menuBack');
   renderKeys();
@@ -195,7 +194,6 @@ document.getElementById('menuStartBtn').addEventListener('click', startGame);
 document.getElementById('pauseBtn').addEventListener('click', togglePause);
 document.getElementById('backBtn').addEventListener('click', goMenu);
 document.getElementById('playAgainBtn').addEventListener('click', startGame);
-document.getElementById('menuBtn').addEventListener('click', goMenu);
 
 function goMenu() {
   clearInterval(interval); running = false;
@@ -304,8 +302,26 @@ function showResult() {
     }
   }
   document.getElementById('playAgainBtn').textContent = s('playAgain');
-  document.getElementById('menuBtn').textContent = s('mainMenu');
   document.getElementById('result-overlay').classList.add('show');
+
+  let timeLeft = 5;
+  const countdown = document.getElementById('result-countdown');
+  countdown.textContent = s('goingToMenu').replace('{n}', timeLeft);
+  const timer = setInterval(() => {
+    timeLeft--;
+    if (timeLeft <= 0) {
+      clearInterval(timer);
+      document.getElementById('result-overlay').classList.remove('show');
+      goMenu();
+    } else {
+      countdown.textContent = s('goingToMenu').replace('{n}', timeLeft);
+    }
+  }, 1000);
+
+  document.getElementById('playAgainBtn').onclick = () => {
+    clearInterval(timer);
+    startGame();
+  };
 }
 
 function draw() {
