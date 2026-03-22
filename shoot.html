@@ -128,27 +128,27 @@
 <!-- ═══════ OVERLAY (opening / end screen) ═══════ -->
 <div id="overlay">
   <!-- Language toggle -->
-  <button id="lang-btn" onclick="toggleLang()" style="position:absolute;top:14px;right:16px;padding:5px 14px;background:transparent;border:1px solid #444;color:#888;font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;cursor:pointer;border-radius:4px;transition:all .2s;" onmouseover="this.style.borderColor='#aaa';this.style.color='#fff'" onmouseout="this.style.borderColor='#444';this.style.color='#888'">English</button>
+  <button id="lang-btn" onclick="toggleLang()" style="position:absolute;top:14px;right:16px;padding:5px 14px;background:transparent;border:1px solid #444;color:#888;font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;cursor:pointer;border-radius:4px;transition:all .2s;" onmouseover="this.style.borderColor='#aaa';this.style.color='#fff'" onmouseout="this.style.borderColor='#444';this.style.color='#888'">עברית</button>
 
   <h1 id="main-title" style="font-family:'Bebas Neue',sans-serif;font-size:54px;letter-spacing:12px;
     background:linear-gradient(90deg,#4af,#fa0,#f44,#4d4);
     -webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:2px;
-    text-align:center;width:100%;">קרב יריות</h1>
-  <p id="main-subtitle" style="font-size:9px;letter-spacing:4px;color:#444;text-align:center;width:100%;">משחק זירה · 60 שניות · הכי הרבה הרגות מנצח</p>
+    text-align:center;width:100%;">SHOOT FIGHT</h1>
+  <p id="main-subtitle" style="font-size:9px;letter-spacing:4px;color:#444;text-align:center;width:100%;">ARENA SHOOTER · 60 SEC · MOST KILLS WINS</p>
 
   <!-- Player count picker — hidden when showing end-of-game result -->
   <div id="setup-section">
-    <div id="num-players-label" style="font-size:8px;letter-spacing:4px;color:#555;margin-top:14px;margin-bottom:0;text-align:center;width:100%;">מספר שחקנים</div>
+    <div id="num-players-label" style="font-size:8px;letter-spacing:4px;color:#555;margin-top:14px;margin-bottom:0;text-align:center;width:100%;">NUMBER OF PLAYERS</div>
     <div id="pcount-row">
-      <div class="pcount-btn active" data-n="2"><span class="num">2</span><span class="lbl">שחקנים</span></div>
-      <div class="pcount-btn"        data-n="3"><span class="num">3</span><span class="lbl">שחקנים</span></div>
-      <div class="pcount-btn"        data-n="4"><span class="num">4</span><span class="lbl">שחקנים</span></div>
+      <div class="pcount-btn active" data-n="2"><span class="num">2</span><span class="lbl">PLAYERS</span></div>
+      <div class="pcount-btn"        data-n="3"><span class="num">3</span><span class="lbl">PLAYERS</span></div>
+      <div class="pcount-btn"        data-n="4"><span class="num">4</span><span class="lbl">PLAYERS</span></div>
     </div>
     <div id="char-rows"></div>
   </div>
 
-  <button id="start-btn" onclick="startGame()">התחל משחק</button>
-  <button id="home-page-btn" onclick="try{window.top.location.replace('https://arnonmaya.github.io/games/')}catch(e){window.location.replace('https://arnonmaya.github.io/games/')}" style="margin-top:10px;padding:9px 32px;background:transparent;border:1px solid #444;color:#666;font-family:'Orbitron',monospace;font-size:9px;letter-spacing:3px;cursor:pointer;transition:all .2s;display:block;margin-left:auto;margin-right:auto;" onmouseover="this.style.borderColor='#888';this.style.color='#aaa'" onmouseout="this.style.borderColor='#444';this.style.color='#666'">חזור לדף הבית ←</button>
+  <button id="start-btn" onclick="startGame()">START GAME</button>
+  <button id="home-page-btn" onclick="try{window.top.location.replace('https://arnonmaya.github.io/games/')}catch(e){window.location.replace('https://arnonmaya.github.io/games/')}" style="margin-top:10px;padding:9px 32px;background:transparent;border:1px solid #444;color:#666;font-family:'Orbitron',monospace;font-size:9px;letter-spacing:3px;cursor:pointer;transition:all .2s;display:block;margin-left:auto;margin-right:auto;" onmouseover="this.style.borderColor='#888';this.style.color='#aaa'" onmouseout="this.style.borderColor='#444';this.style.color='#666'">← BACK TO HOME PAGE</button>
 
   <div id="winner-text"></div>
   <div id="replay-ring-wrap">
@@ -169,7 +169,7 @@
 // ═══════════════════════════════════════════════════════
 //  LANGUAGE SYSTEM
 // ═══════════════════════════════════════════════════════
-let lang = 'he'; // default Hebrew
+let lang = 'en'; // default English
 
 const TRANSLATIONS = {
   en: {
