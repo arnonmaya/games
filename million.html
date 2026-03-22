@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Race to a Million / מירוץ למיליון</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;700&family=Space+Mono:wght@400;700&family=Rubik:wght@400;700;900&family=Heebo:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #f5c518;
+    --gold2: #e6a800;
+    --dark: #0a0a12;
+    --panel: #12121f;
+    --border: #2a2a45;
+    --accent: #4f8ef7;
+    --green: #22c55e;
+    --red: #ef4444;
+    --text: #e8e8f0;
+    --muted: #6b7280;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--dark);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 0%, rgba(79,142,247,0.08) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 40% at 80% 80%, rgba(245,197,24,0.06) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .stars { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+  .star {
+    position: absolute; background: white; border-radius: 50%;
+    animation: twinkle var(--d, 3s) ease-in-out infinite var(--delay, 0s);
+  }
+  @keyframes twinkle {
+    0%, 100% { opacity: 0.1; transform: scale(1); }
+    50% { opacity: 0.7; transform: scale(1.3); }
+  }
+
+  .container {
+    position: relative; z-index: 1;
+    width: 100%; max-width: 780px; padding: 20px;
+  }
+
+  .screen { display: none; animation: fadeIn 0.5s ease; }
+  .screen.active { display: flex; flex-direction: column; align-items: center; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* RTL support */
+  body.rtl { direction: rtl; }
+  body.rtl .answer-btn { text-align: right; flex-direction: row-reverse; }
+  body.rtl .game-header { flex-direction: row-reverse; }
+  body.rtl .prize-row { flex-direction: row-reverse; }
+  body.rtl .back-btn { transform: none; }
+  body.rtl .game-header { flex-direction: row; }
+
+  /* CORNER LANGUAGE SWITCHER */
+  .lang-corner {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    z-index: 100;
+    display: flex;
+    gap: 6px;
+  }
+
+  .lang-corner-btn {
+    background: rgba(18,18,31,0.85);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 6px 12px;
+    font-size: 0.72rem;
+    color: var(--muted);
+    cursor: pointer;
+    font-family: 'Space Mono', monospace;
+    transition: all 0.2s;
+    letter-spacing: 0.5px;
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    text-decoration: none;
+  }
+
+  .lang-corner-btn:hover {
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+
+  .lang-corner-btn.active {
+    border-color: var(--gold);
+    color: var(--gold);
+    background: rgba(245,197,24,0.1);
+  }
+
+  /* INTRO SCREEN */
+  .logo { text-align: center; margin-bottom: 36px; }
+  .logo .top-line {
+    font-size: 0.82rem;
+    letter-spacing: 6px;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .logo h1 {
+    font-family: 'Bebas Neue', cursive;
+    font-size: clamp(3.5rem, 9vw, 5.5rem);
+    font-weight: 400;
+    line-height: 0.95;
+    letter-spacing: 3px;
+    background: linear-gradient(135deg, var(--gold) 0%, #fff8e0 40%, var(--gold2) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 0 40px rgba(245,197,24,0.3));
+  }
+  .logo h1.heb {
+    font-family: 'Rubik', sans-serif;
+    font-weight: 900;
+    font-size: clamp(3rem, 8vw, 5rem);
+    letter-spacing: -1px;
+  }
+  .logo .subtitle { font-size: 0.9rem; color: var(--muted); margin-top: 10px; letter-spacing: 2px; }
+
+  .prize-ladder-intro {
+    display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin: 28px 0;
+  }
+  .prize-pill {
+    background: rgba(245,197,24,0.08);
+    border: 1px solid rgba(245,197,24,0.2);
+    border-radius: 30px;
+    padding: 6px 14px;
+    font-size: 0.78rem;
+    color: var(--gold);
+    font-family: 'Space Mono', monospace;
+  }
+  .prize-pill.big {
+    background: rgba(245,197,24,0.15);
+    border-color: rgba(245,197,24,0.5);
+    font-size: 0.88rem;
+    font-weight: 700;
+    padding: 8px 20px;
+  }
+
+  .intro-desc {
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.9rem;
+    margin-bottom: 24px;
+    max-width: 400px;
+    line-height: 1.7;
+  }
+
+  .btn-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; justify-content: center; }
+
+  .btn-start {
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold2) 100%);
+    color: #0a0a00;
+    border: none;
+    border-radius: 50px;
+    padding: 18px 55px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 8px 40px rgba(245,197,24,0.35);
+    transition: all 0.2s;
+    letter-spacing: 1px;
+  }
+  .btn-start:hover { transform: translateY(-3px) scale(1.03); box-shadow: 0 14px 50px rgba(245,197,24,0.5); }
+  .btn-start:active { transform: scale(0.98); }
+
+
+
+  /* GAME HEADER */
+  .game-header {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+    gap: 12px;
+  }
+  .back-btn {
+    background: rgba(255,255,255,0.06);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    width: 40px; height: 40px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.3rem; color: var(--muted); cursor: pointer;
+    transition: all 0.2s; flex-shrink: 0;
+  }
+  .back-btn:hover { background: rgba(239,68,68,0.12); border-color: var(--red); color: var(--red); }
+
+  .question-number { font-size: 0.78rem; color: var(--muted); font-family: 'Space Mono', monospace; letter-spacing: 2px; text-transform: uppercase; }
+  .current-prize { font-family: 'Bebas Neue', cursive; font-size: 1.5rem; color: var(--gold); letter-spacing: 2px; }
+
+  .lifelines { display: flex; gap: 10px; }
+  .lifeline-btn {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    width: 44px; height: 44px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.2rem; cursor: pointer; transition: all 0.2s; position: relative;
+  }
+  .lifeline-btn:hover:not(.used) { background: rgba(79,142,247,0.15); border-color: var(--accent); transform: scale(1.1); }
+  .lifeline-btn.used { opacity: 0.25; cursor: not-allowed; filter: grayscale(1); }
+  .lifeline-label {
+    position: absolute; bottom: -18px; left: 50%; transform: translateX(-50%);
+    font-size: 0.48rem; color: var(--muted); white-space: nowrap;
+    font-family: 'Space Mono', monospace; text-transform: uppercase; letter-spacing: 0.5px;
+  }
+
+  /* PRIZE PROGRESS */
+  .prize-progress { width: 100%; display: flex; gap: 4px; margin-bottom: 28px; }
+  .prize-step { flex: 1; height: 4px; border-radius: 2px; background: var(--border); transition: background 0.4s; }
+  .prize-step.done { background: var(--gold2); }
+  .prize-step.current { background: var(--gold); box-shadow: 0 0 8px rgba(245,197,24,0.6); }
+
+  /* QUESTION */
+  .question-box {
+    width: 100%;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 32px;
+    text-align: center;
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .question-box::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  }
+  .question-text { font-size: clamp(1rem, 2.5vw, 1.25rem); font-weight: 500; line-height: 1.6; color: #fff; }
+
+  /* ANSWERS */
+  .answers-grid {
+    width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;
+  }
+  .answer-btn {
+    background: var(--panel);
+    border: 1.5px solid var(--border);
+    border-radius: 14px;
+    padding: 18px 16px;
+    font-size: 0.95rem; font-weight: 500;
+    color: var(--text); cursor: pointer;
+    display: flex; align-items: center; gap: 12px;
+    text-align: left;
+    transition: all 0.2s; position: relative; overflow: hidden;
+  }
+  .answer-btn .letter {
+    min-width: 32px; height: 32px; border-radius: 8px;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.75rem; font-weight: 700; color: var(--gold);
+    flex-shrink: 0; transition: all 0.2s;
+    font-family: 'Space Mono', monospace;
+  }
+  .answer-btn:hover:not(:disabled) { border-color: var(--accent); background: rgba(79,142,247,0.1); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(79,142,247,0.15); }
+  .answer-btn:hover:not(:disabled) .letter { background: var(--accent); border-color: var(--accent); color: white; }
+  .answer-btn.selected { border-color: var(--gold); background: rgba(245,197,24,0.1); animation: pulse-gold 0.6s ease; }
+  .answer-btn.selected .letter { background: var(--gold); color: #000; border-color: var(--gold); }
+  .answer-btn.correct { border-color: var(--green); background: rgba(34,197,94,0.15); }
+  .answer-btn.correct .letter { background: var(--green); color: white; border-color: var(--green); }
+  .answer-btn.wrong { border-color: var(--red); background: rgba(239,68,68,0.15); animation: shake 0.4s ease; }
+  .answer-btn.wrong .letter { background: var(--red); color: white; border-color: var(--red); }
+  .answer-btn.hidden { opacity: 0.2; pointer-events: none; }
+  .answer-btn:disabled { cursor: not-allowed; }
+
+  @keyframes pulse-gold { 0%{transform:scale(1)} 50%{transform:scale(1.02);box-shadow:0 0 25px rgba(245,197,24,0.4)} 100%{transform:scale(1)} }
+  @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+
+  /* TIMER */
+  .timer-bar-wrap { width: 100%; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; margin-bottom: 20px; }
+  .timer-bar { height: 100%; background: linear-gradient(90deg, var(--green), var(--gold), var(--red)); border-radius: 3px; transition: width 1s linear; }
+
+  /* FEEDBACK */
+  .feedback-msg { text-align: center; font-size: 1rem; font-weight: 700; min-height: 28px; margin-bottom: 8px; font-family: 'Space Mono', monospace; }
+  .feedback-msg.correct { color: var(--green); }
+  .feedback-msg.wrong { color: var(--red); }
+
+  /* LIFELINE RESULT */
+  .lifeline-result {
+    width: 100%;
+    background: rgba(79,142,247,0.08);
+    border: 1px solid rgba(79,142,247,0.25);
+    border-radius: 12px;
+    padding: 14px 18px;
+    font-size: 0.85rem;
+    color: var(--accent);
+    font-family: 'Space Mono', monospace;
+    margin-bottom: 16px;
+    display: none;
+    animation: fadeIn 0.3s ease;
+  }
+
+  /* PRIZE LIST */
+  .prize-list { width: 100%; display: flex; flex-direction: column; gap: 4px; margin-top: 20px; }
+  .prize-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 7px 14px; border-radius: 8px;
+    font-family: 'Space Mono', monospace; font-size: 0.75rem; color: var(--muted); transition: all 0.3s;
+  }
+  .prize-row.current-row { background: rgba(245,197,24,0.1); border: 1px solid rgba(245,197,24,0.3); color: var(--gold); font-weight: 700; }
+  .prize-row.done-row { color: rgba(34,197,94,0.7); }
+
+  /* END SCREEN */
+  .end-box { text-align: center; padding: 40px 20px; }
+  .end-emoji { font-size: 5rem; margin-bottom: 20px; display: block; }
+  .end-title { font-family: 'Bebas Neue', cursive; font-size: 2.8rem; letter-spacing: 4px; margin-bottom: 10px; }
+  .end-title.heb { font-family: 'Rubik', sans-serif; font-weight: 900; font-size: 2.2rem; letter-spacing: 0; }
+  .end-prize {
+    font-family: 'Bebas Neue', cursive; font-size: 4rem; letter-spacing: 4px;
+    background: linear-gradient(135deg, var(--gold), #fff8e0);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    filter: drop-shadow(0 0 30px rgba(245,197,24,0.4));
+    margin: 10px 0 30px;
+  }
+  .end-subtitle { color: var(--muted); font-size: 1rem; margin-bottom: 30px; }
+  .btn-play-again {
+    background: linear-gradient(135deg, var(--gold), var(--gold2));
+    color: #000; border: none; border-radius: 50px;
+    padding: 16px 50px; font-size: 1rem; font-weight: 700;
+    cursor: pointer; box-shadow: 0 6px 30px rgba(245,197,24,0.3); transition: all 0.2s; letter-spacing: 1px;
+  }
+  .btn-play-again:hover { transform: translateY(-2px); box-shadow: 0 10px 40px rgba(245,197,24,0.5); }
+  .countdown-msg { margin-top: 16px; font-family: 'Space Mono', monospace; font-size: 0.72rem; color: var(--muted); min-height: 24px; letter-spacing: 1px; }
+  .countdown-num { display: inline-block; color: var(--gold); font-weight: 700; }
+
+  /* CONFETTI */
+  .confetti-piece {
+    position: fixed; width: 10px; height: 10px; top: -20px; border-radius: 2px;
+    animation: confettiFall linear forwards; z-index: 100; pointer-events: none;
+  }
+  @keyframes confettiFall { to { top: 110vh; transform: rotate(720deg); opacity: 0; } }
+
+  @media (max-width: 500px) {
+    .answers-grid { grid-template-columns: 1fr; }
+    .logo h1 { font-size: 3rem; }
+    .lang-btn { min-width: 140px; padding: 24px 28px; }
+  }
+</style>
+</head>
+<body>
+<div class="stars" id="stars"></div>
+
+<!-- CORNER LANGUAGE BUTTONS -->
+<div class="lang-corner">
+  <a class="lang-corner-btn" href="https://arnonmaya.github.io/games/" target="_blank">🏠 בית</a>
+  <button class="lang-corner-btn active" id="btn-en" onclick="setLanguage('en')">🇺🇸 EN</button>
+  <button class="lang-corner-btn" id="btn-he" onclick="setLanguage('he')">🇮🇱 עב</button>
+</div>
+
+<div class="container">
+
+  <!-- INTRO -->
+  <div class="screen active" id="screen-intro">
+    <div class="logo">
+      <div class="top-line" id="intro-top-line">★ THE GAME ★</div>
+      <h1 id="intro-h1">RACE TO<br>A MILLION</h1>
+      <div class="subtitle" id="intro-subtitle">10 questions · 3 lifelines · safe havens</div>
+    </div>
+    <div class="prize-ladder-intro" id="prize-ladder"></div>
+    <div class="intro-desc" id="intro-desc"></div>
+    <div class="btn-row">
+      <button class="btn-start" id="btn-start-game" onclick="startGame()">▶ &nbsp; START</button>
+    </div>
+  </div>
+
+  <!-- GAME -->
+  <div class="screen" id="screen-game">
+    <div class="game-header">
+      <button class="back-btn" onclick="goHome()" style="transform:none !important;">&#8592;</button>
+      <div>
+        <div class="question-number" id="q-number">QUESTION 1 OF 10</div>
+        <div class="current-prize" id="q-prize">$1,000</div>
+      </div>
+      <div class="lifelines">
+        <div class="lifeline-btn" id="ll-fifty" onclick="useFiftyFifty()">
+          <span>½</span>
+          <span class="lifeline-label" id="ll-fifty-label">50/50</span>
+        </div>
+        <div class="lifeline-btn" id="ll-audience" onclick="useAudience()">
+          <span>👥</span>
+          <span class="lifeline-label" id="ll-audience-label">Audience</span>
+        </div>
+        <div class="lifeline-btn" id="ll-stop" onclick="useStop()">
+          <span>🛑</span>
+          <span class="lifeline-label" id="ll-stop-label">Walk Away</span>
+        </div>
+      </div>
+    </div>
+    <div class="prize-progress" id="prize-progress"></div>
+    <div class="timer-bar-wrap"><div class="timer-bar" id="timer-bar"></div></div>
+    <div class="question-box"><div class="question-text" id="question-text">...</div></div>
+    <div class="lifeline-result" id="lifeline-result"></div>
+    <div class="feedback-msg" id="feedback-msg"></div>
+    <div class="answers-grid" id="answers-grid"></div>
+    <div class="prize-list" id="prize-list"></div>
+  </div>
+
+  <!-- END -->
+  <div class="screen" id="screen-end">
+    <div class="end-box">
+      <span class="end-emoji" id="end-emoji">🏆</span>
+      <div class="end-title" id="end-title">YOU WON!</div>
+      <div class="end-prize" id="end-prize">$1,000,000</div>
+      <div class="end-subtitle" id="end-subtitle"></div>
+      <button class="btn-play-again" id="btn-play-again" onclick="startGame()">🔄 Play Again</button>
+      <div class="countdown-msg" id="countdown-msg"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ===== TRANSLATIONS =====
+const T = {
+  en: {
+    dir: 'ltr',
+    topLine: '★  T H E  G A M E  ★',
+    titleFont: 'Bebas Neue',
+    titleClass: '',
+    titleText: 'RACE TO\nA MILLION',
+    subtitle: '10 questions · 3 lifelines · safe havens',
+    descHTML: 'Answer 10 questions correctly to win a million dollars!<br>You have <strong style="color:var(--text)">3 lifelines</strong>: 50/50, Ask the Audience, and Walk Away.',
+    startBtn: '▶ &nbsp; START PLAYING',
+    prizes: ["$1,000","$5,000","$10,000","$25,000","$50,000","$100,000","$200,000","$300,000","$500,000","$1,000,000"],
+    letters: ['A','B','C','D'],
+    questionOf: (n) => `QUESTION ${n} OF 10`,
+    feedbackCorrect: '✓  Correct!',
+    feedbackWrong: '✗  Wrong answer. Game over.',
+    feedbackTimeUp: '⏱  Time\'s up!',
+    lifelineFiftyResult: '50/50: Two wrong answers removed!',
+    lifelineAudiencePrefix: '📊 Audience Says: ',
+    lifelineStopResult: (p) => `🛑 You walked away with ${p}!`,
+    endWonTitle: 'YOU WON!',
+    endWonSubtitle: 'You answered all 10 questions correctly. Incredible!',
+    endLostTitle: 'GAME OVER',
+    endLostSubtitleZero: "You didn't reach a safe haven. Try again!",
+    endLostSubtitle: (p) => `You leave with ${p} from your last safe haven.`,
+    endStopTitle: 'SMART MOVE!',
+    endStopSubtitle: 'You chose to walk away and take the money.',
+    endZeroPrize: '$0',
+    playAgain: '🔄  Play Again',
+    countdownMsg: (n) => `RETURNING HOME IN <span class="countdown-num" id="cd-num">${n}</span>...`,
+    ll50Label: '50/50',
+    llAudienceLabel: 'Audience',
+    llStopLabel: 'Walk Away',
+    qLabel: (i) => `Q${i+1}`,
+    checkIcon: '✓',
+    currentIcon: '▶',
+  },
+  he: {
+    dir: 'rtl',
+    topLine: '★ המשחק ★',
+    titleFont: 'Rubik',
+    titleClass: 'heb',
+    titleText: 'מירוץ למיליון',
+    subtitle: '10 שאלות · 3 עזרות · נקודות בטחון',
+    descHTML: 'ענה נכון על 10 שאלות ותרוויח מיליון שקל!<br>יש לך <strong style="color:var(--text)">3 עזרות</strong>: 50/50, קהל, ועצור והרוויח.',
+    startBtn: '▶ התחל לשחק',
+    prizes: ["₪1,000","₪5,000","₪10,000","₪25,000","₪50,000","₪100,000","₪200,000","₪300,000","₪500,000","₪1,000,000"],
+    letters: ['א','ב','ג','ד'],
+    questionOf: (n) => `שאלה ${n} מתוך 10`,
+    feedbackCorrect: '✅ נכון מאוד!',
+    feedbackWrong: '❌ טעות! המשחק נגמר.',
+    feedbackTimeUp: '⏱ נגמר הזמן!',
+    lifelineFiftyResult: '50/50: שתי תשובות שגויות הוסרו!',
+    lifelineAudiencePrefix: '📊 תוצאות הקהל: ',
+    lifelineStopResult: (p) => `🛑 עצרת! הרווחת ${p} ויצאת בשלום.`,
+    endWonTitle: 'ניצחת!',
+    endWonSubtitle: 'ענית נכון על כל 10 השאלות! מדהים!',
+    endLostTitle: 'המשחק נגמר',
+    endLostSubtitleZero: 'לא הגעת לאף נקודת בטחון. נסה שוב!',
+    endLostSubtitle: (p) => `יצאת עם ${p} מנקודת הבטחון האחרונה.`,
+    endStopTitle: 'החלטה חכמה!',
+    endStopSubtitle: 'בחרת לעצור ולקחת את הכסף בשלב זה.',
+    endZeroPrize: '₪0',
+    playAgain: '🔄 שחק שוב',
+    countdownMsg: (n) => `חוזר לדף הראשי בעוד <span class="countdown-num" id="cd-num">${n}</span> שניות...`,
+    ll50Label: '50/50',
+    llAudienceLabel: 'קהל',
+    llStopLabel: 'עצור',
+    qLabel: (i) => `שאלה ${i+1}`,
+    checkIcon: '✓',
+    currentIcon: '▶',
+  }
+};
+
+// ===== QUESTIONS =====
+const questions_en = {
+  easy: [
+    { q: "What is the capital of France?", a: ["Berlin","Madrid","Paris","Rome"], correct: 2 },
+    { q: "How many days are in a week?", a: ["5","6","7","8"], correct: 2 },
+    { q: "What color do you get mixing red and white?", a: ["Orange","Pink","Purple","Yellow"], correct: 1 },
+    { q: "How many legs does a dog have?", a: ["2","4","6","8"], correct: 1 },
+    { q: "What comes after Wednesday?", a: ["Monday","Tuesday","Thursday","Friday"], correct: 2 },
+    { q: "How many months are in a year?", a: ["10","11","12","13"], correct: 2 },
+    { q: "Which fruit is yellow and sour?", a: ["Apple","Orange","Lemon","Grape"], correct: 2 },
+    { q: "How many seconds are in a minute?", a: ["30","60","90","100"], correct: 1 },
+    { q: "Which planet do we live on?", a: ["Mars","Venus","Jupiter","Earth"], correct: 3 },
+    { q: "What is the opposite of 'hot'?", a: ["Warm","Cold","Dry","Wet"], correct: 1 },
+  ],
+  medium: [
+    { q: "Who painted the Mona Lisa?", a: ["Michelangelo","Raphael","Leonardo da Vinci","Rembrandt"], correct: 2 },
+    { q: "How many players are on a soccer team?", a: ["9","10","11","12"], correct: 2 },
+    { q: "Which star is closest to Earth?", a: ["Moon","Mars","The Sun","Venus"], correct: 2 },
+    { q: "How many sides does a triangle have?", a: ["2","3","4","5"], correct: 1 },
+    { q: "Which country is the largest by area?", a: ["China","USA","Canada","Russia"], correct: 3 },
+    { q: "Who wrote Romeo and Juliet?", a: ["Chaucer","Shakespeare","Dickens","Milton"], correct: 1 },
+    { q: "What color do you get mixing red and blue?", a: ["Green","Orange","Purple","Brown"], correct: 2 },
+    { q: "How many kilometers is a marathon?", a: ["21","38","42.195","50"], correct: 2 },
+    { q: "What is the chemical symbol for water?", a: ["CO2","NaCl","H2O","O2"], correct: 2 },
+    { q: "What year was the Eiffel Tower completed?", a: ["1879","1885","1889","1895"], correct: 2 },
+  ],
+  hard: [
+    { q: "What is the closest planet to the Sun?", a: ["Venus","Earth","Mars","Mercury"], correct: 3 },
+    { q: "How many bones are in the adult human body?", a: ["186","206","226","246"], correct: 1 },
+    { q: "Who invented the telephone?", a: ["Edison","Tesla","Alexander Graham Bell","Marconi"], correct: 2 },
+    { q: "How many elements are in the periodic table (2024)?", a: ["108","112","118","124"], correct: 2 },
+    { q: "Who wrote 'The Brothers Karamazov'?", a: ["Tolstoy","Chekhov","Dostoevsky","Gorky"], correct: 2 },
+    { q: "What is the speed of light per second?", a: ["30,000 km","300,000 km","3,000,000 km","3,000 km"], correct: 1 },
+    { q: "What is the chemical symbol for gold?", a: ["Go","Gd","Au","Ag"], correct: 2 },
+    { q: "What is the chemical symbol for silver?", a: ["Si","Sv","Au","Ag"], correct: 3 },
+  ],
+  veryhard: [
+    { q: "In what year did Einstein receive the Nobel Prize in Physics?", a: ["1915","1918","1921","1925"], correct: 2 },
+    { q: "How many neurons does the average human brain contain?", a: ["8 billion","86 billion","150 billion","500 billion"], correct: 1 },
+    { q: "What is the average distance from Earth to the Sun?", a: ["150 million km","300 million km","50 million km","1 billion km"], correct: 0 },
+    { q: "Probability of flipping heads 10 times in a row?", a: ["1/512","1/1024","1/256","1/2048"], correct: 1 },
+    { q: "In what year was Albert Einstein born?", a: ["1869","1874","1879","1885"], correct: 2 },
+    { q: "In what year did Neil Armstrong walk on the Moon?", a: ["1965","1967","1969","1971"], correct: 2 },
+  ]
+};
+
+const questions_he = {
+  easy: [
+    { q: "מה הבירה של ישראל?", a: ["ירושלים","תל אביב","חיפה","באר שבע"], correct: 0 },
+    { q: "כמה ימים יש בשבוע?", a: ["5","6","7","8"], correct: 2 },
+    { q: "מה הצבע של עלי עצים בקיץ?", a: ["צהוב","כתום","ירוק","אדום"], correct: 2 },
+    { q: "כמה רגליים לכלב?", a: ["2","4","6","8"], correct: 1 },
+    { q: "מה בא אחרי יום שלישי?", a: ["יום שני","יום רביעי","יום חמישי","שבת"], correct: 1 },
+    { q: "כמה חודשים יש בשנה?", a: ["10","11","12","13"], correct: 2 },
+    { q: "איזה פרי הוא צהוב וחמוץ?", a: ["תפוח","תפוז","לימון","ענב"], correct: 2 },
+    { q: "כמה שניות יש בדקה?", a: ["30","60","90","100"], correct: 1 },
+    { q: "באיזה ים גובל החוף המערבי של ישראל?", a: ["ים סוף","ים המלח","הים התיכון","כנרת"], correct: 2 },
+    { q: "מה היפוך של 'גדול'?", a: ["ארוך","קצר","קטן","רחב"], correct: 2 },
+  ],
+  medium: [
+    { q: "מי כתב את 'המדינה היהודית'?", a: ["דוד בן גוריון","תיאודור הרצל","חיים וייצמן","מנחם בגין"], correct: 1 },
+    { q: "כמה שחקנים בקבוצת כדורגל?", a: ["9","10","11","12"], correct: 2 },
+    { q: "איזה כוכב הכי קרוב לכדור הארץ?", a: ["ירח","מאדים","שמש","נוגה"], correct: 2 },
+    { q: "מי צייר את 'מונה ליזה'?", a: ["מיכלאנג'לו","רפאל","לאונרדו דה וינצ'י","רמברנדט"], correct: 2 },
+    { q: "כמה צלעות למשולש?", a: ["2","3","4","5"], correct: 1 },
+    { q: "באיזו שנה הוקמה מדינת ישראל?", a: ["1945","1947","1948","1949"], correct: 2 },
+    { q: "מה הצבע המתקבל מערוב אדום וכחול?", a: ["ירוק","כתום","סגול","חום"], correct: 2 },
+    { q: "כמה קילומטר במרתון?", a: ["21","38","42.195","50"], correct: 2 },
+    { q: "מי כתב את 'רומיאו ויוליה'?", a: ["צ'וסר","שייקספיר","דיקנס","מילטון"], correct: 1 },
+    { q: "איזו מדינה גדולה ביותר בשטחה?", a: ["סין","ארצות הברית","קנדה","רוסיה"], correct: 3 },
+  ],
+  hard: [
+    { q: "מה השם הכימי של מים?", a: ["CO2","NaCl","H2O","O2"], correct: 2 },
+    { q: "מה הפלנטה הקרובה ביותר לשמש?", a: ["נוגה","כדור הארץ","מאדים","כוכב חמה"], correct: 3 },
+    { q: "כמה עצמות יש בגוף האדם?", a: ["186","206","226","246"], correct: 1 },
+    { q: "מי המציא את הטלפון?", a: ["אדיסון","טסלה","גרהם בל","מרקוני"], correct: 2 },
+    { q: "כמה אלמנטים בטבלה המחזורית (2024)?", a: ["108","112","118","124"], correct: 2 },
+    { q: "מי כתב את 'האחים קרמזוב'?", a: ["טולסטוי","צ'כוב","דוסטויבסקי","גורקי"], correct: 2 },
+    { q: "מהי מהירות האור בשניה?", a: ["30,000 קמ","300,000 קמ","3,000,000 קמ","3,000 קמ"], correct: 1 },
+    { q: "מה הסמל הכימי של זהב?", a: ["Go","Gd","Au","Ag"], correct: 2 },
+  ],
+  veryhard: [
+    { q: "מי היה הנשיא הראשון של מדינת ישראל?", a: ["דוד בן גוריון","חיים וייצמן","משה שרת","יצחק בן צבי"], correct: 1 },
+    { q: "כמה ק\"מ מרחק ממוצע בין כדור הארץ לשמש?", a: ["150 מיליון","300 מיליון","50 מיליון","1 מיליארד"], correct: 0 },
+    { q: "מה שנת הולדתו של אלברט איינשטיין?", a: ["1869","1874","1879","1885"], correct: 2 },
+    { q: "כמה נוירונים יש במוח האדם בממוצע?", a: ["8 מיליארד","86 מיליארד","150 מיליארד","500 מיליארד"], correct: 1 },
+    { q: "מי זכה בפרס נובל לפיזיקה ב-1921?", a: ["ניוטון","קירי","איינשטיין","בוהר"], correct: 2 },
+    { q: "באיזו שנה נחת האדם הראשון על הירח?", a: ["1965","1967","1969","1971"], correct: 2 },
+  ]
+};
+
+// ===== STATE =====
+let lang = 'en';
+let t = T.en;
+let pool = questions_en;
+let currentQ = 0;
+let gameQuestions = [];
+let lifelines = { fifty: false, audience: false, stop: false };
+let timerInterval = null;
+let countdownInterval = null;
+let timeLeft = 30;
+let answered = false;
+const safeHavens = [0, 4, 9];
+
+// ===== INIT =====
+function createStars() {
+  const c = document.getElementById('stars');
+  for (let i = 0; i < 80; i++) {
+    const s = document.createElement('div');
+    s.className = 'star';
+    const sz = Math.random() * 2.5 + 0.5;
+    s.style.cssText = `width:${sz}px;height:${sz}px;top:${Math.random()*100}vh;left:${Math.random()*100}vw;--d:${2+Math.random()*4}s;--delay:${Math.random()*3}s;`;
+    c.appendChild(s);
+  }
+}
+
+function setLanguage(l) {
+  lang = l;
+  t = T[l];
+  pool = l === 'he' ? questions_he : questions_en;
+  document.body.dir = t.dir;
+  if (l === 'he') document.body.classList.add('rtl');
+  else document.body.classList.remove('rtl');
+
+  // Update corner button active states
+  document.getElementById('btn-en').classList.toggle('active', l === 'en');
+  document.getElementById('btn-he').classList.toggle('active', l === 'he');
+
+  // Update intro
+  document.getElementById('intro-top-line').textContent = t.topLine;
+  const h1 = document.getElementById('intro-h1');
+  h1.className = 'h1 ' + t.titleClass;
+  h1.style.fontFamily = `'${t.titleFont}', cursive`;
+  h1.innerHTML = t.titleText.replace('\n','<br>');
+  document.getElementById('intro-subtitle').textContent = t.subtitle;
+  document.getElementById('intro-desc').innerHTML = t.descHTML;
+  document.getElementById('btn-start-game').innerHTML = t.startBtn;
+
+  // Update prize ladder
+  const ladder = document.getElementById('prize-ladder');
+  ladder.innerHTML = '';
+  t.prizes.slice(0,-1).forEach(p => {
+    const span = document.createElement('span');
+    span.className = 'prize-pill';
+    span.textContent = p;
+    ladder.appendChild(span);
+  });
+  const big = document.createElement('span');
+  big.className = 'prize-pill big';
+  big.textContent = '🏆 ' + t.prizes[9];
+  ladder.appendChild(big);
+
+  // Update lifeline labels
+  document.getElementById('ll-fifty-label').textContent = t.ll50Label;
+  document.getElementById('ll-audience-label').textContent = t.llAudienceLabel;
+  document.getElementById('ll-stop-label').textContent = t.llStopLabel;
+
+  document.getElementById('btn-play-again').innerHTML = t.playAgain;
+
+  // If currently on intro or lang screen, stay on intro
+  const active = document.querySelector('.screen.active');
+  if (!active || active.id === 'screen-intro' || active.id === 'screen-lang') {
+    showScreen('screen-intro');
+  }
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function pickQuestions() {
+  const shuffle = arr => [...arr].sort(() => Math.random() - 0.5);
+  const pick = (arr, n) => shuffle(arr).slice(0, n);
+  return [
+    ...pick(pool.easy, 3),
+    ...pick(pool.medium, 3),
+    ...pick(pool.hard, 2),
+    ...pick(pool.veryhard, 2),
+  ];
+}
+
+function startGame() {
+  clearInterval(countdownInterval);
+  document.getElementById('countdown-msg').textContent = '';
+  gameQuestions = pickQuestions();
+  currentQ = 0;
+  lifelines = { fifty: false, audience: false, stop: false };
+  answered = false;
+  showScreen('screen-game');
+  renderQuestion();
+  renderPrizeList();
+  updateLifelineButtons();
+}
+
+function renderQuestion() {
+  answered = false;
+  const q = gameQuestions[currentQ];
+  document.getElementById('q-number').textContent = t.questionOf(currentQ + 1);
+  document.getElementById('q-prize').textContent = t.prizes[currentQ];
+  document.getElementById('question-text').textContent = q.q;
+  document.getElementById('feedback-msg').textContent = '';
+  document.getElementById('feedback-msg').className = 'feedback-msg';
+  document.getElementById('lifeline-result').style.display = 'none';
+
+  const prog = document.getElementById('prize-progress');
+  prog.innerHTML = '';
+  for (let i = 0; i < 10; i++) {
+    const step = document.createElement('div');
+    step.className = 'prize-step' + (i < currentQ ? ' done' : i === currentQ ? ' current' : '');
+    prog.appendChild(step);
+  }
+
+  const grid = document.getElementById('answers-grid');
+  grid.innerHTML = '';
+  q.a.forEach((ans, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'answer-btn';
+    btn.id = `ans-${i}`;
+    btn.innerHTML = `<span class="letter">${t.letters[i]}</span><span>${ans}</span>`;
+    btn.onclick = () => selectAnswer(i);
+    grid.appendChild(btn);
+  });
+
+  startTimer();
+  renderPrizeList();
+}
+
+function startTimer() {
+  clearInterval(timerInterval);
+  timeLeft = 30;
+  updateTimerBar();
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    updateTimerBar();
+    if (timeLeft <= 0) { clearInterval(timerInterval); if (!answered) timeUp(); }
+  }, 1000);
+}
+
+function updateTimerBar() {
+  document.getElementById('timer-bar').style.width = (timeLeft / 30 * 100) + '%';
+}
+
+function timeUp() {
+  answered = true;
+  revealAnswer(null);
+  setTimeout(() => showEnd(false), 2000);
+}
+
+function selectAnswer(idx) {
+  if (answered) return;
+  answered = true;
+  clearInterval(timerInterval);
+  document.querySelectorAll('.answer-btn').forEach(b => b.disabled = true);
+  document.getElementById(`ans-${idx}`).classList.add('selected');
+  setTimeout(() => revealAnswer(idx), 1000);
+}
+
+function revealAnswer(selected) {
+  const correct = gameQuestions[currentQ].correct;
+  document.querySelectorAll('.answer-btn').forEach(b => b.disabled = true);
+  document.getElementById(`ans-${correct}`).classList.add('correct');
+  if (selected !== null && selected !== correct) {
+    document.getElementById(`ans-${selected}`).classList.add('wrong');
+    document.getElementById(`ans-${selected}`).classList.remove('selected');
+    setFeedback('wrong', t.feedbackWrong);
+    setTimeout(() => showEnd(false), 2500);
+  } else if (selected === correct) {
+    setFeedback('correct', t.feedbackCorrect);
+    setTimeout(() => nextQuestion(), 2000);
+  }
+}
+
+function setFeedback(type, msg) {
+  const el = document.getElementById('feedback-msg');
+  el.textContent = msg;
+  el.className = 'feedback-msg ' + type;
+}
+
+function nextQuestion() {
+  currentQ++;
+  if (currentQ >= 10) showEnd(true);
+  else renderQuestion();
+}
+
+function showEnd(won) {
+  showScreen('screen-end');
+  const safePrize = getSafeHaven();
+  const endTitle = document.getElementById('end-title');
+  if (won) {
+    document.getElementById('end-emoji').textContent = '🏆';
+    endTitle.textContent = t.endWonTitle;
+    endTitle.className = 'end-title ' + t.titleClass;
+    document.getElementById('end-prize').textContent = t.prizes[9];
+    document.getElementById('end-subtitle').textContent = t.endWonSubtitle;
+    launchConfetti();
+  } else {
+    document.getElementById('end-emoji').textContent = currentQ === 0 ? '😢' : '😔';
+    endTitle.textContent = t.endLostTitle;
+    endTitle.className = 'end-title ' + t.titleClass;
+    document.getElementById('end-prize').textContent = safePrize;
+    document.getElementById('end-subtitle').textContent =
+      safePrize === t.endZeroPrize ? t.endLostSubtitleZero : t.endLostSubtitle(safePrize);
+  }
+  startReturnCountdown();
+}
+
+function getSafeHaven() {
+  for (let i = safeHavens.length - 1; i >= 0; i--) {
+    if (currentQ > safeHavens[i]) return t.prizes[safeHavens[i]];
+  }
+  return t.endZeroPrize;
+}
+
+function renderPrizeList() {
+  const list = document.getElementById('prize-list');
+  list.innerHTML = '';
+  for (let i = 9; i >= 0; i--) {
+    const row = document.createElement('div');
+    row.className = i === currentQ ? 'prize-row current-row' : i < currentQ ? 'prize-row done-row' : 'prize-row';
+    const icon = i < currentQ ? t.checkIcon : i === currentQ ? t.currentIcon : '';
+    row.innerHTML = `<span>${icon} ${t.qLabel(i)}</span><span style="font-weight:700">${t.prizes[i]}</span>`;
+    list.appendChild(row);
+  }
+}
+
+function updateLifelineButtons() {
+  ['fifty', 'audience', 'stop'].forEach(ll => {
+    const btn = document.getElementById(`ll-${ll}`);
+    if (lifelines[ll]) btn.classList.add('used');
+    else btn.classList.remove('used');
+  });
+}
+
+function useFiftyFifty() {
+  if (lifelines.fifty || answered) return;
+  lifelines.fifty = true;
+  updateLifelineButtons();
+  const correct = gameQuestions[currentQ].correct;
+  const wrong = [0,1,2,3].filter(i => i !== correct).sort(() => Math.random()-0.5).slice(0,2);
+  wrong.forEach(i => document.getElementById(`ans-${i}`).classList.add('hidden'));
+  showLifelineResult(t.lifelineFiftyResult);
+}
+
+function useAudience() {
+  if (lifelines.audience || answered) return;
+  lifelines.audience = true;
+  updateLifelineButtons();
+  const correct = gameQuestions[currentQ].correct;
+  let pcts = [0,0,0,0];
+  let rem = 100;
+  const cp = 45 + Math.floor(Math.random() * 30);
+  pcts[correct] = cp; rem -= cp;
+  const others = [0,1,2,3].filter(i => i !== correct);
+  others.forEach((o,i) => {
+    if (i === others.length - 1) pcts[o] = rem;
+    else { const p = Math.floor(Math.random() * rem * 0.6); pcts[o] = p; rem -= p; }
+  });
+  const bars = pcts.map((p,i) => `${t.letters[i]}: ${p}%`).join('  |  ');
+  showLifelineResult(t.lifelineAudiencePrefix + bars);
+}
+
+function useStop() {
+  if (lifelines.stop || answered || currentQ === 0) return;
+  lifelines.stop = true;
+  answered = true;
+  clearInterval(timerInterval);
+  updateLifelineButtons();
+  const earned = t.prizes[currentQ - 1];
+  showLifelineResult(t.lifelineStopResult(earned));
+  setTimeout(() => {
+    document.getElementById('end-emoji').textContent = '🙌';
+    const endTitle = document.getElementById('end-title');
+    endTitle.textContent = t.endStopTitle;
+    endTitle.className = 'end-title ' + t.titleClass;
+    document.getElementById('end-prize').textContent = earned;
+    document.getElementById('end-subtitle').textContent = t.endStopSubtitle;
+    showScreen('screen-end');
+    startReturnCountdown();
+  }, 2500);
+}
+
+function startReturnCountdown() {
+  let secs = 5;
+  const el = document.getElementById('countdown-msg');
+  el.innerHTML = t.countdownMsg(secs);
+  clearInterval(countdownInterval);
+  countdownInterval = setInterval(() => {
+    secs--;
+    const numEl = document.getElementById('cd-num');
+    if (numEl) numEl.textContent = secs;
+    if (secs <= 0) { clearInterval(countdownInterval); goHome(); }
+  }, 1000);
+}
+
+function goHome() {
+  clearInterval(countdownInterval);
+  document.getElementById('countdown-msg').textContent = '';
+  showScreen('screen-intro');
+}
+
+function showLifelineResult(msg) {
+  const el = document.getElementById('lifeline-result');
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
+function launchConfetti() {
+  const colors = ['#f5c518','#4f8ef7','#22c55e','#ef4444','#a855f7','#fff'];
+  for (let i = 0; i < 80; i++) {
+    setTimeout(() => {
+      const p = document.createElement('div');
+      p.className = 'confetti-piece';
+      p.style.cssText = `left:${Math.random()*100}vw;background:${colors[Math.floor(Math.random()*colors.length)]};width:${6+Math.random()*8}px;height:${6+Math.random()*8}px;animation-duration:${2+Math.random()*2}s;animation-delay:${Math.random()*1}s;border-radius:${Math.random()>0.5?'50%':'2px'};`;
+      document.body.appendChild(p);
+      setTimeout(() => p.remove(), 4000);
+    }, i * 30);
+  }
+}
+
+createStars();
+setLanguage('en');
+</script>
+</body>
+</html>
