@@ -586,6 +586,9 @@ function showGameOverUI(){
 //  MINE SPAWNING
 // ═══════════════════════════════════════════════════════
 function spawnMine(){
+  // Only one obstacle at a time — wait until the screen is clear
+  if(mines.length > 0) return;
+
   ensureAudio();
   const types=['fireball','greenball','laser','tongue','circlelaser'];
   const type=types[Math.floor(Math.random()*types.length)];
