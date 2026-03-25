@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="he" dir="rtl">
+<html lang="en" dir="ltr" id="htmlRoot">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>טריויה AI</title>
+<title>Trivia AI | טריויה AI</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{font-family:'Segoe UI',Arial,sans-serif;background:linear-gradient(135deg,#1a1a2e,#16213e,#0f3460);min-height:100vh;color:#fff;overflow-x:hidden}
@@ -30,7 +30,6 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:linear-gradient(135deg,#
 .btn-start:active{transform:scale(.97)}
 .btn-home{width:100%;padding:13px;border:1px solid rgba(255,255,255,.2);border-radius:14px;font-size:.9rem;font-weight:600;cursor:pointer;background:rgba(255,255,255,.06);color:#a0aec0;transition:all .15s;margin-top:8px;touch-action:manipulation}
 .btn-home:hover{background:rgba(255,255,255,.12);color:#fff}
-/* Player turn banner */
 .turn-banner{background:linear-gradient(135deg,rgba(233,69,96,.25),rgba(197,48,48,.15));border:1px solid rgba(233,69,96,.4);border-radius:14px;padding:12px 18px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;animation:pulse .6s ease}
 @keyframes pulse{0%{transform:scale(.97);opacity:.7}100%{transform:scale(1);opacity:1}}
 .turn-name{font-size:1.1rem;font-weight:800;color:#fff}
@@ -87,97 +86,106 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:linear-gradient(135deg,#
 .res-icon{font-size:4rem;display:block;margin-bottom:10px}
 .res-title{font-size:1.8rem;font-weight:900;margin-bottom:6px;background:linear-gradient(90deg,#e94560,#f5a623);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 .res-sub{color:#a0aec0;font-size:.88rem;margin-bottom:16px}
-/* Multiplayer podium */
 .podium{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
 .podium-row{display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:13px;padding:12px 16px}
 .podium-row.first{background:rgba(246,224,94,.12);border-color:rgba(246,224,94,.3)}
 .podium-rank{font-size:1.2rem;width:28px}
 .podium-name{font-size:1rem;font-weight:700;flex:1;text-align:right;margin-right:10px}
 .podium-pts{font-size:1.1rem;font-weight:800;color:#f6e05e}
-/* Single player stats */
 .res-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
 .r-stat{background:rgba(255,255,255,.07);border-radius:13px;padding:14px 8px;text-align:center}
 .r-val{font-size:1.8rem;font-weight:800}
 .r-lbl{color:#a0aec0;font-size:.76rem;margin-top:3px}
 .res-btns{display:flex;gap:10px;flex-wrap:wrap}
-/* Play again countdown */
 .replay-btn-wrap{position:relative;overflow:hidden;border-radius:13px;flex:1}
 .replay-btn-wrap .countdown-bar{position:absolute;bottom:0;left:0;height:3px;background:#68d391;transition:width .1s linear}
-.sound-toggle{position:fixed;top:14px;left:14px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:50%;width:38px;height:38px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1.1rem;transition:all .15s;z-index:100;touch-action:manipulation}
-.sound-toggle:hover{background:rgba(255,255,255,.18)}
+/* Top controls */
+.top-controls{position:fixed;top:14px;left:14px;display:flex;gap:8px;z-index:100}
+.ctrl-btn{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:50%;width:38px;height:38px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1rem;transition:all .15s;touch-action:manipulation}
+.ctrl-btn:hover{background:rgba(255,255,255,.18)}
+/* LTR override for English */
+html[dir=ltr] .podium-name{text-align:left;margin-right:0;margin-left:10px}
+html[dir=ltr] .ans-btn{text-align:left}
 @media(max-width:460px){.ans-grid{grid-template-columns:1fr}.logo h1{font-size:2rem}.btns{flex-wrap:wrap}.btn{min-width:80px}}
 </style>
 </head>
 <body>
 
-<!-- Sound toggle -->
-<button class="sound-toggle" id="soundBtn" onclick="toggleSound()" title="הפעל/כבה צלילים">🔊</button>
+<!-- Top controls: sound + language -->
+<div class="top-controls">
+  <button class="ctrl-btn" id="soundBtn" onclick="toggleSound()" title="Sound">🔊</button>
+  <button class="ctrl-btn" id="langBtn" onclick="toggleLang()" title="Language">🇺🇸</button>
+</div>
 
 <!-- PAGE 1: LOBBY -->
 <div class="page active" id="page1">
 <div class="inner">
   <div class="logo">
-    <h1>🧠 טריויה AI</h1>
-    <p>שאלות שנוצרות בזמן אמת על ידי בינה מלאכותית</p>
+    <h1>🧠 <span data-he="טריויה AI" data-en="Trivia AI">טריויה AI</span></h1>
+    <p data-he="שאלות שנוצרות בזמן אמת על ידי בינה מלאכותית" data-en="Questions generated in real time by artificial intelligence">שאלות שנוצרות בזמן אמת על ידי בינה מלאכותית</p>
   </div>
 
   <div class="card">
-    <div class="card-title">📋 כללי המשחק</div>
+    <div class="card-title" data-he="📋 כללי המשחק" data-en="📋 Game Rules">📋 כללי המשחק</div>
     <ul class="rules-list">
-      <li><span class="bullet">1</span><span>ה-AI מייצר שאלות חדשות ומקוריות בכל פעם — <span class="hl">אין שאלות חוזרות!</span></span></li>
-      <li><span class="bullet">2</span><span>לכל שאלה 4 תשובות אפשריות, רק אחת נכונה.</span></li>
-      <li><span class="bullet">3</span><span>על כל תשובה נכונה מקבלים <span class="hl">10 נקודות</span>. על תשובה שגויה לא מורידים.</span></li>
-      <li><span class="bullet">4</span><span>לאחר כל תשובה מוצג הסבר קצר — לומדים תוך כדי משחק.</span></li>
+      <li><span class="bullet">1</span><span data-he="ה-AI מייצר שאלות חדשות ומקוריות בכל פעם — <span class='hl'>אין שאלות חוזרות!</span>" data-en="AI generates unique questions every time — <span class='hl'>no repeats!</span>">ה-AI מייצר שאלות חדשות ומקוריות בכל פעם — <span class="hl">אין שאלות חוזרות!</span></span></li>
+      <li><span class="bullet">2</span><span data-he="לכל שאלה 4 תשובות אפשריות, רק אחת נכונה." data-en="Each question has 4 possible answers, only one is correct.">לכל שאלה 4 תשובות אפשריות, רק אחת נכונה.</span></li>
+      <li><span class="bullet">3</span><span data-he="על כל תשובה נכונה מקבלים <span class='hl'>10 נקודות</span>. על תשובה שגויה לא מורידים." data-en="Each correct answer earns <span class='hl'>10 points</span>. No penalty for wrong answers.">על כל תשובה נכונה מקבלים <span class="hl">10 נקודות</span>. על תשובה שגויה לא מורידים.</span></li>
+      <li><span class="bullet">4</span><span data-he="לאחר כל תשובה מוצג הסבר קצר — לומדים תוך כדי משחק." data-en="After each answer, a short explanation is shown — learn while you play.">לאחר כל תשובה מוצג הסבר קצר — לומדים תוך כדי משחק.</span></li>
     </ul>
   </div>
 
   <div class="card">
-    <div class="card-title">👥 מספר שחקנים</div>
+    <div class="card-title" data-he="👥 מספר שחקנים" data-en="👥 Number of Players">👥 מספר שחקנים</div>
     <div class="pill-group" id="playersGroup">
-      <button class="pill active" data-val="1">🧑 שחקן 1</button>
-      <button class="pill" data-val="2">👫 2 שחקנים</button>
-      <button class="pill" data-val="3">👨‍👩‍👦 3 שחקנים</button>
-      <button class="pill" data-val="4">👨‍👩‍👧‍👦 4 שחקנים</button>
+      <button class="pill active" data-val="1" data-he="🧑 שחקן 1" data-en="🧑 1 Player">🧑 שחקן 1</button>
+      <button class="pill" data-val="2" data-he="👫 2 שחקנים" data-en="👫 2 Players">👫 2 שחקנים</button>
+      <button class="pill" data-val="3" data-he="👨‍👩‍👦 3 שחקנים" data-en="👨‍👩‍👦 3 Players">👨‍👩‍👦 3 שחקנים</button>
+      <button class="pill" data-val="4" data-he="👨‍👩‍👧‍👦 4 שחקנים" data-en="👨‍👩‍👧‍👦 4 Players">👨‍👩‍👧‍👦 4 שחקנים</button>
     </div>
   </div>
 
   <div class="card">
-    <div class="card-title">🔢 כמה שאלות?</div>
+    <div class="card-title" data-he="🔢 כמה שאלות?" data-en="🔢 How many questions?">🔢 כמה שאלות?</div>
     <div class="pill-group" id="numGroup">
       <button class="pill" data-val="10">10</button>
       <button class="pill active" data-val="20">20</button>
       <button class="pill" data-val="30">30</button>
       <button class="pill" data-val="50">50</button>
-      <button class="pill" data-val="999">♾️ אינסוף</button>
+      <button class="pill" data-val="999" data-he="♾️ אינסוף" data-en="♾️ Endless">♾️ אינסוף</button>
     </div>
   </div>
 
   <div class="card">
-    <div class="card-title">🌍 בחר נושא</div>
+    <div class="card-title" data-he="🌍 בחר נושא" data-en="🌍 Choose Topic">🌍 בחר נושא</div>
     <div class="pill-group" id="catGroup">
-      <button class="pill active" data-val="כללי">🌍 כללי</button>
-      <button class="pill" data-val="ספורט">⚽ ספורט</button>
-      <button class="pill" data-val="היסטוריה">📜 היסטוריה</button>
-      <button class="pill" data-val="מדע">🔬 מדע</button>
-      <button class="pill" data-val="גיאוגרפיה">🗺️ גיאוגרפיה</button>
-      <button class="pill" data-val="קולנוע ומוסיקה">🎬 קולנוע</button>
-      <button class="pill" data-val="מזון ובישול">🍕 אוכל</button>
-      <button class="pill" data-val="טבע ובעלי חיים">🦁 טבע</button>
+      <button class="pill active" data-val-he="כללי" data-val="General" data-val-en="General" data-he="🌍 כללי" data-en="🌍 General">🌍 כללי</button>
+      <button class="pill" data-val-he="ספורט" data-val="ספורט" data-val-en="Sports" data-he="⚽ ספורט" data-en="⚽ Sports">⚽ ספורט</button>
+      <button class="pill" data-val-he="היסטוריה" data-val="היסטוריה" data-val-en="History" data-he="📜 היסטוריה" data-en="📜 History">📜 היסטוריה</button>
+      <button class="pill" data-val-he="מדע" data-val="מדע" data-val-en="Science" data-he="🔬 מדע" data-en="🔬 Science">🔬 מדע</button>
+      <button class="pill" data-val-he="גיאוגרפיה" data-val="גיאוגרפיה" data-val-en="Geography" data-he="🗺️ גיאוגרפיה" data-en="🗺️ Geography">🗺️ גיאוגרפיה</button>
+      <button class="pill" data-val-he="קולנוע ומוסיקה" data-val="קולנוע ומוסיקה" data-val-en="Movies & Music" data-he="🎬 קולנוע" data-en="🎬 Movies">🎬 קולנוע</button>
+      <button class="pill" data-val-he="מזון ובישול" data-val="מזון ובישול" data-val-en="Food & Cooking" data-he="🍕 אוכל" data-en="🍕 Food">🍕 אוכל</button>
+      <button class="pill" data-val-he="טבע ובעלי חיים" data-val="טבע ובעלי חיים" data-val-en="Nature & Animals" data-he="🦁 טבע" data-en="🦁 Nature">🦁 טבע</button>
     </div>
   </div>
 
   <div class="card">
-    <div class="card-title">🎯 רמת קושי</div>
+    <div class="card-title" data-he="🎯 רמת קושי" data-en="🎯 Difficulty">🎯 רמת קושי</div>
     <div class="pill-group" id="diffGroup">
-      <button class="pill active" data-val="מעורב">🎲 מעורב</button>
-      <button class="pill" data-val="קל">😊 קל</button>
-      <button class="pill" data-val="בינוני">🤔 בינוני</button>
-      <button class="pill" data-val="קשה">🔥 קשה</button>
+      <button class="pill active" data-val-he="מעורב" data-val="Mixed" data-val-en="Mixed" data-he="🎲 מעורב" data-en="🎲 Mixed">🎲 מעורב</button>
+      <button class="pill" data-val-he="קל" data-val="קל" data-val-en="Easy" data-he="😊 קל" data-en="😊 Easy">😊 קל</button>
+      <button class="pill" data-val-he="בינוני" data-val="בינוני" data-val-en="Medium" data-he="🤔 בינוני" data-en="🤔 Medium">🤔 בינוני</button>
+      <button class="pill" data-val-he="קשה" data-val="קשה" data-val-en="Hard" data-he="🔥 קשה" data-en="🔥 Hard">🔥 קשה</button>
     </div>
   </div>
 
-  <button class="btn-start" onclick="startGame()">🚀 התחל משחק!</button>
-  <button class="btn-home" onclick="window.location.href='https://arnonmaya.github.io/games/'">🏠 חזרה לדף הבית</button>
+  <button class="btn-start" onclick="startGame()">
+    <span data-he="🚀 התחל משחק!" data-en="🚀 Start Game!">🚀 התחל משחק!</span>
+  </button>
+  <button class="btn-home" onclick="window.location.href='https://arnonmaya.github.io/games/'">
+    <span data-he="🏠 חזרה לדף הבית" data-en="🏠 Back to Home">🏠 חזרה לדף הבית</span>
+  </button>
 </div>
 </div>
 
@@ -186,7 +194,9 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:linear-gradient(135deg,#
 <div class="inner">
   <div id="gameArea">
     <div class="top-bar">
-      <button class="back-btn" onclick="goBack()">← כללים</button>
+      <button class="back-btn" onclick="goBack()">
+        <span data-he="← כללים" data-en="← Rules">← כללים</span>
+      </button>
       <div class="stats-row">
         <div class="chip g">✓ <span id="sC">0</span></div>
         <div class="chip r">✗ <span id="sW">0</span></div>
@@ -194,13 +204,11 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:linear-gradient(135deg,#
       </div>
     </div>
 
-    <!-- Player scores bar (multi-player only) -->
     <div class="player-scores" id="playerScoresBar" style="display:none"></div>
 
-    <!-- Turn banner (multi-player only) -->
     <div class="turn-banner" id="turnBanner" style="display:none">
       <div>
-        <div class="turn-label">התור של</div>
+        <div class="turn-label" id="turnLabel" data-he="התור של" data-en="It's the turn of">התור של</div>
         <div class="turn-name" id="turnName">שחקן 1</div>
       </div>
       <div style="font-size:1.8rem" id="turnEmoji">🎯</div>
@@ -219,29 +227,37 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:linear-gradient(135deg,#
     <div class="expl" id="expl"></div>
 
     <div class="btns">
-      <button class="btn btn-g" id="skipBtn" onclick="loadQ()">⏭ דלג</button>
-      <button class="btn btn-end" onclick="showResult()">🏁 סיים</button>
-      <button class="btn btn-p" id="nextBtn" onclick="nextQ()" disabled>הבאה ←</button>
+      <button class="btn btn-g" id="skipBtn" onclick="loadQ()">
+        <span data-he="⏭ דלג" data-en="⏭ Skip">⏭ דלג</span>
+      </button>
+      <button class="btn btn-end" onclick="showResult()">
+        <span data-he="🏁 סיים" data-en="🏁 End">🏁 סיים</span>
+      </button>
+      <button class="btn btn-p" id="nextBtn" onclick="nextQ()" disabled>
+        <span data-he="הבאה ←" data-en="Next →">הבאה ←</span>
+      </button>
     </div>
   </div>
 
   <div id="resultArea">
     <div class="res-wrap">
       <span class="res-icon" id="rEmoji">🏆</span>
-      <div class="res-title" id="rTitle">כל הכבוד!</div>
+      <div class="res-title" id="rTitle"></div>
       <div class="res-sub" id="rSub"></div>
-      <!-- Single player stats -->
       <div class="res-stats" id="singleStats">
-        <div class="r-stat"><div class="r-val" style="color:#68d391" id="rC">0</div><div class="r-lbl">נכון</div></div>
-        <div class="r-stat"><div class="r-val" style="color:#fc8181" id="rW">0</div><div class="r-lbl">שגוי</div></div>
-        <div class="r-stat"><div class="r-val" style="color:#f6e05e" id="rS">0</div><div class="r-lbl">נקודות</div></div>
+        <div class="r-stat"><div class="r-val" style="color:#68d391" id="rC">0</div><div class="r-lbl" data-he="נכון" data-en="Correct">נכון</div></div>
+        <div class="r-stat"><div class="r-val" style="color:#fc8181" id="rW">0</div><div class="r-lbl" data-he="שגוי" data-en="Wrong">שגוי</div></div>
+        <div class="r-stat"><div class="r-val" style="color:#f6e05e" id="rS">0</div><div class="r-lbl" data-he="נקודות" data-en="Points">נקודות</div></div>
       </div>
-      <!-- Multi player podium -->
       <div class="podium" id="multiPodium" style="display:none"></div>
       <div class="res-btns">
-        <button class="btn btn-g" onclick="goBack()">🏠 תפריט</button>
+        <button class="btn btn-g" onclick="goBack()">
+          <span data-he="🏠 תפריט" data-en="🏠 Menu">🏠 תפריט</span>
+        </button>
         <div class="replay-btn-wrap">
-          <button class="btn btn-p" id="replayBtn" onclick="replayNow()">🔄 שחק שוב <span id="cdNum">5</span></button>
+          <button class="btn btn-p" id="replayBtn" onclick="replayNow()">
+            <span data-he="🔄 שחק שוב" data-en="🔄 Play Again">🔄 שחק שוב</span> <span id="cdNum">5</span>
+          </button>
           <div class="countdown-bar" id="cdBar" style="width:100%"></div>
         </div>
       </div>
@@ -251,81 +267,111 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:linear-gradient(135deg,#
 </div>
 
 <script>
+// ===== LANGUAGE =====
+let lang = 'en';
+
+function toggleLang(){
+  lang = lang==='he' ? 'en' : 'he';
+  const root = document.getElementById('htmlRoot');
+  root.setAttribute('lang', lang);
+  root.setAttribute('dir', lang==='he'?'rtl':'ltr');
+  document.getElementById('langBtn').textContent = lang==='he' ? '🇺🇸' : '🇮🇱';
+  applyLang();
+  syncPillVals();
+  cat = getCatVal(); diff = getDiffVal();
+  triggerPreload();
+  playClick();
+}
+
+function applyLang(){
+  // Update all data-he / data-en elements
+  document.querySelectorAll('[data-he][data-en]').forEach(el=>{
+    el.innerHTML = el.getAttribute('data-'+lang);
+  });
+  // Update catGroup pills that have data-val-he / data-val-en
+  document.querySelectorAll('#catGroup .pill, #diffGroup .pill').forEach(p=>{
+    if(p.dataset.valHe) p.dataset.val = p.dataset[lang==='he'?'valHe':'valEn'];
+  });
+}
+
+function getCatVal(){
+  const active = document.querySelector('#catGroup .pill.active');
+  if(!active) return lang==='he'?'כללי':'General';
+  return (lang==='he' ? active.dataset.valHe : active.dataset.valEn) || active.dataset.val;
+}
+function getDiffVal(){
+  const active = document.querySelector('#diffGroup .pill.active');
+  if(!active) return lang==='he'?'מעורב':'Mixed';
+  return (lang==='he' ? active.dataset.valHe : active.dataset.valEn) || active.dataset.val;
+}
+
+function t(he, en){ return lang==='he' ? he : en; }
+
 // ===== STATE =====
-let cat='כללי', diff='מעורב', numQ=20, qNum=0, tot=20;
-let nextQCache=null;
+let cat='General', diff='Mixed', numQ=20, qNum=0, tot=20;
 let cor=0, wr=0, sc=0, answered=false, asked=[], curQ=null;
 let numPlayers=1, currentPlayer=0, playerScores=[], playerNames=[];
 let soundOn=true, cdTimer=null;
+let nextQCache=null;
 
 const playerEmojis=['🎯','⚡','🌟','🔥'];
 const playerColors=['#fc8181','#68d391','#63b3ed','#f6e05e'];
 
-// ===== AUDIO ENGINE =====
+// ===== AUDIO =====
 const AC=new(window.AudioContext||window.webkitAudioContext)();
-
 function beep(freq,dur,type='sine',vol=0.18,delay=0){
   if(!soundOn)return;
-  try{
-    const o=AC.createOscillator(), g=AC.createGain();
-    o.connect(g); g.connect(AC.destination);
-    o.type=type; o.frequency.setValueAtTime(freq,AC.currentTime+delay);
-    g.gain.setValueAtTime(0,AC.currentTime+delay);
-    g.gain.linearRampToValueAtTime(vol,AC.currentTime+delay+0.01);
-    g.gain.exponentialRampToValueAtTime(0.001,AC.currentTime+delay+dur);
-    o.start(AC.currentTime+delay); o.stop(AC.currentTime+delay+dur+0.05);
-  }catch(e){}
+  try{const o=AC.createOscillator(),g=AC.createGain();o.connect(g);g.connect(AC.destination);o.type=type;o.frequency.setValueAtTime(freq,AC.currentTime+delay);g.gain.setValueAtTime(0,AC.currentTime+delay);g.gain.linearRampToValueAtTime(vol,AC.currentTime+delay+0.01);g.gain.exponentialRampToValueAtTime(0.001,AC.currentTime+delay+dur);o.start(AC.currentTime+delay);o.stop(AC.currentTime+delay+dur+0.05);}catch(e){}
 }
-
 function playCorrect(){beep(523,.08,'sine',.2);beep(659,.08,'sine',.2,.1);beep(784,.18,'sine',.2,.2);}
 function playWrong(){beep(220,.12,'sawtooth',.15);beep(180,.2,'sawtooth',.15,.1);}
 function playClick(){beep(600,.06,'sine',.1);}
 function playStart(){[0,.12,.24,.36].forEach((d,i)=>{const notes=[440,494,523,587];beep(notes[i],.1,'sine',.15,d)});}
 function playTick(){beep(880,.04,'sine',.08);}
-function playFanfare(){
-  const seq=[[523,.1],[659,.1],[784,.1],[1047,.3]];
-  let d=0;seq.forEach(([f,dur])=>{beep(f,dur,'sine',.2,d);d+=dur+.02;});
-}
+function playFanfare(){const seq=[[523,.1],[659,.1],[784,.1],[1047,.3]];let d=0;seq.forEach(([f,dur])=>{beep(f,dur,'sine',.2,d);d+=dur+.02;});}
+function toggleSound(){soundOn=!soundOn;document.getElementById('soundBtn').textContent=soundOn?'🔊':'🔇';if(soundOn)AC.resume();playClick();}
 
-function toggleSound(){
-  soundOn=!soundOn;
-  document.getElementById('soundBtn').textContent=soundOn?'🔊':'🔇';
-  if(soundOn)AC.resume();
-  playClick();
-}
-
-// ===== PILL GROUPS =====
+// ===== PILLS =====
 function setupPills(id,cb){
   document.getElementById(id).addEventListener('click',e=>{
     const p=e.target.closest('.pill');if(!p)return;
     document.querySelectorAll('#'+id+' .pill').forEach(x=>x.classList.remove('active'));
-    p.classList.add('active'); playClick(); cb(p.dataset.val);
+    p.classList.add('active');playClick();cb(p.dataset.val);
   });
 }
-setupPills('catGroup',v=>{cat=v;triggerPreload();});
-setupPills('diffGroup',v=>{diff=v;triggerPreload();});
+setupPills('catGroup',v=>{ cat=v; triggerPreload(); });
+setupPills('diffGroup',v=>{ diff=v; triggerPreload(); });
+
+// On lang toggle, update data-val of each pill to match current lang
+function syncPillVals(){
+  document.querySelectorAll('#catGroup .pill, #diffGroup .pill').forEach(p=>{
+    const newVal = p.dataset[lang==='he'?'valHe':'valEn'];
+    if(newVal) p.dataset.val = newVal;
+  });
+}
 setupPills('numGroup',v=>numQ=parseInt(v));
 setupPills('playersGroup',v=>numPlayers=parseInt(v));
 
 function triggerPreload(){nextQCache=null;preloadNext();}
 
-// ===== NAVIGATION =====
+// ===== NAV =====
 function showPage(id){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById(id).classList.add('active');}
 function goBack(){clearCd();showPage('page1');}
 
 // ===== GAME START =====
 function startGame(){
   AC.resume();
+  cat=getCatVal(); diff=getDiffVal();
   tot=numQ; qNum=0; cor=0; wr=0; sc=0; answered=false; asked=[];
   currentPlayer=0;
   playerScores=Array(numPlayers).fill(0);
-  playerNames=Array.from({length:numPlayers},(_,i)=>'שחקן '+(i+1));
+  playerNames=Array.from({length:numPlayers},(_,i)=>t('שחקן','Player')+' '+(i+1));
 
   document.getElementById('sC').textContent='0';
   document.getElementById('sW').textContent='0';
   document.getElementById('sT').textContent='0';
   document.getElementById('progFill').style.width='0%';
-  document.getElementById('progLbl').textContent=tot===999?'שאלה 1':'שאלה 1 מתוך '+tot;
+  document.getElementById('progLbl').textContent=tot===999?t('שאלה 1','Question 1'):(t('שאלה','Question')+' 1 '+(lang==='he'?'מתוך':'of')+' '+tot);
   document.getElementById('progPct').textContent='0%';
   document.getElementById('ansGrid').innerHTML='';
   document.getElementById('expl').classList.remove('show');
@@ -343,24 +389,25 @@ function updateMultiUI(){
   const bar=document.getElementById('playerScoresBar');
   const banner=document.getElementById('turnBanner');
   if(numPlayers===1){bar.style.display='none';banner.style.display='none';return;}
-  bar.style.display='flex';
-  banner.style.display='flex';
+  bar.style.display='flex'; banner.style.display='flex';
   bar.innerHTML=playerNames.map((n,i)=>`<div class="pscore${i===currentPlayer?' active-p':''}" style="color:${playerColors[i]}">${playerEmojis[i]} ${n}<br><span style="font-size:1rem">${playerScores[i]}</span></div>`).join('');
+  document.getElementById('turnLabel').textContent=t('התור של',"It's the turn of");
   document.getElementById('turnName').textContent=playerNames[currentPlayer];
   document.getElementById('turnEmoji').textContent=playerEmojis[currentPlayer];
 }
 
-// ===== PRELOAD =====
-const dMap={
-  'מעורב':'שנה רמת קושי בין שאלות — חלק קלות, חלק בינוניות, חלק קשות',
-  'קל':'שאלות קלות שרוב האנשים יודעים',
-  'בינוני':'שאלות ברמה בינונית',
-  'קשה':'שאלות קשות ומאתגרות'
-};
+// ===== FETCH =====
+const dMapHe={'מעורב':'שנה רמת קושי בין שאלות','קל':'שאלות קלות','בינוני':'שאלות ברמה בינונית','קשה':'שאלות קשות'};
+const dMapEn={'Mixed':'Mix easy, medium and hard questions','Easy':'Easy questions most people know','Medium':'Medium difficulty questions','Hard':'Hard challenging questions'};
 
 async function fetchQ(){
-  const avoid=asked.length?'אל תחזור על: '+asked.slice(-5).join(' | '):'';
-  const prompt='אתה מייצר שאלת טריויה בעברית בנושא: '+cat+'.\nרמת קושי: '+dMap[diff]+'.\n'+avoid+'\n\nהחזר JSON בלבד, ללא backticks:\n{"question":"שאלה","answers":["א","ב","ג","ד"],"correct":0,"difficulty":"קל/בינוני/קשה","explanation":"הסבר קצר"}\n\nהצב תשובה נכונה במיקום אקראי (0-3).';
+  const avoid=asked.length?( lang==='he'?'אל תחזור על: ':'Do not repeat: ')+asked.slice(-5).join(' | '):'';
+  let prompt;
+  if(lang==='he'){
+    prompt='אתה מייצר שאלת טריויה בעברית בנושא: '+cat+'.\nרמת קושי: '+(dMapHe[diff]||diff)+'.\n'+avoid+'\n\nהחזר JSON בלבד, ללא backticks:\n{"question":"שאלה","answers":["א","ב","ג","ד"],"correct":0,"difficulty":"קל/בינוני/קשה","explanation":"הסבר קצר"}\n\nהצב תשובה נכונה במיקום אקראי (0-3).';
+  } else {
+    prompt='You generate an English trivia question about: '+cat+'.\nDifficulty: '+(dMapEn[diff]||diff)+'.\n'+avoid+'\n\nReturn JSON only, no backticks:\n{"question":"question text","answers":["A","B","C","D"],"correct":0,"difficulty":"Easy/Medium/Hard","explanation":"short explanation"}\n\nPlace the correct answer at a random index (0-3).';
+  }
   const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]})});
   const data=await res.json();
   const raw=data.content[0].text.trim().replace(/```json|```/g,'').trim();
@@ -376,9 +423,9 @@ function renderQ(q){
   curQ=q;
   asked.push(curQ.question.substring(0,50));
   const card=document.getElementById('qCard');
-  const dc={'קל':'color:#68d391','בינוני':'color:#f6e05e','קשה':'color:#fc8181'}[curQ.difficulty]||'color:#a0aec0';
-  card.innerHTML='<div class="q-meta"><span class="q-tag">'+cat+'</span><span class="q-diff" style="'+dc+'">● '+(curQ.difficulty||diff)+'</span></div><div class="q-text">'+curQ.question+'</div>';
-  const ltrs=['א','ב','ג','ד'];
+  const dc={'קל':'color:#68d391','Easy':'color:#68d391','בינוני':'color:#f6e05e','Medium':'color:#f6e05e','קשה':'color:#fc8181','Hard':'color:#fc8181'}[curQ.difficulty]||'color:#a0aec0';
+  card.innerHTML='<div class="q-meta"><span class="q-tag">'+cat+'</span><span class="q-diff" style="'+dc+'">● '+curQ.difficulty+'</span></div><div class="q-text">'+curQ.question+'</div>';
+  const ltrs=lang==='he'?['א','ב','ג','ד']:['A','B','C','D'];
   const grid=document.getElementById('ansGrid');
   grid.innerHTML='';
   curQ.answers.forEach((a,i)=>{
@@ -400,74 +447,63 @@ async function loadQ(){
   if(nextQCache){renderQ(nextQCache);nextQCache=null;preloadNext();}
   else{
     const card=document.getElementById('qCard');
-    card.innerHTML='<div class="load"><div class="spin"></div><span>רגע...</span></div>';
+    card.innerHTML='<div class="load"><div class="spin"></div><span>'+t('רגע...','Loading...')+'</span></div>';
     try{const q=await fetchQ();renderQ(q);preloadNext();}
-    catch(e){card.innerHTML='<div style="color:#fc8181;font-size:.9rem">שגיאה. לחץ "דלג" לנסות שוב.</div>';}
+    catch(e){card.innerHTML='<div style="color:#fc8181;font-size:.9rem">'+t('שגיאה. לחץ "דלג" לנסות שוב.','Error. Click "Skip" to retry.')+'</div>';}
   }
 }
 
-// ===== PICK ANSWER =====
 function pick(idx){
   if(answered)return;
   answered=true;
   const btns=document.querySelectorAll('.ans-btn');
   btns.forEach(b=>b.disabled=true);
   const isCorrect=idx===curQ.correct;
-  if(isCorrect){
-    btns[idx].classList.add('correct');
-    cor++; sc+=10;
-    playerScores[currentPlayer]+=10;
-    playCorrect();
-  } else {
-    btns[idx].classList.add('wrong');
-    btns[curQ.correct].classList.add('reveal');
-    wr++;
-    playWrong();
-  }
+  if(isCorrect){btns[idx].classList.add('correct');cor++;sc+=10;playerScores[currentPlayer]+=10;playCorrect();}
+  else{btns[idx].classList.add('wrong');btns[curQ.correct].classList.add('reveal');wr++;playWrong();}
   document.getElementById('sC').textContent=cor;
   document.getElementById('sW').textContent=wr;
   document.getElementById('sT').textContent=sc;
   if(numPlayers>1)updateMultiUI();
   const ex=document.getElementById('expl');
-  ex.innerHTML='<strong>💡 הסבר:</strong> '+curQ.explanation;
+  ex.innerHTML='<strong>💡 '+t('הסבר','Explanation')+':</strong> '+curQ.explanation;
   ex.classList.add('show');
   document.getElementById('nextBtn').disabled=false;
   document.getElementById('skipBtn').disabled=true;
   preloadNext();
 }
 
-// ===== NEXT QUESTION =====
 function nextQ(){
   qNum++;
   const pct=tot===999?0:Math.round((qNum/tot)*100);
   document.getElementById('progFill').style.width=pct+'%';
   document.getElementById('progPct').textContent=tot===999?'∞':pct+'%';
   if(tot!==999&&qNum>=tot){showResult();return;}
-  document.getElementById('progLbl').textContent=tot===999?'שאלה '+(qNum+1):'שאלה '+(qNum+1)+' מתוך '+tot;
-  // Advance player turn
+  const qLabel=lang==='he'?'שאלה':'Question';
+  const ofLabel=lang==='he'?'מתוך':'of';
+  document.getElementById('progLbl').textContent=tot===999?qLabel+' '+(qNum+1):(qLabel+' '+(qNum+1)+' '+ofLabel+' '+tot);
   currentPlayer=(currentPlayer+1)%numPlayers;
   updateMultiUI();
   playTick();
   loadQ();
 }
 
-// ===== RESULT =====
 function showResult(){
   clearCd();
   document.getElementById('gameArea').classList.add('hidden');
   document.getElementById('resultArea').classList.add('show');
-
   if(numPlayers===1){
-    // single player
     const pct=(cor/(qNum||1))*100;
-    let emoji='😅',title='ממשיכים להתאמן!';
-    if(pct>=90){emoji='🏆';title='גאון מוחלט!';}
-    else if(pct>=70){emoji='🎉';title='כל הכבוד!';}
-    else if(pct>=50){emoji='👍';title='לא רע בכלל!';}
-    else if(pct>=30){emoji='📚';title='יש מקום לשיפור';}
+    let emoji='😅',title=t('ממשיכים להתאמן!','Keep practicing!');
+    if(pct>=90){emoji='🏆';title=t('גאון מוחלט!','Absolute genius!');}
+    else if(pct>=70){emoji='🎉';title=t('כל הכבוד!','Well done!');}
+    else if(pct>=50){emoji='👍';title=t('לא רע בכלל!','Not bad at all!');}
+    else if(pct>=30){emoji='📚';title=t('יש מקום לשיפור','Room to improve');}
     document.getElementById('rEmoji').textContent=emoji;
     document.getElementById('rTitle').textContent=title;
-    document.getElementById('rSub').textContent=tot===999?'ענית על '+qNum+' שאלות':'ענית נכון על '+cor+' מתוך '+(qNum||tot)+' שאלות';
+    document.getElementById('rSub').textContent=tot===999
+      ?(t('ענית על','You answered')+' '+qNum+' '+t('שאלות','questions'))
+      :(t('ענית נכון על','You got')+' '+cor+' '+t('מתוך','out of')+' '+(qNum||tot)+' '+t('שאלות','questions'));
     document.getElementById('rC').textContent=cor;
     document.getElementById('rW').textContent=wr;
     document.getElementById('rS').textContent=sc;
@@ -475,39 +511,36 @@ function showResult(){
     document.getElementById('multiPodium').style.display='none';
     playFanfare();
   } else {
-    // multi player podium
     const ranked=[...playerScores.map((s,i)=>({name:playerNames[i],score:s,emoji:playerEmojis[i],color:playerColors[i]}))].sort((a,b)=>b.score-a.score);
     const winner=ranked[0];
     document.getElementById('rEmoji').textContent='🏆';
-    document.getElementById('rTitle').textContent=winner.name+' מנצח/ת!';
-    document.getElementById('rSub').textContent='עם '+winner.score+' נקודות';
+    document.getElementById('rTitle').textContent=winner.name+' '+t('מנצח/ת!','wins!');
+    document.getElementById('rSub').textContent=t('עם','with')+' '+winner.score+' '+t('נקודות','points');
     document.getElementById('singleStats').style.display='none';
     const pod=document.getElementById('multiPodium');
     pod.style.display='flex';
     const medals=['🥇','🥈','🥉','4️⃣'];
-    pod.innerHTML=ranked.map((p,i)=>`<div class="podium-row${i===0?' first':''}"><span class="podium-rank">${medals[i]}</span><span class="podium-name" style="color:${p.color}">${p.emoji} ${p.name}</span><span class="podium-pts">${p.score} נק׳</span></div>`).join('');
+    const ptsLabel=t("נק׳","pts");
+    pod.innerHTML=ranked.map((p,i)=>`<div class="podium-row${i===0?' first':''}"><span class="podium-rank">${medals[i]}</span><span class="podium-name" style="color:${p.color}">${p.emoji} ${p.name}</span><span class="podium-pts">${p.score} ${ptsLabel}</span></div>`).join('');
     playFanfare();
   }
+  // update static labels
+  document.querySelectorAll('[data-he][data-en]').forEach(el=>{el.innerHTML=el.getAttribute('data-'+lang);});
   startCountdown();
 }
 
-// ===== COUNTDOWN =====
 function startCountdown(){
   let secs=5;
   document.getElementById('cdNum').textContent=secs;
   document.getElementById('cdBar').style.width='100%';
-  cdTimer=setInterval(()=>{
-    secs--;
-    document.getElementById('cdNum').textContent=secs;
-    document.getElementById('cdBar').style.width=(secs/5*100)+'%';
-    if(secs<=0){clearInterval(cdTimer);cdTimer=null;goBack();}
-  },1000);
+  cdTimer=setInterval(()=>{secs--;document.getElementById('cdNum').textContent=secs;document.getElementById('cdBar').style.width=(secs/5*100)+'%';if(secs<=0){clearInterval(cdTimer);cdTimer=null;goBack();}},1000);
 }
-
 function replayNow(){clearCd();startGame();}
 function clearCd(){if(cdTimer){clearInterval(cdTimer);cdTimer=null;}}
 
-// Preload first question on page load
+// Init
+syncPillVals();
+applyLang();
 preloadNext();
 </script>
 </body>
