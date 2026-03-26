@@ -189,7 +189,7 @@
 <body>
 
 <button id="lang-btn">עב</button>
-<a id="home-btn" href="https://arnonmaya.github.io/games/" ">🏠 חזרה לדף הבית</a>
+<a id="home-btn" href="https://arnonmaya.github.io/games/" target="_blank">🏠 חזרה לדף הבית</a>
 
 <!-- ========== MAIN MENU ========== -->
 <div id="menu-screen" class="screen active">
@@ -706,7 +706,7 @@ async function hostStartGame() {
     gameStarted: true,
     snakeStates: initialSnakeStates,
     food: foodPos,
-    speed: 100,
+    speed: 180,
     tick: 0,
     playerCount: pCount,
     aliveCount: pCount
@@ -816,7 +816,7 @@ function runOnlineHostLoop(initialData) {
   });
 
   let hostFood = initialData.food || {x:10,y:10};
-  let hostSpeed = 100;
+  let hostSpeed = 180;
   let hostAlive = pids.length;
   let totalScore = 0;
 
@@ -913,7 +913,7 @@ function runOnlineHostLoop(initialData) {
         do { hostFood = {x:Math.floor(Math.random()*COLS), y:Math.floor(Math.random()*ROWS)}; }
         while (occ.some(c=>c.x===hostFood.x&&c.y===hostFood.y));
         if (totalScore%5===0) {
-          hostSpeed = Math.max(50, hostSpeed-10);
+          hostSpeed = Math.max(80, hostSpeed-10);
           clearInterval(onlineInterval);
           onlineInterval = setInterval(hostStep, hostSpeed);
         }
@@ -1180,7 +1180,7 @@ function startLocalGame() {
   });
 
   scores = Array(numPlayers).fill(0);
-  aliveCount = numPlayers; speed = 100; running = true; paused = false;
+  aliveCount = numPlayers; speed = 180; running = true; paused = false;
   placeFood(); buildLocalScoreRow();
   document.getElementById('msg').textContent = numPlayers > 1 ? s('battle') : s('goodLuck');
   document.getElementById('pauseBtn').textContent = s('pause');
@@ -1236,7 +1236,7 @@ function localStep() {
       scores[i]++;document.getElementById(`score-${i}`).textContent=scores[i];
       placeFood();
       const total=scores.reduce((a,b)=>a+b,0);
-      if(total%5===0){speed=Math.max(50,speed-10);clearInterval(interval);interval=setInterval(localStep,speed);}
+      if(total%5===0){speed=Math.max(80,speed-10);clearInterval(interval);interval=setInterval(localStep,speed);}
     }else{sn.body.pop();}
   });
 
