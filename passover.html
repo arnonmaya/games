@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>חידון הפסח</title>
+  <link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;700;900&family=Heebo:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Heebo', sans-serif;
+      direction: rtl;
+      background: #FAF8F3;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+    }
+
+    .game-wrap {
+      width: 100%;
+      max-width: 600px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .header { text-align: center; margin-bottom: 2rem; }
+
+    .title {
+      font-family: 'Frank Ruhl Libre', serif;
+      font-size: 2.8rem;
+      font-weight: 900;
+      color: #2C2C2A;
+      letter-spacing: -0.5px;
+      line-height: 1.1;
+    }
+
+    .subtitle { font-size: 1rem; color: #888780; margin-top: 0.35rem; }
+
+    .score-bar {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+      width: 100%;
+      justify-content: center;
+    }
+
+    .score-bar span {
+      background: white;
+      border: 1px solid #D3D1C7;
+      border-radius: 8px;
+      padding: 5px 16px;
+      font-size: 0.85rem;
+      color: #5F5E5A;
+    }
+
+    .score-bar .highlight {
+      background: #EEEDFE;
+      color: #3C3489;
+      border-color: #AFA9EC;
+      font-weight: 700;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 5px;
+      background: #D3D1C7;
+      border-radius: 99px;
+      margin-bottom: 1.5rem;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #7F77DD, #AFA9EC);
+      border-radius: 99px;
+      transition: width 0.4s ease;
+    }
+
+    .question-card {
+      background: white;
+      border: 1px solid #D3D1C7;
+      border-radius: 16px;
+      padding: 2rem;
+      width: 100%;
+      margin-bottom: 1.25rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    }
+
+    .q-category {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #534AB7;
+      margin-bottom: 0.75rem;
+    }
+
+    .q-text {
+      font-family: 'Frank Ruhl Libre', serif;
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: #2C2C2A;
+      line-height: 1.5;
+    }
+
+    .options-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      width: 100%;
+      margin-bottom: 1.25rem;
+    }
+
+    .opt-btn {
+      background: white;
+      border: 1px solid #B4B2A9;
+      border-radius: 10px;
+      padding: 0.9rem 1rem;
+      font-family: 'Heebo', sans-serif;
+      font-size: 0.95rem;
+      color: #2C2C2A;
+      cursor: pointer;
+      text-align: right;
+      direction: rtl;
+      transition: background 0.15s, border-color 0.15s, transform 0.1s;
+      line-height: 1.4;
+    }
+
+    .opt-btn:hover:not(:disabled) { background: #F1EFE8; border-color: #7F77DD; }
+    .opt-btn:active:not(:disabled) { transform: scale(0.98); }
+    .opt-btn.correct { background: #EAF3DE; border-color: #639922; color: #27500A; font-weight: 700; }
+    .opt-btn.wrong { background: #FCEBEB; border-color: #E24B4A; color: #501313; }
+    .opt-btn:disabled { cursor: default; }
+
+    .next-btn {
+      padding: 0.75rem 2.5rem;
+      border-radius: 10px;
+      border: 1px solid #7F77DD;
+      background: #EEEDFE;
+      color: #3C3489;
+      font-family: 'Heebo', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: none;
+      transition: background 0.15s;
+      align-self: flex-start;
+    }
+
+    .next-btn:hover { background: #CECBF6; }
+    .next-btn.show { display: block; }
+
+    .end-screen { text-align: center; width: 100%; display: none; }
+    .end-screen.show { display: block; }
+
+    .end-card {
+      background: white;
+      border: 1px solid #D3D1C7;
+      border-radius: 20px;
+      padding: 2.5rem 2rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+
+    .end-trophy { font-size: 5rem; display: block; margin-bottom: 1rem; }
+    .end-title { font-family: 'Frank Ruhl Libre', serif; font-size: 2rem; font-weight: 900; color: #2C2C2A; margin-bottom: 0.5rem; }
+    .end-score { font-size: 3.5rem; font-weight: 700; color: #534AB7; margin: 1rem 0 0.5rem; }
+    .end-score-label { font-size: 0.9rem; color: #888780; margin-bottom: 1.25rem; }
+    .end-msg { font-size: 1rem; color: #5F5E5A; margin-bottom: 2rem; line-height: 1.7; max-width: 380px; margin-left: auto; margin-right: auto; }
+
+    .btn-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+
+    .restart-btn {
+      padding: 0.85rem 2.5rem;
+      border-radius: 10px;
+      border: none;
+      background: #7F77DD;
+      color: white;
+      font-family: 'Heebo', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+    }
+
+    .restart-btn:hover { background: #534AB7; }
+    .restart-btn:active { transform: scale(0.98); }
+
+    .lb-btn {
+      padding: 0.85rem 2rem;
+      border-radius: 10px;
+      border: 1px solid #7F77DD;
+      background: #EEEDFE;
+      color: #3C3489;
+      font-family: 'Heebo', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .lb-btn:hover { background: #CECBF6; }
+
+    .splash { width: 100%; max-width: 560px; text-align: center; }
+
+    .splash-card {
+      background: white;
+      border: 1px solid #D3D1C7;
+      border-radius: 20px;
+      padding: 2.5rem 2rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+
+    .splash-icon { font-size: 4rem; display: block; margin-bottom: 1rem; }
+
+    .splash-title {
+      font-family: 'Frank Ruhl Libre', serif;
+      font-size: 2.4rem;
+      font-weight: 900;
+      color: #2C2C2A;
+      margin-bottom: 0.4rem;
+    }
+
+    .splash-tagline { font-size: 1rem; color: #888780; margin-bottom: 1.75rem; }
+
+    .rules-box {
+      background: #EEEDFE;
+      border: 1px solid #AFA9EC;
+      border-radius: 12px;
+      padding: 1.25rem 1.5rem;
+      text-align: right;
+      margin-bottom: 1.75rem;
+    }
+
+    .rules-title { font-size: 0.8rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #534AB7; margin-bottom: 0.75rem; }
+
+    .rules-list { list-style: none; padding: 0; margin: 0; }
+
+    .rules-list li {
+      font-size: 0.92rem;
+      color: #3C3489;
+      line-height: 1.7;
+      padding-right: 1.25rem;
+      position: relative;
+    }
+
+    .rules-list li::before { content: '✦'; position: absolute; right: 0; font-size: 0.6rem; top: 0.35rem; color: #7F77DD; }
+
+    .name-label { font-size: 0.9rem; color: #5F5E5A; margin-bottom: 0.5rem; display: block; text-align: right; }
+
+    .name-input {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 1px solid #B4B2A9;
+      border-radius: 10px;
+      font-family: 'Heebo', sans-serif;
+      font-size: 1rem;
+      color: #2C2C2A;
+      background: white;
+      direction: rtl;
+      margin-bottom: 1rem;
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+
+    .name-input:focus { border-color: #7F77DD; box-shadow: 0 0 0 3px rgba(127,119,221,0.15); }
+
+    .name-input.shake { animation: shake 0.35s ease; border-color: #E24B4A; }
+
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      20% { transform: translateX(-6px); }
+      40% { transform: translateX(6px); }
+      60% { transform: translateX(-4px); }
+      80% { transform: translateX(4px); }
+    }
+
+    .start-btn {
+      width: 100%;
+      padding: 0.85rem;
+      border-radius: 10px;
+      border: none;
+      background: #7F77DD;
+      color: white;
+      font-family: 'Heebo', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+    }
+
+    .start-btn:hover { background: #534AB7; }
+    .start-btn:active { transform: scale(0.98); }
+
+    .splash-lb-btn {
+      width: 100%;
+      padding: 0.7rem;
+      border-radius: 10px;
+      border: 1px solid #7F77DD;
+      background: #EEEDFE;
+      color: #3C3489;
+      font-family: 'Heebo', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 0.75rem;
+      transition: background 0.15s;
+    }
+
+    .splash-lb-btn:hover { background: #CECBF6; }
+
+    /* Modal */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      z-index: 999;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+
+    .modal-overlay.open { display: flex; }
+
+    .modal {
+      background: white;
+      border-radius: 20px;
+      padding: 2rem;
+      width: 100%;
+      max-width: 520px;
+      max-height: 80vh;
+      overflow-y: auto;
+      direction: rtl;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.18);
+      position: relative;
+    }
+
+    .modal-title {
+      font-family: 'Frank Ruhl Libre', serif;
+      font-size: 1.6rem;
+      font-weight: 900;
+      color: #2C2C2A;
+      margin-bottom: 1.25rem;
+      text-align: center;
+    }
+
+    .modal-close {
+      position: absolute;
+      left: 1.25rem;
+      top: 1.25rem;
+      background: none;
+      border: none;
+      font-size: 1.3rem;
+      cursor: pointer;
+      color: #888780;
+      line-height: 1;
+    }
+
+    .modal-close:hover { color: #2C2C2A; }
+
+    .lb-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+    .lb-table th { text-align: right; padding: 8px 10px; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.06em; color: #534AB7; border-bottom: 2px solid #EEEDFE; }
+    .lb-table td { padding: 10px 10px; border-bottom: 1px solid #F1EFE8; color: #2C2C2A; vertical-align: middle; }
+    .lb-table tr:last-child td { border-bottom: none; }
+    .lb-table tr:nth-child(1) td { font-weight: 700; }
+
+    .rank-badge { display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 50%; font-size: 0.8rem; font-weight: 700; }
+    .rank-1 { background: #FAC775; color: #633806; }
+    .rank-2 { background: #D3D1C7; color: #444441; }
+    .rank-3 { background: #F0997B; color: #4A1B0C; }
+    .rank-n { background: #EEEDFE; color: #534AB7; }
+
+    .empty-lb { text-align: center; color: #888780; padding: 2rem 1rem; font-size: 0.95rem; }
+    .time-tag { font-size: 0.78rem; color: #888780; }
+
+    @media (max-width: 480px) {
+      .title { font-size: 2.2rem; }
+      .options-grid { grid-template-columns: 1fr; }
+      .question-card { padding: 1.5rem; }
+      .splash-title { font-size: 2rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="game-wrap">
+
+  <!-- Splash -->
+  <div class="splash" id="splash">
+    <div class="splash-card">
+      <span class="splash-icon">🫶</span>
+      <div class="splash-title">חידון הפסח</div>
+      <div class="splash-tagline">כמה אתם מכירים את חג החירות?</div>
+
+      <div class="rules-box">
+        <div class="rules-title">חוקי המשחק</div>
+        <ul class="rules-list">
+          <li>המשחק מכיל 10 שאלות על חג הפסח</li>
+          <li>לכל שאלה יש 4 תשובות אפשריות — בחרו אחת</li>
+          <li>על כל תשובה נכונה מקבלים נקודה</li>
+          <li>השאלות מופיעות בסדר אקראי בכל משחק</li>
+          <li>בסוף תראו את הציון הסופי שלכם</li>
+        </ul>
+      </div>
+
+      <label class="name-label" for="player-name">הכניסו את שמכם כדי להתחיל:</label>
+      <input class="name-input" type="text" id="player-name" placeholder="השם שלי..." maxlength="30" />
+      <button class="start-btn" onclick="startGame()">התחל את המשחק ←</button>
+      <button class="splash-lb-btn" onclick="showLeaderboard()">🏆 לוח התוצאות</button>
+    </div>
+  </div>
+
+  <!-- Game screen -->
+  <div id="game-screen" style="display:none; width:100%;">
+    <div style="display:flex; flex-direction:column; align-items:center; width:100%;">
+
+      <div class="header">
+        <div class="title">🫶 חידון הפסח</div>
+        <div class="subtitle" id="player-greeting"></div>
+      </div>
+
+      <div class="score-bar" id="score-bar">
+        <span id="q-counter">שאלה 1 מתוך 10</span>
+        <span class="highlight" id="score-display">ניקוד: 0</span>
+      </div>
+
+      <div class="progress-bar" id="prog-bar">
+        <div class="progress-fill" id="prog"></div>
+      </div>
+
+      <div class="question-card" id="q-card">
+        <div class="q-category" id="q-cat"></div>
+        <div class="q-text" id="q-text"></div>
+      </div>
+
+      <div class="options-grid" id="opts-grid"></div>
+
+      <button class="next-btn" id="next-btn">שאלה הבאה ←</button>
+
+      <div class="end-screen" id="end-screen">
+        <div class="end-card">
+          <span class="end-trophy" id="end-trophy"></span>
+          <div class="end-title" id="end-title"></div>
+          <div class="end-score" id="end-score"></div>
+          <div class="end-score-label">תשובות נכונות מתוך 10</div>
+          <div class="end-msg" id="end-msg"></div>
+          <div class="btn-row">
+            <button class="restart-btn" onclick="goToSplash()">שחק שוב 🔄</button>
+            <button class="lb-btn" onclick="showLeaderboard()">🏆 לוח התוצאות</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Leaderboard Modal -->
+<div class="modal-overlay" id="lb-modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeLeaderboard()">✕</button>
+    <div class="modal-title">🏆 לוח התוצאות</div>
+    <div id="lb-content"></div>
+  </div>
+</div>
+
+<script>
+const STORAGE_KEY = 'pesach_quiz_leaderboard_v1';
+
+const questions = [
+  { cat: "ההגדה של פסח", emoji: "📖", q: "מה שם הספר שקוראים בליל הסדר?", opts: ['התנ"ך','ההגדה','המשנה','הגמרא'], ans: 1 },
+  { cat: "עשר המכות", emoji: "🐸", q: "מהי המכה השנייה שהכה משה את מצרים?", opts: ["דם","כינים","צפרדע","ערוב"], ans: 2 },
+  { cat: "יציאת מצרים", emoji: "🌊", q: "מה קרה לים סוף כאשר בני ישראל הגיעו אליו?", opts: ["הם שחו מעברו","הים נבקע","בנו גשר","הים קפא"], ans: 1 },
+  { cat: "מאכלי הסדר", emoji: "🫓", q: "למה אוכלים מצה בפסח?", opts: ["כי זה טעים","כי לא הספיק הבצק להחמיץ","כי אסור לאכול לחם בחורף","כי משה אמר"], ans: 1 },
+  { cat: "הסדר", emoji: "🍷", q: "כמה כוסות יין שותים בסדר פסח?", opts: ["שתיים","שלוש","ארבע","חמש"], ans: 2 },
+  { cat: "גיבורי הסיפור", emoji: "👶", q: "מי מצא את משה בתיבה שצפה בנהר הנילוס?", opts: ["פרעה","בת פרעה","מרים","יוכבד"], ans: 1 },
+  { cat: "מאכלי הסדר", emoji: "🌿", q: "מה מייצג המרור שאוכלים בליל הסדר?", opts: ["את מתיקות החירות","את מרירות העבדות","את הכעס על פרעה","את הנדידה במדבר"], ans: 1 },
+  { cat: "האפיקומן", emoji: "🫙", q: "מה זה האפיקומן?", opts: ["שיר פסח","חצי מצה שמחביאים","כוס מיוחדת","סוג של מרק"], ans: 1 },
+  { cat: "יציאת מצרים", emoji: "⏱️", q: "כמה שנים היו בני ישראל עבדים במצרים?", opts: ["100 שנה","210 שנה","430 שנה","40 שנה"], ans: 2 },
+  { cat: "הסדר", emoji: "🍽️", q: "מה שמה של הצלחת המיוחדת שמניחים על שולחן הסדר?", opts: ["קערת הסדר","עוגת הפסח","כוס אליהו","מגש המצות"], ans: 0 }
+];
+
+let current = 0, score = 0, answered = false, startTime = 0, playerName = '';
+const shuffled = questions.slice().sort(() => Math.random() - 0.5);
+
+/* ─── Leaderboard (localStorage) ─── */
+function getLeaderboard() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); }
+  catch(e) { return []; }
+}
+
+function saveScore(name, score, time) {
+  const lb = getLeaderboard();
+  lb.push({ name, score, time, date: new Date().toLocaleDateString('he-IL') });
+  lb.sort((a, b) => b.score - a.score || a.time - b.time);
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(lb));
+}
+
+function fmtTime(sec) {
+  return sec < 60 ? sec + ' שנ׳' : Math.floor(sec / 60) + ':' + String(sec % 60).padStart(2, '0');
+}
+
+function showLeaderboard() {
+  const lb = getLeaderboard();
+  const modal = document.getElementById('lb-modal');
+  modal.classList.add('open');
+
+  if (lb.length === 0) {
+    document.getElementById('lb-content').innerHTML = '<div class="empty-lb">אין עדיין תוצאות.<br>היו הראשונים לשחק! 🎉</div>';
+    return;
+  }
+
+  let html = '<table class="lb-table"><thead><tr><th style="width:36px">#</th><th>שם</th><th>ניקוד</th><th>זמן</th><th>תאריך</th></tr></thead><tbody>';
+  lb.forEach((e, i) => {
+    const rankClass = i === 0 ? 'rank-1' : i === 1 ? 'rank-2' : i === 2 ? 'rank-3' : 'rank-n';
+    const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i + 1);
+    html += `<tr>
+      <td><span class="rank-badge ${rankClass}">${medal}</span></td>
+      <td>${e.name}</td>
+      <td style="font-weight:700;color:#534AB7">${e.score}/10</td>
+      <td class="time-tag">${fmtTime(e.time)}</td>
+      <td class="time-tag">${e.date || ''}</td>
+    </tr>`;
+  });
+  html += '</tbody></table>';
+  document.getElementById('lb-content').innerHTML = html;
+}
+
+function closeLeaderboard() {
+  document.getElementById('lb-modal').classList.remove('open');
+}
+
+document.getElementById('lb-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeLeaderboard();
+});
+
+/* ─── Quiz logic ─── */
+function renderQ() {
+  const q = shuffled[current];
+  document.getElementById('q-cat').textContent = q.cat;
+  document.getElementById('q-text').textContent = q.q;
+  document.getElementById('q-counter').textContent = `שאלה ${current + 1} מתוך ${shuffled.length}`;
+  document.getElementById('prog').style.width = `${(current / shuffled.length) * 100}%`;
+
+  const grid = document.getElementById('opts-grid');
+  grid.innerHTML = '';
+  q.opts.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.textContent = opt;
+    btn.onclick = () => selectAnswer(i);
+    grid.appendChild(btn);
+  });
+
+  document.getElementById('next-btn').className = 'next-btn';
+  answered = false;
+}
+
+function selectAnswer(idx) {
+  if (answered) return;
+  answered = true;
+  const q = shuffled[current];
+  const btns = document.querySelectorAll('.opt-btn');
+  btns.forEach(b => b.disabled = true);
+  btns[q.ans].classList.add('correct');
+
+  if (idx === q.ans) {
+    score++;
+    document.getElementById('score-display').textContent = `ניקוד: ${score}`;
+  } else {
+    btns[idx].classList.add('wrong');
+  }
+
+  const nb = document.getElementById('next-btn');
+  nb.className = 'next-btn show';
+  nb.textContent = current < shuffled.length - 1 ? 'שאלה הבאה ←' : 'לתוצאות 🎉';
+}
+
+document.getElementById('next-btn').onclick = () => {
+  current++;
+  if (current >= shuffled.length) showEnd();
+  else renderQ();
+};
+
+function showEnd() {
+  const elapsed = Math.round((Date.now() - startTime) / 1000);
+  ['q-card', 'opts-grid', 'score-bar', 'prog-bar'].forEach(id => {
+    document.getElementById(id).style.display = 'none';
+  });
+  document.getElementById('next-btn').style.display = 'none';
+
+  const pct = score / shuffled.length;
+  let trophy, title, msg;
+  if (pct === 1)       { trophy = '🏆'; title = 'מומחה פסח אמיתי!'; msg = 'ענית נכון על כל השאלות! אתה/את בהחלט מוכן/ה לליל הסדר. חג שמח! 🎉'; }
+  else if (pct >= 0.7) { trophy = '🥇'; title = 'כל הכבוד!'; msg = 'ידע פסח מרשים מאוד. עוד קצת עיון בהגדה ואתה/את מושלם/ת!'; }
+  else if (pct >= 0.4) { trophy = '🥈'; title = 'לא רע!'; msg = 'יש בסיס טוב! מומלץ לחזור על ההגדה לפני הסדר. 📖'; }
+  else                 { trophy = '🐸'; title = 'יש מה לשפר!'; msg = 'בשנה הבאה בירושלים – ועד אז, כדאי ללמוד עוד על חג החירות. 😄'; }
+
+  document.getElementById('end-trophy').textContent = trophy;
+  document.getElementById('end-title').textContent = title;
+  document.getElementById('end-score').textContent = `${score} / ${shuffled.length}`;
+  document.getElementById('end-msg').textContent = msg;
+  document.getElementById('end-screen').className = 'end-screen show';
+
+  saveScore(playerName, score, elapsed);
+}
+
+function startGame() {
+  const ni = document.getElementById('player-name');
+  const name = ni.value.trim();
+  if (!name) {
+    ni.classList.add('shake');
+    ni.focus();
+    setTimeout(() => ni.classList.remove('shake'), 400);
+    return;
+  }
+  playerName = name;
+  document.getElementById('player-greeting').textContent = `שלום, ${name}! בהצלחה 🎉`;
+  document.getElementById('splash').style.display = 'none';
+  document.getElementById('game-screen').style.display = 'block';
+  current = 0; score = 0; answered = false; startTime = Date.now();
+  shuffled.sort(() => Math.random() - 0.5);
+  document.getElementById('score-display').textContent = 'ניקוד: 0';
+  ['q-card', 'opts-grid', 'score-bar', 'prog-bar'].forEach(id => {
+    document.getElementById(id).style.display = '';
+  });
+  document.getElementById('next-btn').style.display = '';
+  document.getElementById('end-screen').className = 'end-screen';
+  renderQ();
+}
+
+function goToSplash() {
+  document.getElementById('game-screen').style.display = 'none';
+  document.getElementById('splash').style.display = 'block';
+  document.getElementById('player-name').value = '';
+}
+
+document.getElementById('player-name').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') startGame();
+});
+</script>
+</body>
+</html>
