@@ -274,8 +274,8 @@ html[dir=ltr] .ans-btn{text-align:left}
 <div class="page active" id="pageHome">
 <div class="inner">
   <div class="logo">
-    <div class="badge">🧠 AI TRIVIA</div>
-    <h1>TRIVIA <em>AI</em></h1>
+    <div class="badge" data-he="🧠 טריויה AI" data-en="🧠 AI TRIVIA">🧠 AI TRIVIA</div>
+    <h1 data-he="טריויה <em>AI</em>" data-en="TRIVIA <em>AI</em>">TRIVIA <em>AI</em></h1>
     <p data-he="שאלות AI בזמן אמת — בחר מצב משחק" data-en="Real-time AI questions — choose your mode">שאלות AI בזמן אמת — בחר מצב משחק</p>
   </div>
 
@@ -308,7 +308,7 @@ html[dir=ltr] .ans-btn{text-align:left}
 <div class="inner">
   <div class="logo" style="margin-bottom:14px">
     <div class="badge" data-he="אותו מכשיר" data-en="SAME DEVICE">אותו מכשיר</div>
-    <h1>LOCAL <em>GAME</em></h1>
+    <h1 data-he="משחק <em>מקומי</em>" data-en="LOCAL <em>GAME</em>">LOCAL <em>GAME</em></h1>
   </div>
 
   <div class="card">
@@ -368,7 +368,7 @@ html[dir=ltr] .ans-btn{text-align:left}
 <div class="inner">
   <div class="logo" style="margin-bottom:14px">
     <div class="badge" data-he="אונליין" data-en="ONLINE">אונליין</div>
-    <h1>ONLINE <em>ROOMS</em></h1>
+    <h1 data-he="חדרים <em>אונליין</em>" data-en="ONLINE <em>ROOMS</em>">ONLINE <em>ROOMS</em></h1>
   </div>
   <div class="card">
     <div class="card-title" data-he="🎮 בחר" data-en="🎮 CHOOSE">🎮 בחר</div>
@@ -394,7 +394,7 @@ html[dir=ltr] .ans-btn{text-align:left}
 <div class="inner">
   <div class="logo" style="margin-bottom:14px">
     <div class="badge" data-he="צור חדר" data-en="CREATE ROOM">צור חדר</div>
-    <h1>NEW <em>ROOM</em></h1>
+    <h1 data-he="חדר <em>חדש</em>" data-en="NEW <em>ROOM</em>">NEW <em>ROOM</em></h1>
   </div>
 
   <div class="card">
@@ -451,7 +451,7 @@ html[dir=ltr] .ans-btn{text-align:left}
 <div class="inner">
   <div class="logo" style="margin-bottom:14px">
     <div class="badge" data-he="הצטרף" data-en="JOIN">הצטרף</div>
-    <h1>JOIN <em>GAME</em></h1>
+    <h1 data-he="הצטרף <em>למשחק</em>" data-en="JOIN <em>GAME</em>">JOIN <em>GAME</em></h1>
   </div>
   <div class="card">
     <label class="lbl" data-he="🧑 השם שלך" data-en="🧑 YOUR NAME">🧑 השם שלך</label>
@@ -476,7 +476,7 @@ html[dir=ltr] .ans-btn{text-align:left}
 <div class="inner">
   <div class="logo" style="margin-bottom:14px">
     <div class="badge" data-he="לובי" data-en="LOBBY">לובי</div>
-    <h1>WAITING <em>ROOM</em></h1>
+    <h1 data-he="חדר <em>המתנה</em>" data-en="WAITING <em>ROOM</em>">WAITING <em>ROOM</em></h1>
   </div>
   <div class="code-box">
     <div class="code-lbl" data-he="קוד החדר — שתף עם חברים!" data-en="ROOM CODE — SHARE WITH FRIENDS!">קוד החדר — שתף עם חברים!</div>
@@ -733,8 +733,11 @@ function startLocalGame(){
   updateLocalUI();
   showPage('pageGame');
   playStart();
-  // Preload first question for EVERY player simultaneously
-  preloadAllPlayers().then(()=>loadQ());
+  // Load bank then preload questions for all players
+  loadQuestionBank()
+    .then(()=>preloadAllPlayers())
+    .then(()=>loadQ())
+    .catch(e=>{ document.getElementById('qCard').innerHTML=`<div style="color:var(--wrong);font-size:.9rem">${e.message}</div>`; });
 }
 
 async function preloadAllPlayers(){
@@ -901,7 +904,10 @@ function beginOnlineGame(){
     renderLiveBoard();
     if(myGameDone)checkAllDone();
   });
-  showPage('pageGame'); playStart(); loadQ();
+  showPage('pageGame'); playStart();
+  loadQuestionBank().then(()=>loadQ()).catch(e=>{
+    document.getElementById('qCard').innerHTML=`<div style="color:var(--wrong);font-size:.9rem">${e.message}</div>`;
+  });
 }
 
 function renderLiveBoard(){
@@ -957,38 +963,73 @@ function initGameUI(){
   }
 }
 
-const DEN={'Mixed':'mix easy medium and hard','Easy':'easy questions','Medium':'medium difficulty','Hard':'hard challenging questions'};
-const DHE={'מעורב':'מעורב קל בינוני וקשה','קל':'קל','בינוני':'בינוני','קשה':'קשה'};
+// ════════════════════════════════
+//  QUESTION BANK (from Firebase)
+// ════════════════════════════════
+let questionBank = [];      // all questions loaded from Firebase
+let bankLoaded = false;
 
-// Build a prompt that avoids questions already seen by THIS player (or globally for online)
-function buildPrompt(avoidList){
-  const avoid=avoidList.length?(lang==='he'?'אל תחזור על: ':'Do not repeat: ')+avoidList.slice(-8).join(' | '):'';
-  return lang==='he'
-    ?`צור שאלת טריויה בעברית. נושא: ${cat}. קושי: ${DHE[diff]||diff}.\n${avoid}\nהחזר JSON בלבד:\n{"question":"...","answers":["א","ב","ג","ד"],"correct":0,"difficulty":"קל/בינוני/קשה","explanation":"..."}\nמקם תשובה נכונה באינדקס אקראי (0-3).`
-    :`Generate English trivia. Topic: ${cat}. Difficulty: ${DEN[diff]||diff}.\n${avoid}\nReturn JSON only:\n{"question":"...","answers":["A","B","C","D"],"correct":0,"difficulty":"Easy/Medium/Hard","explanation":"..."}\nPlace correct answer at random index (0-3).`;
+async function loadQuestionBank(){
+  if(bankLoaded) return;
+  try {
+    const snap = await FL.get(FL.ref(db, 'questions'));
+    if(snap.exists()){
+      questionBank = Object.values(snap.val());
+      bankLoaded = true;
+      console.log('Question bank loaded:', questionBank.length, 'questions');
+    } else {
+      throw new Error(lang==='he'?'לא נמצאו שאלות ב-Database':'No questions found in database');
+    }
+  } catch(e) {
+    throw new Error((lang==='he'?'שגיאה בטעינת שאלות: ':'Error loading questions: ') + e.message);
+  }
 }
 
-async function callAPI(prompt){
-  const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:900,
-      messages:[{role:'user',content:prompt}]})});
-  const data=await res.json();
-  return JSON.parse(data.content[0].text.trim().replace(/```json|```/g,'').trim());
+// Pick a random question for a player, filtered by category/difficulty, avoiding already-seen
+function pickQuestion(avoidList){
+  let pool = questionBank;
+
+  // Filter by category
+  if(cat && cat !== 'General' && cat !== 'כללי'){
+    const filtered = pool.filter(q => q.category === cat);
+    if(filtered.length > 0) pool = filtered;
+  }
+
+  // Filter by difficulty
+  const diffMap = {'Easy':'Easy','Medium':'Medium','Hard':'Hard','קל':'Easy','בינוני':'Medium','קשה':'Hard'};
+  const mappedDiff = diffMap[diff];
+  if(mappedDiff && diff !== 'Mixed' && diff !== 'מעורב'){
+    const filtered = pool.filter(q => q.difficulty === mappedDiff);
+    if(filtered.length > 0) pool = filtered;
+  }
+
+  // Avoid already-seen questions
+  const available = pool.filter(q => !avoidList.includes(q.question.substring(0,50)));
+
+  // If we've seen everything, reset
+  const finalPool = available.length > 0 ? available : pool;
+
+  // Pick random
+  return finalPool[Math.floor(Math.random() * finalPool.length)];
 }
 
-// Fetch a question for a specific local player (uses their personal history)
 async function fetchQFor(playerIdx){
+  await loadQuestionBank();
   const avoidList = mode==='local' ? (playerAsked[playerIdx]||[]) : asked;
-  return callAPI(buildPrompt(avoidList));
+  const q = pickQuestion(avoidList);
+  if(!q) throw new Error('No questions available');
+  return q;
 }
 
-// Generic fetch for online mode (uses global asked[])
-async function fetchQ(){ return callAPI(buildPrompt(asked)); }
+async function fetchQ(){
+  await loadQuestionBank();
+  const q = pickQuestion(asked);
+  if(!q) throw new Error('No questions available');
+  return q;
+}
 
 function preloadNext(){
   if(mode==='local'){
-    // Preload the NEXT player's question in background
     const nextPlayer=(localCurPlayer+1)%localPlayers.length;
     if(!playerQueues[nextPlayer]) preloadForPlayer(nextPlayer);
   } else {
@@ -1042,7 +1083,8 @@ async function loadQ(){
         renderQ(q, pi);
         preloadNext();
       }catch(e){
-        document.getElementById('qCard').innerHTML=`<div style="color:var(--wrong);font-size:.9rem">${t('שגיאה — לחץ דלג','Error — press Skip')}</div>`;
+        console.error('loadQ error:', e);
+        document.getElementById('qCard').innerHTML=`<div style="color:var(--wrong);font-size:.9rem">${t('שגיאה — לחץ דלג','Error — press Skip')}: ${e.message||''}</div>`;
       }
     }
   } else {
