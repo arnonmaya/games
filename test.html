@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>English Quiz</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f1b2d;
+    --card: #162033;
+    --accent1: #f7c948;
+    --accent2: #4ecdc4;
+    --accent3: #ff6b6b;
+    --accent4: #a29bfe;
+    --text: #eef2ff;
+    --muted: #8892b0;
+    --correct: #55efc4;
+    --wrong: #ff7675;
+    --border: #2a3a55;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    background-image: radial-gradient(ellipse at 20% 20%, rgba(78,205,196,0.07) 0%, transparent 50%),
+                      radial-gradient(ellipse at 80% 80%, rgba(162,155,254,0.07) 0%, transparent 50%);
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 24px;
+    padding-top: 10px;
+  }
+
+  header h1 {
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(2rem, 5vw, 3rem);
+    color: var(--accent1);
+    letter-spacing: 1px;
+    text-shadow: 0 0 30px rgba(247,201,72,0.3);
+  }
+
+  header p {
+    color: var(--muted);
+    font-size: 0.95rem;
+    margin-top: 4px;
+  }
+
+  /* Topic tabs */
+  .topics-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 24px;
+    max-width: 720px;
+    width: 100%;
+  }
+
+  .topic-btn {
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 2px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.5px;
+  }
+
+  .topic-btn.active {
+    border-color: var(--accent2);
+    color: var(--accent2);
+    background: rgba(78,205,196,0.1);
+  }
+
+  .topic-btn:hover:not(.active) {
+    border-color: var(--muted);
+    color: var(--text);
+  }
+
+  /* Progress */
+  .progress-wrap {
+    width: 100%;
+    max-width: 680px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .progress-bar {
+    flex: 1;
+    height: 8px;
+    background: var(--border);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent2), var(--accent4));
+    border-radius: 99px;
+    transition: width 0.4s ease;
+  }
+
+  .progress-label {
+    font-size: 0.8rem;
+    color: var(--muted);
+    white-space: nowrap;
+    font-weight: 700;
+  }
+
+  /* Score pills */
+  .score-row {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+    justify-content: center;
+  }
+
+  .pill {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 14px;
+    border-radius: 99px;
+    font-size: 0.85rem;
+    font-weight: 800;
+  }
+
+  .pill.correct-pill { background: rgba(85,239,196,0.12); color: var(--correct); }
+  .pill.wrong-pill { background: rgba(255,118,117,0.12); color: var(--wrong); }
+  .pill.topic-pill { background: rgba(247,201,72,0.12); color: var(--accent1); }
+
+  /* Card */
+  .quiz-card {
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: 20px;
+    padding: 32px 28px 28px;
+    max-width: 680px;
+    width: 100%;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.3);
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+  }
+
+  .card-accent {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    border-radius: 20px 20px 0 0;
+  }
+
+  .topic-tag {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 99px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 16px;
+  }
+
+  .question-text {
+    font-size: clamp(1.1rem, 2.5vw, 1.3rem);
+    font-weight: 700;
+    line-height: 1.5;
+    margin-bottom: 24px;
+    color: var(--text);
+  }
+
+  /* For text-input questions */
+  .text-input-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+
+  .text-input-wrap input,
+  .text-input-wrap textarea {
+    background: rgba(255,255,255,0.05);
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 16px;
+    color: var(--text);
+    font-family: 'Nunito', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    outline: none;
+    transition: border-color 0.2s;
+    resize: vertical;
+  }
+
+  .text-input-wrap input:focus,
+  .text-input-wrap textarea:focus {
+    border-color: var(--accent2);
+  }
+
+  .submit-btn {
+    background: linear-gradient(135deg, var(--accent2), var(--accent4));
+    border: none;
+    border-radius: 12px;
+    padding: 12px 28px;
+    color: #fff;
+    font-family: 'Nunito', sans-serif;
+    font-size: 1rem;
+    font-weight: 800;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    transition: opacity 0.2s, transform 0.15s;
+    align-self: flex-start;
+  }
+
+  .submit-btn:hover { opacity: 0.88; transform: translateY(-1px); }
+
+  /* Options */
+  .options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .option-btn {
+    background: rgba(255,255,255,0.04);
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    padding: 13px 18px;
+    text-align: left;
+    color: var(--text);
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.97rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.18s;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .option-btn .opt-letter {
+    min-width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    background: var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: 800;
+    color: var(--muted);
+    transition: all 0.18s;
+  }
+
+  .option-btn:hover:not(:disabled) {
+    border-color: var(--accent4);
+    background: rgba(162,155,254,0.08);
+  }
+
+  .option-btn:hover:not(:disabled) .opt-letter {
+    background: var(--accent4);
+    color: #fff;
+  }
+
+  .option-btn.correct {
+    border-color: var(--correct);
+    background: rgba(85,239,196,0.1);
+  }
+
+  .option-btn.correct .opt-letter {
+    background: var(--correct);
+    color: #0f1b2d;
+  }
+
+  .option-btn.wrong {
+    border-color: var(--wrong);
+    background: rgba(255,118,117,0.1);
+  }
+
+  .option-btn.wrong .opt-letter {
+    background: var(--wrong);
+    color: #fff;
+  }
+
+  .option-btn:disabled { cursor: default; }
+
+  /* Feedback */
+  .feedback {
+    margin-top: 16px;
+    padding: 12px 16px;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    display: none;
+    line-height: 1.5;
+  }
+
+  .feedback.show { display: block; }
+  .feedback.correct-fb { background: rgba(85,239,196,0.1); color: var(--correct); border: 1.5px solid rgba(85,239,196,0.3); }
+  .feedback.wrong-fb { background: rgba(255,118,117,0.1); color: var(--wrong); border: 1.5px solid rgba(255,118,117,0.3); }
+
+  /* Next button */
+  .next-btn {
+    margin-top: 20px;
+    padding: 12px 32px;
+    border-radius: 12px;
+    background: var(--accent1);
+    border: none;
+    color: #1a1a2e;
+    font-family: 'Nunito', sans-serif;
+    font-size: 1rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.15s;
+    display: none;
+    letter-spacing: 0.5px;
+  }
+
+  .next-btn.show { display: inline-block; }
+  .next-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+
+  /* Result screen */
+  .result-screen {
+    text-align: center;
+    padding: 20px;
+  }
+
+  .result-screen .big-emoji {
+    font-size: 4rem;
+    margin-bottom: 12px;
+  }
+
+  .result-screen h2 {
+    font-family: 'Fredoka One', cursive;
+    font-size: 2rem;
+    color: var(--accent1);
+    margin-bottom: 8px;
+  }
+
+  .result-screen .score-display {
+    font-size: 3rem;
+    font-weight: 800;
+    color: var(--accent2);
+    margin: 16px 0;
+  }
+
+  .result-screen p {
+    color: var(--muted);
+    margin-bottom: 24px;
+    font-size: 1rem;
+  }
+
+  .restart-btn {
+    background: linear-gradient(135deg, var(--accent1), var(--accent3));
+    border: none;
+    border-radius: 14px;
+    padding: 14px 36px;
+    color: #fff;
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.15rem;
+    cursor: pointer;
+    transition: transform 0.2s, opacity 0.2s;
+    letter-spacing: 0.5px;
+  }
+
+  .restart-btn:hover { transform: scale(1.04); opacity: 0.92; }
+
+  .slide-out {
+    animation: slideOut 0.3s ease forwards;
+  }
+
+  .slide-in {
+    animation: slideIn 0.35s ease forwards;
+  }
+
+  @keyframes slideOut {
+    to { transform: translateX(-40px); opacity: 0; }
+  }
+
+  @keyframes slideIn {
+    from { transform: translateX(40px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+
+  .hint {
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin-top: 6px;
+    font-style: italic;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>✏️ English Quiz</h1>
+  <p>Test your grammar skills — questions shuffle every time!</p>
+</header>
+
+<div class="topics-bar" id="topicsBar"></div>
+
+<div class="progress-wrap">
+  <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="progress-label" id="progressLabel">0 / 0</div>
+</div>
+
+<div class="score-row">
+  <div class="pill correct-pill">✓ <span id="correctCount">0</span></div>
+  <div class="pill wrong-pill">✗ <span id="wrongCount">0</span></div>
+  <div class="pill topic-pill">📚 <span id="topicLabel">All Topics</span></div>
+</div>
+
+<div class="quiz-card" id="quizCard">
+  <div class="card-accent" id="cardAccent"></div>
+  <div id="cardContent"></div>
+</div>
+
+<script>
+const TOPICS = {
+  pronouns: { label: "Pronouns", color: "#a29bfe" },
+  capital: { label: "Capital Letters", color: "#f7c948" },
+  wh: { label: "WH Questions", color: "#4ecdc4" },
+  verbBe: { label: "Verb Be", color: "#fd79a8" },
+  verbHave: { label: "Verb Have", color: "#55efc4" },
+  unseen: { label: "Unseen Text", color: "#74b9ff" },
+  writing: { label: "Writing", color: "#fab1a0" },
+};
+
+const ALL_QUESTIONS = [
+  // ===== PRONOUNS =====
+  { topic: "pronouns", type: "mcq", q: "Choose the correct pronoun: ___ is my best friend. (talking about a girl)", opts: ["He", "She", "It", "They"], ans: 1, exp: "'She' is used for a female person." },
+  { topic: "pronouns", type: "mcq", q: "Which sentence uses the correct object pronoun?\n'I gave ___ a book.' (talking about Tom)", opts: ["he", "him", "his", "himself"], ans: 1, exp: "After verbs, we use object pronouns: him, her, us, them." },
+  { topic: "pronouns", type: "mcq", q: "Choose the correct pronoun: ___ are playing football. (two boys)", opts: ["He", "She", "They", "It"], ans: 2, exp: "'They' is used for more than one person." },
+  { topic: "pronouns", type: "mcq", q: "Replace the underlined words with a pronoun:\n'Tom and I went to school.'", opts: ["They", "We", "Us", "He"], ans: 1, exp: "'We' replaces 'Tom and I' as a subject." },
+  { topic: "pronouns", type: "mcq", q: "What type of pronoun is 'myself'?", opts: ["Subject pronoun", "Object pronoun", "Possessive pronoun", "Reflexive pronoun"], ans: 3, exp: "Reflexive pronouns end in -self or -selves: myself, yourself, himself." },
+  { topic: "pronouns", type: "fill", q: "Fill in the blank with the correct possessive pronoun:\nThis is my dog. The dog is ___.", ans: "mine", exp: "Mine = it belongs to me (possessive pronoun, no noun after it)." },
+  { topic: "pronouns", type: "mcq", q: "Choose the correct pronoun: I can do ___ by myself. (referring to a task)", opts: ["them", "him", "it", "her"], ans: 2, exp: "'It' is used for things/tasks." },
+
+  // ===== CAPITAL LETTERS =====
+  { topic: "capital", type: "mcq", q: "Which sentence is correctly capitalized?", opts: ["my friend sara lives in london.", "My friend sara lives in London.", "My friend Sara lives in London.", "my Friend Sara lives in london."], ans: 2, exp: "Capitalize the first word, names of people (Sara), and cities (London)." },
+  { topic: "capital", type: "mcq", q: "Which word should be capitalized?\n'I went to school on monday.'", opts: ["school", "went", "monday", "on"], ans: 2, exp: "Days of the week always start with a capital letter: Monday." },
+  { topic: "capital", type: "mcq", q: "Choose the correctly written sentence:", opts: ["we celebrate christmas in december.", "We celebrate Christmas in december.", "We celebrate Christmas in December.", "we celebrate Christmas in December."], ans: 2, exp: "Holidays (Christmas) and months (December) are capitalized. Start the sentence with a capital too." },
+  { topic: "capital", type: "fill", q: "Rewrite correctly (fix capital letters):\n'my name is david and i am from israel.'", ans: "My name is David and I am from Israel.", exp: "Start of sentence, names, the word 'I', and countries are capitalized." },
+  { topic: "capital", type: "mcq", q: "Which rule explains why 'I' is always capitalized?", opts: ["It's a name", "The pronoun 'I' is always a capital letter", "It starts a sentence", "It is a special word"], ans: 1, exp: "The pronoun 'I' is always written as a capital letter in English." },
+
+  // ===== WH QUESTIONS =====
+  { topic: "wh", type: "mcq", q: "Which question word asks about a place?", opts: ["Who", "What", "Where", "When"], ans: 2, exp: "'Where' asks about a place. Example: Where do you live?" },
+  { topic: "wh", type: "mcq", q: "Choose the correct question:\n___ is your birthday? – It's in July.", opts: ["Where", "Who", "When", "What"], ans: 2, exp: "'When' asks about time." },
+  { topic: "wh", type: "mcq", q: "Complete the question:\n'___ are you crying?' – Because I am sad.", opts: ["What", "Why", "Who", "Whose"], ans: 1, exp: "'Why' asks for a reason." },
+  { topic: "wh", type: "mcq", q: "___ is your teacher? – Mrs. Green.", opts: ["What", "Where", "Who", "Which"], ans: 2, exp: "'Who' asks about a person." },
+  { topic: "wh", type: "fill", q: "Write the correct WH word:\n'___ book is this?' – It's mine.", ans: "Whose", exp: "'Whose' asks about possession / ownership." },
+  { topic: "wh", type: "mcq", q: "Which question is grammatically correct?", opts: ["What you are doing?", "What are you doing?", "What doing you are?", "Are what you doing?"], ans: 1, exp: "WH questions: WH word + auxiliary verb + subject + main verb." },
+  { topic: "wh", type: "fill", q: "Complete the question:\n'___ many students are in your class?' – Twenty.", ans: "How", exp: "'How many' asks about a countable quantity." },
+
+  // ===== VERB BE =====
+  { topic: "verbBe", type: "mcq", q: "Choose the correct form of 'be':\n___ you from Israel?", opts: ["Is", "Am", "Are", "Be"], ans: 2, exp: "With 'you' we use 'are'." },
+  { topic: "verbBe", type: "mcq", q: "Choose the correct sentence:", opts: ["She are happy.", "She am happy.", "She is happy.", "She be happy."], ans: 2, exp: "She / He / It → is." },
+  { topic: "verbBe", type: "mcq", q: "What is the negative form of:\n'They are at school.'", opts: ["They not are at school.", "They aren't at school.", "They isn't at school.", "They amn't at school."], ans: 1, exp: "They are → They aren't (are + not)." },
+  { topic: "verbBe", type: "fill", q: "Fill in 'am', 'is', or 'are':\nI ___ ten years old.", ans: "am", exp: "I → am." },
+  { topic: "verbBe", type: "mcq", q: "Change to a question:\n'He is a doctor.'", opts: ["He is a doctor?", "Is he a doctor?", "Does he is a doctor?", "Do he is a doctor?"], ans: 1, exp: "To make a Yes/No question with 'be', put 'is/am/are' before the subject." },
+  { topic: "verbBe", type: "fill", q: "Fill in 'was' or 'were':\nYesterday, we ___ at the park.", ans: "were", exp: "We / You / They → were (past tense)." },
+
+  // ===== VERB HAVE =====
+  { topic: "verbHave", type: "mcq", q: "Choose the correct sentence:", opts: ["She have a cat.", "She has a cat.", "She haves a cat.", "She having a cat."], ans: 1, exp: "He / She / It → has." },
+  { topic: "verbHave", type: "mcq", q: "What is the negative form of:\n'I have a bicycle.'", opts: ["I not have a bicycle.", "I doesn't have a bicycle.", "I don't have a bicycle.", "I haven't have a bicycle."], ans: 2, exp: "I / You / We / They → don't have." },
+  { topic: "verbHave", type: "fill", q: "Fill in 'have' or 'has':\nMy parents ___ a big house.", ans: "have", exp: "My parents = they → have." },
+  { topic: "verbHave", type: "mcq", q: "Change to a question:\n'She has a dog.'", opts: ["Has she a dog?", "Does she has a dog?", "Does she have a dog?", "Do she have a dog?"], ans: 2, exp: "For questions with 'have' (not as auxiliary), use Do/Does + subject + have." },
+  { topic: "verbHave", type: "mcq", q: "Which sentence is correct?", opts: ["I have got two brothers.", "I has got two brothers.", "I have get two brothers.", "I haves got two brothers."], ans: 0, exp: "'Have got' is used with I / You / We / They. 'Has got' with He / She / It." },
+  { topic: "verbHave", type: "fill", q: "Complete the sentence:\nHe ___ got a new phone.", ans: "has", exp: "He → has got." },
+
+  // ===== UNSEEN TEXT =====
+  {
+    topic: "unseen", type: "unseen",
+    passage: `Tom is a 12-year-old boy who loves animals. He has two pets: a dog named Rex and a cat named Whiskers. Every morning, Tom feeds them before school. Rex is big, brown, and friendly. Whiskers is small and white. Tom's favourite subject at school is Science because he wants to be a vet when he grows up.`,
+    questions: [
+      { q: "How old is Tom?", opts: ["10", "11", "12", "13"], ans: 2, exp: "The text says 'Tom is a 12-year-old boy'." },
+      { q: "What are the names of Tom's pets?", opts: ["Bob and Kitty", "Rex and Whiskers", "Max and Luna", "Rex and Luna"], ans: 1, exp: "Rex (dog) and Whiskers (cat)." },
+      { q: "When does Tom feed his pets?", opts: ["After school", "At night", "Every morning", "At lunchtime"], ans: 2, exp: "'Every morning, Tom feeds them before school.'" },
+      { q: "What does Tom want to be when he grows up?", opts: ["A teacher", "A doctor", "A scientist", "A vet"], ans: 3, exp: "'he wants to be a vet when he grows up.'" },
+    ]
+  },
+  {
+    topic: "unseen", type: "unseen",
+    passage: `Anna loves the beach. Every summer, her family goes to Eilat for one week. They swim in the sea, build sandcastles, and eat ice cream. Anna's favourite activity is snorkelling because she can see colourful fish. Her brother Dan prefers playing beach volleyball. At the end of the holiday, Anna always feels sad to leave.`,
+    questions: [
+      { q: "Where does Anna's family go every summer?", opts: ["Tel Aviv", "Haifa", "Eilat", "Jerusalem"], ans: 2, exp: "'her family goes to Eilat for one week'." },
+      { q: "What is Anna's favourite activity at the beach?", opts: ["Swimming", "Building sandcastles", "Snorkelling", "Volleyball"], ans: 2, exp: "'Anna's favourite activity is snorkelling'." },
+      { q: "What does Dan prefer doing?", opts: ["Snorkelling", "Eating ice cream", "Swimming", "Beach volleyball"], ans: 3, exp: "'Her brother Dan prefers playing beach volleyball'." },
+      { q: "How does Anna feel at the end of the holiday?", opts: ["Happy", "Excited", "Sad", "Bored"], ans: 2, exp: "'Anna always feels sad to leave'." },
+    ]
+  },
+
+  // ===== WRITING =====
+  { topic: "writing", type: "write", q: "Write 3 sentences about yourself using the verb 'be'.\n(Example: I am a student. My eyes are brown.)", exp: "Good use of: I am / My name is / I am from / I am ... years old / My hair is..." },
+  { topic: "writing", type: "write", q: "Write a short paragraph (3–4 sentences) about your favourite animal.\nUse: is/has/can", exp: "Include: what the animal is, what it looks like (has), what it can do." },
+  { topic: "writing", type: "write", q: "Write 3 WH questions you would ask a new classmate.\n(Use: What, Where, When, How, Who, Why)", exp: "Example: What is your name? Where are you from? How old are you?" },
+  { topic: "writing", type: "write", q: "Look at this situation and write a short message (2–3 sentences):\nYour friend missed school today. Send them a WhatsApp message asking how they are and what happened.", exp: "Use: Are you okay? Did you...? I was worried because..." },
+  { topic: "writing", type: "write", q: "Correct these sentences and rewrite them:\n1. me and sara is best friends.\n2. we have english class on monday.\n3. does she has a pencil?", exp: "1. Sara and I are best friends.\n2. We have English class on Monday.\n3. Does she have a pencil?" },
+];
+
+// State
+let filteredQuestions = [];
+let shuffledQuestions = [];
+let currentIdx = 0;
+let correct = 0;
+let wrong = 0;
+let activeTopic = "all";
+let unsentSubTopic = 0; // for unseen multi-q
+let answered = false;
+let subQIdx = 0;
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function getQuestions(topic) {
+  let base = topic === "all" ? ALL_QUESTIONS : ALL_QUESTIONS.filter(q => q.topic === topic);
+  // Expand unseen multi-q into individual sub-questions keeping track
+  return base;
+}
+
+function initQuiz() {
+  filteredQuestions = getQuestions(activeTopic);
+  shuffledQuestions = shuffle(filteredQuestions);
+  // Also shuffle unseen sub-questions
+  shuffledQuestions = shuffledQuestions.map(q => {
+    if (q.type === "unseen") {
+      return { ...q, questions: shuffle(q.questions).slice(0, 3) };
+    }
+    return q;
+  });
+  currentIdx = 0;
+  correct = 0;
+  wrong = 0;
+  subQIdx = 0;
+  updateScore();
+  updateProgress();
+  renderQuestion();
+}
+
+function updateScore() {
+  document.getElementById("correctCount").textContent = correct;
+  document.getElementById("wrongCount").textContent = wrong;
+  const tl = activeTopic === "all" ? "All Topics" : TOPICS[activeTopic].label;
+  document.getElementById("topicLabel").textContent = tl;
+}
+
+function totalItems() {
+  let total = 0;
+  shuffledQuestions.forEach(q => {
+    if (q.type === "unseen") total += q.questions.length;
+    else total += 1;
+  });
+  return total;
+}
+
+function answeredItems() {
+  let count = 0;
+  for (let i = 0; i < currentIdx; i++) {
+    const q = shuffledQuestions[i];
+    if (q && q.type === "unseen") count += q.questions.length;
+    else count += 1;
+  }
+  // Add current unseen progress
+  if (currentIdx < shuffledQuestions.length) {
+    const cq = shuffledQuestions[currentIdx];
+    if (cq && cq.type === "unseen") count += subQIdx;
+  }
+  return count;
+}
+
+function updateProgress() {
+  const total = totalItems();
+  const done = answeredItems();
+  const pct = total ? (done / total) * 100 : 0;
+  document.getElementById("progressFill").style.width = pct + "%";
+  document.getElementById("progressLabel").textContent = `${done} / ${total}`;
+}
+
+function renderQuestion() {
+  const card = document.getElementById("quizCard");
+  const content = document.getElementById("cardContent");
+
+  if (currentIdx >= shuffledQuestions.length) {
+    showResult();
+    return;
+  }
+
+  card.classList.remove("slide-in");
+  void card.offsetWidth;
+  card.classList.add("slide-in");
+
+  const q = shuffledQuestions[currentIdx];
+  const tinfo = TOPICS[q.topic];
+  document.getElementById("cardAccent").style.background = tinfo.color;
+
+  answered = false;
+
+  if (q.type === "unseen") {
+    renderUnseen(q, content, tinfo);
+  } else if (q.type === "mcq") {
+    renderMcq(q, content, tinfo);
+  } else if (q.type === "fill") {
+    renderFill(q, content, tinfo);
+  } else if (q.type === "write") {
+    renderWrite(q, content, tinfo);
+  }
+
+  updateProgress();
+}
+
+function topicTag(tinfo) {
+  return `<span class="topic-tag" style="background:${tinfo.color}22;color:${tinfo.color};border:1.5px solid ${tinfo.color}44">${tinfo.label}</span>`;
+}
+
+function renderMcq(q, content, tinfo) {
+  const letters = ["A", "B", "C", "D"];
+  const optHtml = q.opts.map((o, i) =>
+    `<button class="option-btn" onclick="checkMcq(${i})" id="opt${i}">
+      <span class="opt-letter">${letters[i]}</span>${o}
+    </button>`
+  ).join("");
+
+  content.innerHTML = `
+    ${topicTag(tinfo)}
+    <div class="question-text">${q.q.replace(/\n/g, "<br>")}</div>
+    <div class="options">${optHtml}</div>
+    <div class="feedback" id="feedback"></div>
+    <button class="next-btn" id="nextBtn" onclick="nextQ()">Next →</button>
+  `;
+}
+
+function checkMcq(chosen) {
+  if (answered) return;
+  answered = true;
+  const q = shuffledQuestions[currentIdx];
+  const fb = document.getElementById("feedback");
+
+  document.querySelectorAll(".option-btn").forEach(b => b.disabled = true);
+
+  if (chosen === q.ans) {
+    correct++;
+    document.getElementById("opt" + chosen).classList.add("correct");
+    fb.textContent = "✓ Correct! " + q.exp;
+    fb.className = "feedback correct-fb show";
+  } else {
+    wrong++;
+    document.getElementById("opt" + chosen).classList.add("wrong");
+    document.getElementById("opt" + q.ans).classList.add("correct");
+    fb.textContent = "✗ Not quite. " + q.exp;
+    fb.className = "feedback wrong-fb show";
+  }
+
+  document.getElementById("nextBtn").classList.add("show");
+  updateScore();
+}
+
+function renderFill(q, content, tinfo) {
+  content.innerHTML = `
+    ${topicTag(tinfo)}
+    <div class="question-text">${q.q.replace(/\n/g, "<br>")}</div>
+    <div class="text-input-wrap">
+      <input type="text" id="fillInput" placeholder="Type your answer..." autocomplete="off" onkeydown="if(event.key==='Enter') checkFill()">
+      <button class="submit-btn" onclick="checkFill()">Check ✓</button>
+    </div>
+    <div class="feedback" id="feedback"></div>
+    <button class="next-btn" id="nextBtn" onclick="nextQ()">Next →</button>
+  `;
+  setTimeout(() => document.getElementById("fillInput").focus(), 100);
+}
+
+function checkFill() {
+  if (answered) return;
+  const q = shuffledQuestions[currentIdx];
+  const input = document.getElementById("fillInput");
+  const val = input.value.trim().toLowerCase().replace(/[.,!?]$/, "");
+  const correctAns = q.ans.toLowerCase().replace(/[.,!?]$/, "");
+  const fb = document.getElementById("feedback");
+  answered = true;
+  input.disabled = true;
+  document.querySelector(".submit-btn").disabled = true;
+
+  if (val === correctAns || val === correctAns.replace(/\./g, "")) {
+    correct++;
+    fb.textContent = "✓ Correct! " + q.exp;
+    fb.className = "feedback correct-fb show";
+    input.style.borderColor = "var(--correct)";
+  } else {
+    wrong++;
+    fb.innerHTML = `✗ The correct answer is: <strong>${q.ans}</strong>. ${q.exp}`;
+    fb.className = "feedback wrong-fb show";
+    input.style.borderColor = "var(--wrong)";
+  }
+
+  document.getElementById("nextBtn").classList.add("show");
+  updateScore();
+}
+
+function renderWrite(q, content, tinfo) {
+  content.innerHTML = `
+    ${topicTag(tinfo)}
+    <div class="question-text">${q.q.replace(/\n/g, "<br>")}</div>
+    <div class="text-input-wrap">
+      <textarea id="writeInput" rows="5" placeholder="Write your answer here..."></textarea>
+      <button class="submit-btn" onclick="submitWrite()">Submit ✓</button>
+    </div>
+    <div class="feedback" id="feedback"></div>
+    <button class="next-btn" id="nextBtn" onclick="nextQ()">Next →</button>
+  `;
+}
+
+function submitWrite() {
+  if (answered) return;
+  const q = shuffledQuestions[currentIdx];
+  const val = document.getElementById("writeInput").value.trim();
+  const fb = document.getElementById("feedback");
+
+  if (!val) { fb.textContent = "Please write something first!"; fb.className = "feedback wrong-fb show"; return; }
+
+  answered = true;
+  document.getElementById("writeInput").disabled = true;
+  document.querySelector(".submit-btn").disabled = true;
+
+  fb.innerHTML = `📝 Great effort! Here are some tips:<br><em>${q.exp.replace(/\n/g, "<br>")}</em>`;
+  fb.className = "feedback correct-fb show";
+
+  correct++;
+  document.getElementById("nextBtn").classList.add("show");
+  updateScore();
+}
+
+function renderUnseen(q, content, tinfo) {
+  const sq = q.questions[subQIdx];
+  const letters = ["A", "B", "C", "D"];
+  const optHtml = sq.opts.map((o, i) =>
+    `<button class="option-btn" onclick="checkUnseen(${i})" id="opt${i}">
+      <span class="opt-letter">${letters[i]}</span>${o}
+    </button>`
+  ).join("");
+
+  const qNum = subQIdx + 1;
+  const total = q.questions.length;
+
+  content.innerHTML = `
+    ${topicTag(tinfo)}
+    <div style="background:rgba(116,185,255,0.07);border:1.5px solid rgba(116,185,255,0.2);border-radius:12px;padding:14px 16px;margin-bottom:18px;font-size:0.93rem;line-height:1.7;color:#cdd6f4;">
+      ${q.passage}
+    </div>
+    <div class="question-text" style="font-size:1rem;">[Question ${qNum}/${total}] ${sq.q}</div>
+    <div class="options">${optHtml}</div>
+    <div class="feedback" id="feedback"></div>
+    <button class="next-btn" id="nextBtn" onclick="nextUnseenQ()">Next →</button>
+  `;
+}
+
+function checkUnseen(chosen) {
+  if (answered) return;
+  answered = true;
+  const q = shuffledQuestions[currentIdx];
+  const sq = q.questions[subQIdx];
+  const fb = document.getElementById("feedback");
+
+  document.querySelectorAll(".option-btn").forEach(b => b.disabled = true);
+
+  if (chosen === sq.ans) {
+    correct++;
+    document.getElementById("opt" + chosen).classList.add("correct");
+    fb.textContent = "✓ Correct! " + sq.exp;
+    fb.className = "feedback correct-fb show";
+  } else {
+    wrong++;
+    document.getElementById("opt" + chosen).classList.add("wrong");
+    document.getElementById("opt" + sq.ans).classList.add("correct");
+    fb.textContent = "✗ " + sq.exp;
+    fb.className = "feedback wrong-fb show";
+  }
+
+  document.getElementById("nextBtn").classList.add("show");
+  updateScore();
+}
+
+function nextUnseenQ() {
+  const q = shuffledQuestions[currentIdx];
+  subQIdx++;
+  if (subQIdx < q.questions.length) {
+    answered = false;
+    updateProgress();
+    renderUnseen(q, document.getElementById("cardContent"), TOPICS[q.topic]);
+  } else {
+    subQIdx = 0;
+    currentIdx++;
+    renderQuestion();
+  }
+}
+
+function nextQ() {
+  currentIdx++;
+  renderQuestion();
+}
+
+function showResult() {
+  const total = correct + wrong;
+  const pct = total ? Math.round((correct / total) * 100) : 0;
+  let emoji = pct >= 80 ? "🏆" : pct >= 60 ? "👍" : pct >= 40 ? "😊" : "💪";
+  let msg = pct >= 80 ? "Excellent work!" : pct >= 60 ? "Good job!" : pct >= 40 ? "Keep practising!" : "Don't give up!";
+
+  document.getElementById("cardContent").innerHTML = `
+    <div class="result-screen">
+      <div class="big-emoji">${emoji}</div>
+      <h2>${msg}</h2>
+      <div class="score-display">${correct} / ${total}</div>
+      <p>${pct}% correct — ${total - correct === 0 ? "Perfect score! 🎉" : `You got ${total - correct} wrong. Review and try again!`}</p>
+      <button class="restart-btn" onclick="restartQuiz()">🔄 Restart & Shuffle</button>
+    </div>
+  `;
+  document.getElementById("cardAccent").style.background = "linear-gradient(90deg, #f7c948, #fd79a8, #4ecdc4)";
+  document.getElementById("progressFill").style.width = "100%";
+  document.getElementById("progressLabel").textContent = "Done!";
+}
+
+function restartQuiz() {
+  const card = document.getElementById("quizCard");
+  card.classList.add("slide-out");
+  setTimeout(() => {
+    card.classList.remove("slide-out");
+    initQuiz();
+  }, 300);
+}
+
+// Build topic buttons
+function buildTopics() {
+  const bar = document.getElementById("topicsBar");
+  const allBtn = document.createElement("button");
+  allBtn.className = "topic-btn active";
+  allBtn.textContent = "⭐ All Topics";
+  allBtn.onclick = () => selectTopic("all", allBtn);
+  bar.appendChild(allBtn);
+
+  Object.entries(TOPICS).forEach(([key, val]) => {
+    const btn = document.createElement("button");
+    btn.className = "topic-btn";
+    btn.textContent = val.label;
+    btn.onclick = () => selectTopic(key, btn);
+    bar.appendChild(btn);
+  });
+}
+
+function selectTopic(key, btn) {
+  activeTopic = key;
+  document.querySelectorAll(".topic-btn").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+  restartQuiz();
+}
+
+buildTopics();
+initQuiz();
+</script>
+</body>
+</html>
