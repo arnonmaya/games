@@ -189,13 +189,9 @@ body.ltr #muteBtn{left:auto;right:14px;}
 </div>
 
 
+<script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
 <script>
-// ── Firebase STUB (online mode disabled — no external CDN available) ──
-function dbSet(path,val){ return Promise.resolve(); }
-function dbUpdate(path,val){ return Promise.resolve(); }
-function dbGet(path){ return Promise.resolve({exists:()=>false,val:()=>null}); }
-function dbOn(path,cb){ return null; }
-function dbOff(path){}
+// PeerJS online multiplayer (online mode disabled — no external CDN available) ──
 function dbOnDisconnectRemove(path){}
 
 // ═══════════════════════════════════════════════════════
@@ -474,16 +470,109 @@ function genCode(){
   return c;
 }
 
+// ═══════════════════════════════════════════════════════
+// ONLINE — PeerJS peer-to-peer (host ↔ clients)
+// Host creates room code = its PeerJS peer ID
+// Clients connect directly to host peer
+// ═══════════════════════════════════════════════════════
+let peer=null, hostConn=null, clientConns=[];
+
+function peerError(msg){ document.getElementById('roomStatus').textContent='❌ '+msg; }
+
+function cleanupPeer(){
+  clientConns.forEach(c=>{try{c.close();}catch(e){}});
+  clientConns=[];
+  if(hostConn){try{hostConn.close();}catch(e){} hostConn=null;}
+  if(peer){try{peer.destroy();}catch(e){} peer=null;}
+}
+
+// ── HOST: create room ──
 async function initOnlineLobby(){
-  document.getElementById('roomCodeDisplay').textContent='----';
-  document.getElementById('roomStatus').textContent='⚠️ מצב אונליין לא זמין בסביבה זו. הורד את הקובץ ופתח אותו בדפדפן.';
+  cleanupPeer();
+  roomCode = genCode();
+  document.getElementById('roomCodeDisplay').textContent = roomCode;
+  document.getElementById('roomStatus').textContent = 'מאתחל...';
   document.getElementById('startOnlineBtn').style.display='none';
+  isHost=true; myPlayerId=0;
+
+  // joinedPlayers[id] = conn
+  const joinedPlayers = {0: null};
+
+  peer = new Peer(roomCode, {debug:0});
+
+  peer.on('error', e=>{
+    if(e.type==='unavailable-id'){
+      roomCode=genCode();
+      document.getElementById('roomCodeDisplay').textContent=roomCode;
+      peer.destroy();
+      initOnlineLobby();
+    } else {
+      peerError(e.message||e.type);
+    }
+  });
+
+  peer.on('open', id=>{
+    document.getElementById('roomStatus').textContent='ממתין לשחקנים... (קוד: '+id+')';
+    renderPlayerSlots(joinedPlayers,0);
+  });
+
+  peer.on('connection', conn=>{
+    conn.on('open',()=>{
+      // assign slot
+      const takenIds=Object.keys(joinedPlayers).map(Number);
+      let newId=-1;
+      for(let i=1;i<4;i++){if(!takenIds.includes(i)){newId=i;break;}}
+      if(newId===-1){conn.send({type:'full'}); conn.close(); return;}
+
+      joinedPlayers[newId]=conn;
+      clientConns.push(conn);
+      conn.metadata={playerId:newId};
+
+      // tell client their id + current player list
+      const pList={};
+      Object.keys(joinedPlayers).forEach(i=>{pList[i]={name:getPN(+i),color:PLAYER_DEFS[+i].color};});
+      conn.send({type:'welcome',playerId:newId,players:pList});
+
+      // broadcast updated list to all clients
+      clientConns.forEach(c=>{
+        if(c.open) c.send({type:'playerlist',players:pList});
+      });
+
+      renderPlayerSlots(joinedPlayers,0);
+      const joined=Object.keys(joinedPlayers).length;
+      document.getElementById('roomStatus').textContent=joined+'/4 שחקנים';
+      if(joined>=2) document.getElementById('startOnlineBtn').style.display='block';
+
+      conn.on('data',d=>{
+        if(d.type==='input'&&d.playerId!=null){
+          const pid=d.playerId;
+          if(players[pid]&&players[pid].alive) players[pid].dir*=-1;
+        }
+      });
+
+      conn.on('close',()=>{
+        delete joinedPlayers[newId];
+        clientConns=clientConns.filter(c=>c!==conn);
+        renderPlayerSlots(joinedPlayers,0);
+        const j2=Object.keys(joinedPlayers).length;
+        document.getElementById('roomStatus').textContent=j2+'/4 שחקנים';
+        if(j2<2) document.getElementById('startOnlineBtn').style.display='none';
+      });
+    });
+  });
+
+  document.getElementById('startOnlineBtn').onclick=()=>{
+    const pList={};
+    Object.keys(joinedPlayers).forEach(i=>{pList[i]={name:getPN(+i),color:PLAYER_DEFS[+i].color};});
+    clientConns.forEach(c=>{if(c.open)c.send({type:'start',players:pList});});
+    hostStartOnlineGame(Object.keys(joinedPlayers).map(Number).sort());
+  };
 }
 
 function renderPlayerSlots(players,myId){
   const el=document.getElementById('playerSlots'); el.innerHTML='';
   for(let i=0;i<4;i++){
-    const p=players&&players[i];
+    const p=players&&players[i]!==undefined;
     const slot=document.createElement('div');
     slot.className='pSlot'+(p?' joined':'')+(i===myId?' me':'');
     slot.style.color=p?PLAYER_DEFS[i].color:'#333';
@@ -492,79 +581,61 @@ function renderPlayerSlots(players,myId){
   }
 }
 
-document.getElementById('joinBtn').addEventListener('click',async()=>{
+// ── CLIENT: join room ──
+document.getElementById('joinBtn').addEventListener('click',()=>{
   const code=document.getElementById('joinCodeInput').value.trim().toUpperCase();
   if(code.length!==4){document.getElementById('joinStatus').textContent=t('joinFail');return;}
   document.getElementById('joinStatus').textContent=t('joining');
-  const snap=await dbGet(`alien_rooms/${code}`);
-  if(!snap.exists()){document.getElementById('joinStatus').textContent=t('joinFail');return;}
-  const data=snap.val();
-  const takenIds=Object.keys(data.players||{}).map(Number);
-  let myId=-1;
-  for(let i=0;i<4;i++){if(!takenIds.includes(i)){myId=i;break;}}
-  if(myId===-1){document.getElementById('joinStatus').textContent='החדר מלא';return;}
+  cleanupPeer();
+  isHost=false;
 
-  roomCode=code; myPlayerId=myId; isHost=false;
-  await dbUpdate(`alien_rooms/${code}/players/${myId}`,{
-    name:getPN(myId),color:PLAYER_DEFS[myId].color,ready:true
+  peer=new Peer({debug:0});
+  peer.on('error',e=>{ document.getElementById('joinStatus').textContent='❌ '+(e.message||e.type); });
+
+  peer.on('open',()=>{
+    const conn=peer.connect(code,{reliable:true});
+    hostConn=conn;
+
+    conn.on('open',()=>{ document.getElementById('joinStatus').textContent='מתחבר...'; });
+
+    conn.on('data',d=>{
+      if(d.type==='full'){ document.getElementById('joinStatus').textContent='החדר מלא'; return; }
+      if(d.type==='welcome'){
+        myPlayerId=d.playerId;
+        roomCode=code;
+        document.getElementById('joinStatus').textContent=t('connectedAs')+getPN(myPlayerId);
+        renderPlayerSlots(d.players,myPlayerId);
+      }
+      if(d.type==='playerlist'){ renderPlayerSlots(d.players,myPlayerId); }
+      if(d.type==='start'){ clientJoinOnlineGame(d.players); }
+      if(d.type==='state'){ applyHostState(d); }
+    });
+
+    conn.on('close',()=>{ document.getElementById('joinStatus').textContent='החיבור נותק'; });
+
+    setTimeout(()=>{
+      if(!hostConn||!hostConn.open){
+        document.getElementById('joinStatus').textContent=t('joinFail');
+      }
+    },6000);
   });
-  await dbUpdate(`alien_rooms/${code}`,{numPlayers:takenIds.length+1});
-  dbOnDisconnectRemove(`alien_rooms/${code}/players/${myId}`);
-
-  document.getElementById('joinStatus').textContent=`${t('connectedAs')}${getPN(myId)}`;
-  renderPlayerSlots({...data.players,[myId]:{name:getPN(myId)}},myId);
-
-  const roomPath=`alien_rooms/${code}`;
-  const roomRef=dbOn(roomPath,snap2=>{
-    const d=snap2.val(); if(!d)return;
-    renderPlayerSlots(d.players,myId);
-    if(d.state==='playing'){
-      clientJoinOnlineGame(code,myId,d);
-    }
-  });
-  onlineListeners.push({path:roomPath,ref:roomRef});
 });
 
 function cleanupOnlineListeners(){
-  onlineListeners.forEach(({path})=>{ try{dbOff(path);}catch(e){} });
+  cleanupPeer();
+  onlineListeners.forEach(({unsub})=>{ if(unsub) try{unsub();}catch(e){} });
   onlineListeners=[];
 }
 
-// ═══════════════════════════════════════════════════════
-// ONLINE HOST
-// ═══════════════════════════════════════════════════════
-async function hostStartOnlineGame(data){
-  const roomPath=`alien_rooms/${roomCode}`;
-  let snap;
-  if(data){ snap=data; }
-  else { const s=await dbGet(roomPath); snap=s.val(); }
-  if(!snap)return;
-  const playerIds=Object.keys(snap.players||{}).map(Number).sort();
+// ── HOST: run game + broadcast ──
+function hostStartOnlineGame(playerIds){
   numPlayers=playerIds.length;
   gameMode='online'; isHost=true;
-
   document.getElementById('lobby').style.display='none';
   document.getElementById('game').style.display='block';
   document.getElementById('onlineBadge').style.display='block';
-  document.getElementById('onlineBadgeText').textContent=`${t('onlineBadge')} • ${t('youAre')} ${getPN(0)} 👑`;
-
+  document.getElementById('onlineBadgeText').textContent=t('onlineBadge')+' • '+t('youAre')+' '+getPN(0)+' 👑';
   initGame(numPlayers);
-
-  playerIds.forEach(pid=>{
-    if(pid===0)return;
-    const inputPath=`alien_rooms/${roomCode}/inputs/${pid}`;
-    let lastFlip=0;
-    const iRef=dbOn(inputPath,snap=>{
-      const val=snap.val();
-      if(!val)return;
-      if(val.flip&&val.flip!==lastFlip){
-        lastFlip=val.flip;
-        if(players[pid]&&players[pid].alive) players[pid].dir*=-1;
-      }
-    });
-    onlineListeners.push({path:inputPath,ref:iRef});
-  });
-
   hostBroadcastLoop();
 }
 
@@ -573,6 +644,7 @@ function hostBroadcastLoop(){
   clearInterval(broadcastTimer);
   broadcastTimer=setInterval(()=>{
     if(!gameActive&&!gameOver)return;
+    if(!clientConns.length){if(gameOver)clearInterval(broadcastTimer);return;}
     const pData={};
     players.forEach((p,i)=>{pData[i]={angle:+p.angle.toFixed(4),alive:p.alive,score:p.score,dir:p.dir};});
     const mData=mines.map(m=>{
@@ -584,27 +656,43 @@ function hostBroadcastLoop(){
       if(m.type==='circlelaser'){base.safeAngle=+m.safeAngle.toFixed(4);base.safeWidth=+m.safeWidth.toFixed(3);base.warningLife=m.warningLife;base.killLife=m.killLife;}
       return base;
     });
-    dbSet(`alien_rooms/${roomCode}/gameState`,{
-      players:pData, mines:mData,
+    const state={type:'state',players:pData,mines:mData,
       alien:{angle:+alien.angle.toFixed(4),spinning:alien.spinning},
-      stage, frameCount, gameOver, statusMsg
-    }).catch(()=>{});
-    if(gameOver) clearInterval(broadcastTimer);
+      stage,frameCount,gameOver,statusMsg};
+    clientConns.forEach(c=>{if(c.open)c.send(state);});
+    if(gameOver)clearInterval(broadcastTimer);
   },50);
 }
 
-// ═══════════════════════════════════════════════════════
-// ONLINE CLIENT
-// ═══════════════════════════════════════════════════════
-function clientJoinOnlineGame(code,myId,roomData){
-  const playerIds=Object.keys(roomData.players||{}).map(Number).sort();
-  numPlayers=playerIds.length;
-  gameMode='online'; isHost=false; myPlayerId=myId;
+// ── CLIENT: receive + render ──
+function applyHostState(d){
+  if(d.players){
+    Object.keys(d.players).forEach(i=>{
+      const pi=+i;
+      if(players[pi]){
+        players[pi].angle=d.players[i].angle;
+        players[pi].alive=d.players[i].alive;
+        players[pi].score=d.players[i].score;
+        players[pi].dir=d.players[i].dir;
+      }
+    });
+  }
+  if(d.alien){alien.angle=d.alien.angle;alien.spinning=d.alien.spinning;}
+  if(d.mines) mines=d.mines.map(m=>({...m}));
+  stage=d.stage||1; frameCount=d.frameCount||0;
+  if(d.statusMsg!==statusMsg){statusMsg=d.statusMsg||'';document.getElementById('statusBar').textContent=statusMsg;}
+  if(d.gameOver&&!gameOver){gameOver=true;gameActive=false;stopMusic();showGameOverUI();}
+  updateScoreUI();
+}
 
+function clientJoinOnlineGame(playerMap){
+  const playerIds=Object.keys(playerMap).map(Number).sort();
+  numPlayers=playerIds.length;
+  gameMode='online'; isHost=false;
   document.getElementById('lobby').style.display='none';
   document.getElementById('game').style.display='block';
   document.getElementById('onlineBadge').style.display='block';
-  document.getElementById('onlineBadgeText').textContent=`${t('onlineBadge')} • ${t('youAre')} ${getPN(myId)}`;
+  document.getElementById('onlineBadgeText').textContent=t('onlineBadge')+' • '+t('youAre')+' '+getPN(myPlayerId);
 
   gameActive=true; gameOver=false; stage=1; frameCount=0; statusMsg='';
   players=[];
@@ -613,54 +701,22 @@ function clientJoinOnlineGame(code,myId,roomData){
       color:PLAYER_DEFS[i].color,name:getPN(i),keySet:PLAYER_DEFS[i].keys,dir:1,invincible:0});
   }
   mines=[];
-  buildScoreBar();
-  buildTouchControls(numPlayers);
+  buildScoreBar(); buildTouchControls(numPlayers);
   document.getElementById('gameOverOverlay').classList.remove('active');
 
-  let lastFlipTs=0;
   const sendFlip=()=>{
-    lastFlipTs=Date.now();
-    dbSet(`alien_rooms/${code}/inputs/${myId}`,{flip:lastFlipTs});
+    if(hostConn&&hostConn.open) hostConn.send({type:'input',playerId:myPlayerId});
   };
 
   const onKD=e=>{
-    if(!PLAYER_DEFS[myId].keys.includes(e.key))return;
+    if(!PLAYER_DEFS[myPlayerId].keys.includes(e.key))return;
     sendFlip();
     if(['ArrowLeft','ArrowRight'].includes(e.key))e.preventDefault();
   };
   document.addEventListener('keydown',onKD);
-  onlineListeners.push({path:null,ref:null,unsub:()=>document.removeEventListener('keydown',onKD)});
+  onlineListeners.push({unsub:()=>document.removeEventListener('keydown',onKD)});
 
-  buildTouchControlsOnline(myId,sendFlip);
-
-  const statePath=`alien_rooms/${code}/gameState`;
-  const stateRef=dbOn(statePath,snap=>{
-    const d=snap.val(); if(!d)return;
-    if(d.players){
-      Object.keys(d.players).forEach(i=>{
-        const pi=+i;
-        if(players[pi]){
-          players[pi].angle=d.players[i].angle;
-          players[pi].alive=d.players[i].alive;
-          players[pi].score=d.players[i].score;
-          players[pi].dir=d.players[i].dir;
-        }
-      });
-    }
-    if(d.alien){alien.angle=d.alien.angle;alien.spinning=d.alien.spinning;}
-    if(d.mines) mines=d.mines.map(m=>({...m}));
-    stage=d.stage||1;
-    frameCount=(d.frameCount||0);
-    if(d.statusMsg!==statusMsg){statusMsg=d.statusMsg||'';document.getElementById('statusBar').textContent=statusMsg;}
-    if(d.gameOver&&!gameOver){
-      gameOver=true; gameActive=false;
-      stopMusic();
-      showGameOverUI();
-    }
-    updateScoreUI();
-  });
-  onlineListeners.push({path:statePath,ref:stateRef});
-
+  buildTouchControlsOnline(myPlayerId,sendFlip);
   startMusic(); scheduleMusicLoop();
   clientRenderLoop();
 }
