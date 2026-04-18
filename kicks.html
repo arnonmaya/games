@@ -293,7 +293,7 @@ const HUMAN_CATCH=26,HUMAN_SPEED=7;
 
 // ── state ──
 let gameMode='solo',difficulty='easy',setupDiff='easy';
-let scores=[0,0],round=1,shotsThisRound=0,shooterIdx=0;
+let scores=[0,0],round=1,shooterShots=[0,0],shooterIdx=0;
 let myIdx=0,myRole='shooter';
 let phase='aim';
 let ballX=W/2,ballY=H-55;
@@ -309,7 +309,7 @@ let roomCode=null,roomRef=null,listeners=[];
 // ── game start ──
 function startGame(mode){
   gameMode=mode; difficulty=setupDiff;
-  scores=[0,0]; round=1; shotsThisRound=0; shooterIdx=0; myIdx=0; myRole='shooter';
+  scores=[0,0]; round=1; shooterShots=[0,0]; shooterIdx=0; myIdx=0; myRole='shooter';
   showScreen('game-screen');
   const dc=document.getElementById('diff-controls');
   dc.style.display=(mode==='online')?'none':'';
@@ -332,7 +332,7 @@ async function showCreate(){
   roomCode=code; roomRef=ref(db,'rooms/'+roomCode);
   document.getElementById('code-display').textContent=roomCode;
   await set(roomRef,{
-    host:true,guest:false,round:1,shotsThisRound:0,scores:[0,0],shooterIdx:0,
+    host:true,guest:false,round:1,shooterShots:[0,0],scores:[0,0],shooterIdx:0,
     phase:'waiting',aim:{x:W/2,y:GOAL_TOP+40},shoot:{x:null,y:null,fired:false},keeperX:W/2,result:null
   });
   onDisconnect(roomRef).remove();
@@ -360,7 +360,7 @@ async function joinRoom(){
 
 function startOnlineGame(){
   gameMode='online'; difficulty='easy';
-  scores=[0,0]; round=1; shotsThisRound=0; shooterIdx=0;
+  scores=[0,0]; round=1; shooterShots=[0,0]; shooterIdx=0;
   myRole=myIdx===0?'shooter':'keeper';
   showScreen('game-screen');
   document.getElementById('diff-controls').style.display='none';
@@ -407,7 +407,7 @@ function listenFirebase(){
   }));
   listeners.push(onValue(ref(db,'rooms/'+roomCode+'/swapRound'),snap=>{
     const v=snap.val(); if(!v) return;
-    scores=[...v.scores]; round=2; shooterIdx=v.newShooterIdx; shotsThisRound=0;
+    scores=[...v.scores]; round=2; shooterIdx=v.newShooterIdx; shooterShots=[...v.shooterShots];
     myRole=myIdx===shooterIdx?'shooter':'keeper';
     cleanupListeners();
     setTimeout(()=>showRoleSwapOverlay(()=>{ rebuildHUD(); updateTurnLabel(); updateKeeperHint(); listenFirebase(); nextShot(); }),300);
@@ -698,11 +698,14 @@ function resolveShot(){
       else { msgEl.textContent=t('miss');msgEl.className='save-msg'; }
       updateHUD();
     }
-    phase='result'; shotsThisRound++;
-    const roundDone=shotsThisRound>=SHOTS_PER_ROUND,gameOver=roundDone&&round===2;
+    phase='result';
+    // count shots only for the current shooter
+    shooterShots[shooterIdx]++;
+    const roundDone=shooterShots[shooterIdx]>=SHOTS_PER_ROUND;
+    const gameOver=roundDone&&round===2;
     setTimeout(()=>{
       if(gameOver){ if(myRole==='shooter') update(roomRef,{gameover:{scores}}); showGameOverOverlay(); }
-      else if(roundDone&&round===1){ if(myRole==='shooter') update(roomRef,{swapRound:{scores,newShooterIdx:1},phase:'swap'}); }
+      else if(roundDone&&round===1){ if(myRole==='shooter') update(roomRef,{swapRound:{scores,shooterShots,newShooterIdx:1},phase:'swap'}); }
       else { if(myRole==='shooter') update(roomRef,{phase:'nextShot'}); nextShot(); }
     },1400);
     return;
@@ -711,8 +714,10 @@ function resolveShot(){
   if(inGoal&&!caught){ scores[shooterIdx]++;spawnParticles(targetX,targetY,'#e8d44d',30);spawnParticles(targetX,targetY,'#ffffff',15);msgEl.textContent=t('goal');msgEl.className='goal-msg'; }
   else if(caught){ spawnParticles(keeperX,KEEPER_BASE,'#e05050',20);msgEl.textContent=t('saved');msgEl.className='save-msg'; }
   else { msgEl.textContent=t('miss');msgEl.className='save-msg'; }
-  shotsThisRound++; updateHUD(); phase='result';
-  const roundDone=shotsThisRound>=SHOTS_PER_ROUND;
+  // count shots for current shooter only
+  shooterShots[shooterIdx]++;
+  updateHUD(); phase='result';
+  const roundDone=shooterShots[shooterIdx]>=SHOTS_PER_ROUND;
   const gameOver=roundDone&&(gameMode==='solo'||round===2);
   setTimeout(()=>{
     if(gameOver) showGameOverOverlay();
@@ -735,7 +740,7 @@ function showOverlay(msg,withBack=false){
 }
 
 function showRoleSwapOverlay(cb){
-  round=2; shooterIdx=1-shooterIdx; shotsThisRound=0;
+  round=2; shooterIdx=1-shooterIdx;
   const wrap=document.getElementById('canvas-wrap');
   const ov=document.createElement('div');
   ov.style.cssText='position:absolute;inset:0;background:rgba(0,0,0,0.88);display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:14px;gap:12px;z-index:15;';
@@ -779,7 +784,7 @@ function showGameOverOverlay(){
     if(window._goCd) clearInterval(window._goCd);
     ov.remove(); cleanupRoom();
     if(gameMode==='online') goLobby();
-    else{ shotsThisRound=0;round=1;shooterIdx=0;scores=[0,0];initRound(); }
+    else{ shooterShots=[0,0];round=1;shooterIdx=0;scores=[0,0];initRound(); }
   });
   let s=5;
   window._goCd=setInterval(()=>{
