@@ -354,6 +354,14 @@ html[dir=ltr] .ans-btn{text-align:left}
     </div>
   </div>
 
+  <div class="card">
+    <div class="card-title" data-he="🌐 שפת שאלות" data-en="🌐 QUESTION LANGUAGE">🌐 שפת שאלות</div>
+    <div class="pill-group" id="lqlangGroup">
+      <button class="pill active" data-val="he" data-he="🇮🇱 עברית" data-en="🇮🇱 Hebrew">🇮🇱 עברית</button>
+      <button class="pill"        data-val="en" data-he="🇺🇸 אנגלית" data-en="🇺🇸 English">🇺🇸 אנגלית</button>
+    </div>
+  </div>
+
   <button class="btn-main" onclick="startLocalGame()">
     <span data-he="🚀 התחל!" data-en="🚀 START!">🚀 התחל!</span>
   </button>
@@ -434,6 +442,14 @@ html[dir=ltr] .ans-btn{text-align:left}
       <button class="pill"        data-val-he="קל"     data-val-en="Easy"   data-he="😊 קל"    data-en="😊 Easy">😊 קל</button>
       <button class="pill"        data-val-he="בינוני" data-val-en="Medium" data-he="🤔 בינוני" data-en="🤔 Medium">🤔 בינוני</button>
       <button class="pill"        data-val-he="קשה"    data-val-en="Hard"   data-he="🔥 קשה"   data-en="🔥 Hard">🔥 קשה</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title" data-he="🌐 שפת שאלות" data-en="🌐 QUESTION LANGUAGE">🌐 שפת שאלות</div>
+    <div class="pill-group" id="oqlangGroup">
+      <button class="pill active" data-val="he" data-he="🇮🇱 עברית" data-en="🇮🇱 Hebrew">🇮🇱 עברית</button>
+      <button class="pill"        data-val="en" data-he="🇺🇸 אנגלית" data-en="🇺🇸 English">🇺🇸 אנגלית</button>
     </div>
   </div>
 
@@ -649,10 +665,13 @@ function setupPills(id,cb){
   });
 }
 let localNum=10, onlineNum=15;
+let questionLang='he';
 setupPills('lcatGroup'); setupPills('ldiffGroup');
 setupPills('lnumGroup', v=>localNum=parseInt(v));
+setupPills('lqlangGroup', v=>questionLang=v);
 setupPills('ocatGroup'); setupPills('odiffGroup');
 setupPills('onumGroup', v=>onlineNum=parseInt(v));
+setupPills('oqlangGroup', v=>questionLang=v);
 
 // ── nav ──
 function showPage(id){
@@ -726,6 +745,7 @@ function startLocalGame(){
   diff=pillVal('ldiffGroup')||'Mixed';
   tot=localNum;
   mode='local';
+  bankLoaded=false; questionBank=[];
   // Init per-player queues
   playerQueues=Array(numPlayers).fill(null);
   playerAsked=Array.from({length:numPlayers},()=>[]);
@@ -795,6 +815,7 @@ async function createRoom(){
       cat:pillVal('ocatGroup')||'General',
       diff:pillVal('odiffGroup')||'Mixed',
       numQ:onlineNum,lang,
+      questionLang:pillVal('oqlangGroup')||'he',
       created:FL.serverTimestamp()
     });
     await FL.set(FL.ref(db,'rooms/'+code+'/players/'+myId),{
@@ -894,6 +915,7 @@ function beginOnlineGame(){
   if(unsubPlayers){unsubPlayers();unsubPlayers=null;}
   mode='online';
   cat=roomData.cat||'General'; diff=roomData.diff||'Mixed'; tot=roomData.numQ||15;
+  questionLang=roomData.questionLang||'he';
   myGameDone=false;
   initGameUI();
   document.getElementById('onlineUI').style.display='block';
@@ -972,11 +994,12 @@ let bankLoaded = false;
 async function loadQuestionBank(){
   if(bankLoaded) return;
   try {
-    const snap = await FL.get(FL.ref(db, 'questions'));
+    const path = questionLang === 'he' ? 'questions_he' : 'questions';
+    const snap = await FL.get(FL.ref(db, path));
     if(snap.exists()){
       questionBank = Object.values(snap.val());
       bankLoaded = true;
-      console.log('Question bank loaded:', questionBank.length, 'questions');
+      console.log('Question bank loaded:', questionBank.length, 'questions from', path);
     } else {
       throw new Error(lang==='he'?'לא נמצאו שאלות ב-Database':'No questions found in database');
     }
@@ -990,8 +1013,12 @@ function pickQuestion(avoidList){
   let pool = questionBank;
 
   // Filter by category
+  const catMap = {'General':'כללי','Science':'מדע','History':'היסטוריה','Geography':'גיאוגרפיה',
+    'Sports':'ספורט','Movies & Music':'קולנוע ומוסיקה','Food & Cooking':'אוכל ובישול','Nature & Animals':'טבע ובעלי חיים',
+    'כללי':'General','מדע':'Science','היסטוריה':'History','גיאוגרפיה':'Geography',
+    'ספורט':'Sports','קולנוע ומוסיקה':'Movies & Music','אוכל ובישול':'Food & Cooking','טבע ובעלי חיים':'Nature & Animals'};
   if(cat && cat !== 'General' && cat !== 'כללי'){
-    const filtered = pool.filter(q => q.category === cat);
+    const filtered = pool.filter(q => q.category === cat || q.category === catMap[cat]);
     if(filtered.length > 0) pool = filtered;
   }
 
