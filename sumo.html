@@ -474,11 +474,131 @@
     letter-spacing: 3px;
     font-family: monospace;
   }
+
+  /* ── Online multiplayer ── */
+  .online-section { margin: 6px 0 0; text-align: center; }
+  .online-divider { color: #604020; font-size: 0.7rem; letter-spacing: 2px; margin-bottom: 8px; }
+  .btn-online {
+    background: linear-gradient(135deg, #1a4a8a, #2a6abf);
+    color: #d0e8ff;
+    border: none;
+    padding: 9px 28px;
+    font-size: 0.85rem;
+    font-family: 'Georgia', serif;
+    letter-spacing: 2px;
+    cursor: pointer;
+    border-radius: 4px;
+    font-weight: bold;
+    transition: transform 0.1s, box-shadow 0.1s;
+    box-shadow: 0 4px 15px rgba(40,100,200,0.3);
+  }
+  .btn-online:hover { transform: scale(1.05); box-shadow: 0 6px 20px rgba(40,100,200,0.5); }
+
+  .online-panel {
+    background: rgba(0,0,0,0.4);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin: 6px 0;
+    width: 100%;
+    max-width: 300px;
+    text-align: center;
+  }
+
+  .online-tabs { display: flex; gap: 6px; margin-bottom: 14px; justify-content: center; }
+  .otab {
+    flex: 1;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: #806040;
+    font-size: 0.72rem;
+    font-family: 'Georgia', serif;
+    letter-spacing: 1px;
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .otab.active { background: rgba(232,201,122,0.15); border-color: #e8c97a; color: #e8c97a; }
+
+  .online-hint { color: #a08050; font-size: 0.72rem; letter-spacing: 1px; margin-bottom: 12px; line-height: 1.5; }
+
+  .room-input {
+    display: block;
+    width: 100px;
+    margin: 0 auto 12px;
+    background: rgba(255,255,255,0.08);
+    border: 2px solid rgba(232,201,122,0.4);
+    border-radius: 8px;
+    color: #e8c97a;
+    font-size: 1.6rem;
+    font-family: 'Georgia', serif;
+    letter-spacing: 6px;
+    text-align: center;
+    padding: 6px 8px;
+    outline: none;
+  }
+  .room-input:focus { border-color: #e8c97a; }
+  .room-input::placeholder { color: #604020; letter-spacing: 4px; }
+
+  .room-code-display {
+    font-size: 2.8rem;
+    font-weight: bold;
+    color: #e8c97a;
+    letter-spacing: 10px;
+    text-shadow: 0 0 20px rgba(232,201,122,0.6);
+    margin-bottom: 10px;
+    font-family: monospace;
+  }
+
+  .waiting-dots { display: flex; gap: 6px; justify-content: center; margin: 8px 0; }
+  .waiting-dots span {
+    color: #e8c97a;
+    font-size: 0.6rem;
+    animation: pulse 1.2s infinite;
+  }
+  .waiting-dots span:nth-child(2) { animation-delay: 0.4s; }
+  .waiting-dots span:nth-child(3) { animation-delay: 0.8s; }
+  @keyframes pulse { 0%,100%{opacity:0.2} 50%{opacity:1} }
+
+  .btn-cancel, .back-to-local {
+    background: none;
+    border: none;
+    color: #806040;
+    font-size: 0.7rem;
+    font-family: 'Georgia', serif;
+    letter-spacing: 1px;
+    cursor: pointer;
+    margin-top: 10px;
+    text-transform: uppercase;
+    transition: color 0.2s;
+    display: block;
+    width: 100%;
+    text-align: center;
+  }
+  .btn-cancel:hover, .back-to-local:hover { color: #e8c97a; }
+
+  .online-status {
+    position: fixed;
+    top: 60px; left: 50%;
+    transform: translateX(-50%);
+    background: rgba(10,5,0,0.9);
+    border: 1px solid rgba(232,201,122,0.3);
+    border-radius: 20px;
+    padding: 5px 16px;
+    font-size: 0.65rem;
+    color: #a08050;
+    letter-spacing: 1px;
+    z-index: 40;
+    display: none;
+  }
+  .online-status.show { display: block; }
 </style>
 </head>
 <body>
 
 <button class="back-arrow" style="display:none;" id="backToStartArrow" onclick="gameActive=false; showStartScreen();" title="Back to Start">&#8678;</button>
+<div class="online-status" id="onlineStatus"></div>
 
 <h1>⛩ Sumo Wrestling</h1>
 <p class="subtitle" data-i18n="subtitle">Push opponents beyond the ring line</p>
@@ -521,6 +641,36 @@
     <div class="controls-preview" id="controlsPreview"></div>
   </div>
 
+  <!-- Online multiplayer section -->
+  <div class="online-section" id="onlineSection">
+    <div class="online-divider"><span data-i18n="or">— OR —</span></div>
+    <button class="btn btn-online" id="btnOnline" onclick="showOnlinePanel()">🌐 <span data-i18n="playOnline">Play Online</span></button>
+  </div>
+
+  <!-- Online panel (create/join room) -->
+  <div class="online-panel" id="onlinePanel" style="display:none;">
+    <div class="online-tabs">
+      <button class="otab active" id="tabCreate" onclick="switchTab('create')" data-i18n="createRoom">Create Room</button>
+      <button class="otab" id="tabJoin" onclick="switchTab('join')" data-i18n="joinRoom">Join Room</button>
+    </div>
+    <div id="createPane">
+      <p class="online-hint" data-i18n="createHint">Choose players and create a room. Share the code with friends!</p>
+      <button class="btn" id="btnCreate" onclick="createRoom()" data-i18n="createRoom">Create Room</button>
+    </div>
+    <div id="joinPane" style="display:none;">
+      <p class="online-hint" data-i18n="joinHint">Enter the room code your friend shared:</p>
+      <input class="room-input" id="roomCodeInput" maxlength="4" placeholder="1234" oninput="this.value=this.value.toUpperCase()">
+      <button class="btn" id="btnJoin" onclick="joinRoom()" data-i18n="joinRoom">Join Room</button>
+    </div>
+    <div id="waitingPane" style="display:none;">
+      <div class="room-code-display" id="roomCodeDisplay"></div>
+      <p class="online-hint" id="waitingMsg" data-i18n="waitingPlayers">Waiting for players…</p>
+      <div class="waiting-dots"><span>●</span><span>●</span><span>●</span></div>
+      <button class="btn-cancel" onclick="cancelRoom()" data-i18n="cancel">Cancel</button>
+    </div>
+    <button class="back-to-local" onclick="hideOnlinePanel()">← <span data-i18n="backLocal">Local game</span></button>
+  </div>
+
   <button class="btn" id="ovBtn" data-i18n="startGame">Start Game</button>
   <a href="https://arnonmaya.github.io/games/" class="home-btn" data-i18n="backHome">🏠 Back to Home Page</a>
 </div>
@@ -537,6 +687,162 @@
 </div>
 
 </div><!-- end #gamePage -->
+
+<!-- Firebase SDK -->
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getDatabase, ref, set, get, onValue, off, remove, update, onDisconnect }
+  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
+
+const fbConfig = {
+  apiKey: "AIzaSyDbprzF4Kf01ejNHagZLrWoDEZUmMlcaJs",
+  authDomain: "games-on-d-mend.firebaseapp.com",
+  databaseURL: "https://games-on-d-mend-default-rtdb.firebaseio.com",
+  projectId: "games-on-d-mend",
+  storageBucket: "games-on-d-mend.firebasestorage.app",
+  messagingSenderId: "828376886522",
+  appId: "1:828376886522:web:6b2ca497c7b0ef0ccb2d43"
+};
+const fbApp = initializeApp(fbConfig);
+const db    = getDatabase(fbApp);
+
+// ── Online state ──────────────────────────────────────────────────
+// Exposed to main script via window
+window.online = {
+  active:    false,
+  isHost:    false,
+  roomCode:  null,
+  myIndex:   0,       // which player I am (0 = host)
+  listeners: [],
+
+  // Called by host every game-loop tick (throttled to ~20fps)
+  pushState(players, scores, round, gameActive) {
+    if (!this.active || !this.isHost) return;
+    const now = Date.now();
+    if (now - (this._lastPush||0) < 50) return;
+    this._lastPush = now;
+    const snap = {
+      ts: now,
+      ga: gameActive ? 1 : 0,
+      sc: scores.slice(0,4),
+      rd: round,
+      pl: players.map(p => ({
+        x: Math.round(p.x*10)/10,
+        y: Math.round(p.y*10)/10,
+        vx: Math.round(p.vx*100)/100,
+        vy: Math.round(p.vy*100)/100,
+        e:  p.eliminated ? 1 : 0,
+        ps: p.pushing ? 1 : 0,
+      }))
+    };
+    set(ref(db, `sumo/${this.roomCode}/state`), snap);
+  },
+
+  // Guests push their input
+  pushInput(dx, dy) {
+    if (!this.active || this.isHost) return;
+    const now = Date.now();
+    if (now - (this._lastInput||0) < 40) return;
+    this._lastInput = now;
+    set(ref(db, `sumo/${this.roomCode}/input/${this.myIndex}`), {dx, dy, ts: now});
+  },
+
+  // Host reads guest inputs
+  getGuestInput(idx) {
+    return this._guestInputs ? (this._guestInputs[idx] || {dx:0,dy:0}) : {dx:0,dy:0};
+  },
+
+  _guestInputs: {},
+  _stateCallback: null,
+
+  // Host: listen for guest inputs
+  listenInputs(numPlayers) {
+    for (let i = 1; i < numPlayers; i++) {
+      const r = ref(db, `sumo/${this.roomCode}/input/${i}`);
+      const unsub = onValue(r, snap => {
+        const v = snap.val();
+        if (v) this._guestInputs[i] = v;
+      });
+      this.listeners.push(() => off(r));
+    }
+  },
+
+  // Guest: listen for game state
+  listenState(callback) {
+    this._stateCallback = callback;
+    const r = ref(db, `sumo/${this.roomCode}/state`);
+    const unsub = onValue(r, snap => {
+      const v = snap.val();
+      if (v) callback(v);
+    });
+    this.listeners.push(() => off(r));
+  },
+
+  // Listen for room changes (players joining)
+  listenRoom(callback) {
+    const r = ref(db, `sumo/${this.roomCode}/room`);
+    const unsub = onValue(r, snap => {
+      const v = snap.val();
+      if (v) callback(v);
+    });
+    this.listeners.push(() => off(r));
+  },
+
+  cleanup() {
+    this.listeners.forEach(fn => fn());
+    this.listeners = [];
+    if (this.roomCode) {
+      remove(ref(db, `sumo/${this.roomCode}`)).catch(()=>{});
+    }
+    this.active = false;
+    this.roomCode = null;
+  }
+};
+
+// ── Room management ───────────────────────────────────────────────
+window.fbCreateRoom = async function(numPlayers) {
+  const code = String(Math.floor(1000 + Math.random() * 9000));
+  const roomRef = ref(db, `sumo/${code}/room`);
+  await set(roomRef, {
+    host: 'p0',
+    numPlayers,
+    players: { 0: { name:'P1', ready:true } },
+    status: 'waiting',
+    ts: Date.now()
+  });
+  // Clean up if host disconnects
+  onDisconnect(ref(db, `sumo/${code}`)).remove();
+  window.online.active   = true;
+  window.online.isHost   = true;
+  window.online.myIndex  = 0;
+  window.online.roomCode = code;
+  return code;
+};
+
+window.fbJoinRoom = async function(code) {
+  const roomSnap = await get(ref(db, `sumo/${code}/room`));
+  if (!roomSnap.exists()) throw new Error('Room not found');
+  const room = roomSnap.val();
+  if (room.status !== 'waiting') throw new Error('Room is full or game started');
+  // Find next slot
+  const taken = Object.keys(room.players || {}).map(Number);
+  let slot = 1;
+  while (taken.includes(slot)) slot++;
+  if (slot >= room.numPlayers) throw new Error('Room is full');
+  await update(ref(db, `sumo/${code}/room/players/${slot}`), { name:`P${slot+1}`, ready:true });
+  window.online.active   = true;
+  window.online.isHost   = false;
+  window.online.myIndex  = slot;
+  window.online.roomCode = code;
+  return { slot, numPlayers: room.numPlayers };
+};
+
+window.fbStartGame = async function(code, numPlayers) {
+  await update(ref(db, `sumo/${code}/room`), { status: 'playing', numPlayers });
+};
+
+console.log('Firebase online module loaded ✓');
+</script>
 
 <script>
 // ── Page navigation ───────────────────────────────────────────────
@@ -583,6 +889,18 @@ const T = {
     scoresMsg:      (name) => `${name} scores! First to 3 points wins the match.`,
     drawMsg:        'Double elimination — no point this round!',
     round:          'Round',
+    or:             '— OR —',
+    playOnline:     'Play Online',
+    createRoom:     'Create Room',
+    joinRoom:       'Join Room',
+    createHint:     'Choose players and create a room. Share the code with friends!',
+    joinHint:       'Enter the room code your friend shared:',
+    waitingPlayers: 'Waiting for players…',
+    cancel:         'Cancel',
+    backLocal:      'Local game',
+    roomFull:       'Room not found or full.',
+    connecting:     'Connecting…',
+    onlineLabel:    (me, code) => `🌐 Online · Room ${code} · You are P${me+1}`,
   },
   he: {
     title:          'קרב התאבקות',
@@ -604,6 +922,18 @@ const T = {
     scoresMsg:      (name) => `${name} מבקיע! הראשון ל-3 נקודות מנצח.`,
     drawMsg:        'שני שחקנים יצאו — אין נקודה!',
     round:          'סיבוב',
+    or:             '— או —',
+    playOnline:     'שחק אונליין',
+    createRoom:     'צור חדר',
+    joinRoom:       'הצטרף לחדר',
+    createHint:     'בחר מספר שחקנים וצור חדר. שתף את הקוד עם חברים!',
+    joinHint:       'הכנס את קוד החדר של החבר שלך:',
+    waitingPlayers: 'ממתין לשחקנים…',
+    cancel:         'ביטול',
+    backLocal:      'משחק מקומי',
+    roomFull:       'החדר לא נמצא או מלא.',
+    connecting:     'מתחבר…',
+    onlineLabel:    (me, code) => `🌐 אונליין · חדר ${code} · אתה P${me+1}`,
   }
 };
 
@@ -630,6 +960,122 @@ function setLang(l) {
 function t(key, ...args) {
   const val = T[lang][key];
   return typeof val === 'function' ? val(...args) : val;
+}
+
+// ── Online UI functions ───────────────────────────────────────────
+let onlineTabActive = 'create';
+
+function showOnlinePanel() {
+  document.getElementById('onlineSection').style.display = 'none';
+  document.getElementById('pickerDiv').style.display = 'none';
+  document.getElementById('onlinePanel').style.display = 'block';
+  document.getElementById('ovBtn').style.display = 'none';
+}
+
+function hideOnlinePanel() {
+  document.getElementById('onlinePanel').style.display = 'none';
+  document.getElementById('onlineSection').style.display = 'block';
+  document.getElementById('pickerDiv').style.display = 'block';
+  document.getElementById('ovBtn').style.display = 'inline-block';
+  document.getElementById('createPane').style.display = 'block';
+  document.getElementById('joinPane').style.display = 'none';
+  document.getElementById('waitingPane').style.display = 'none';
+}
+
+function switchTab(tab) {
+  onlineTabActive = tab;
+  document.getElementById('tabCreate').classList.toggle('active', tab==='create');
+  document.getElementById('tabJoin').classList.toggle('active', tab==='join');
+  document.getElementById('createPane').style.display = tab==='create' ? 'block' : 'none';
+  document.getElementById('joinPane').style.display   = tab==='join'   ? 'block' : 'none';
+  document.getElementById('waitingPane').style.display = 'none';
+}
+
+async function createRoom() {
+  if (!window.fbCreateRoom) { alert('Firebase not loaded yet, please wait…'); return; }
+  document.getElementById('createPane').style.display = 'none';
+  document.getElementById('waitingPane').style.display = 'block';
+  try {
+    const code = await window.fbCreateRoom(numPlayers);
+    document.getElementById('roomCodeDisplay').textContent = code;
+    document.getElementById('waitingMsg').textContent = t('waitingPlayers');
+    // Listen for players joining
+    window.online.listenRoom(room => {
+      const joined = Object.keys(room.players || {}).length;
+      document.getElementById('waitingMsg').textContent =
+        `${joined} / ${room.numPlayers} ${t('waitingPlayers')}`;
+      if (joined >= room.numPlayers) {
+        // All players joined — start!
+        window.fbStartGame(code, numPlayers);
+        startOnlineGame(true, numPlayers);
+      }
+    });
+  } catch(e) {
+    alert(e.message);
+    hideOnlinePanel();
+  }
+}
+
+async function joinRoom() {
+  const code = document.getElementById('roomCodeInput').value.trim();
+  if (code.length !== 4) { alert(t('joinHint')); return; }
+  document.getElementById('joinPane').style.display = 'none';
+  document.getElementById('waitingPane').style.display = 'block';
+  document.getElementById('roomCodeDisplay').textContent = code;
+  document.getElementById('waitingMsg').textContent = t('connecting');
+  try {
+    const { slot, numPlayers: np } = await window.fbJoinRoom(code);
+    numPlayers = np;
+    document.getElementById('waitingMsg').textContent = t('waitingPlayers');
+    // Listen for game to start
+    window.online.listenRoom(room => {
+      if (room.status === 'playing') {
+        startOnlineGame(false, np);
+      }
+    });
+  } catch(e) {
+    alert(t('roomFull') + ' ' + e.message);
+    hideOnlinePanel();
+    document.getElementById('joinPane').style.display = 'block';
+    document.getElementById('waitingPane').style.display = 'none';
+  }
+}
+
+function cancelRoom() {
+  if (window.online) window.online.cleanup();
+  hideOnlinePanel();
+}
+
+function startOnlineGame(isHost, np) {
+  numPlayers = np;
+  hideOnlinePanel();
+  // Show status bar
+  const st = document.getElementById('onlineStatus');
+  st.textContent = t('onlineLabel', window.online.myIndex, window.online.roomCode);
+  st.classList.add('show');
+  // If host, start listening to guest inputs
+  if (isHost) window.online.listenInputs(np);
+  // If guest, listen to game state
+  if (!isHost) {
+    window.online.listenState(snap => {
+      if (!snap || !snap.pl) return;
+      // Apply state to players array
+      for (let i = 0; i < snap.pl.length && i < players.length; i++) {
+        const sp = snap.pl[i];
+        players[i].x = sp.x; players[i].y = sp.y;
+        players[i].vx = sp.vx; players[i].vy = sp.vy;
+        players[i].eliminated = sp.e === 1;
+        players[i].pushing    = sp.ps === 1;
+      }
+      scores = (snap.sc || [0,0,0,0]).slice();
+      round  = snap.rd || 1;
+      updateDots();
+    });
+  }
+  buildUI();
+  hideOverlay();
+  document.getElementById('backToStartArrow').style.display = 'flex';
+  startRound();
 }
 
 let numPlayers = 2;
@@ -986,6 +1432,19 @@ function pickSkin(brightness) {
 let aiHesitateTimer = 0;
 
 function getInput(p) {
+  // Online: guest — only control own player, push input to Firebase
+  if (window.online && window.online.active) {
+    if (!window.online.isHost) {
+      if (p.index !== window.online.myIndex) return {dx:0, dy:0};
+    } else {
+      // Host: read guest inputs from Firebase for non-AI remote players
+      if (p.index > 0 && !p.isAI) {
+        const gi = window.online.getGuestInput(p.index);
+        return { dx: gi.dx||0, dy: gi.dy||0 };
+      }
+    }
+  }
+
   if (p.isAI) {
     let target = null, best = Infinity;
     for (const o of players) {
@@ -995,46 +1454,47 @@ function getInput(p) {
     }
     if (!target) return {dx:0,dy:0};
 
-    // Occasionally pause (hesitation)
-    if (aiHesitateTimer > 0) {
-      aiHesitateTimer--;
-      return {dx:0, dy:0};
-    }
+    if (aiHesitateTimer > 0) { aiHesitateTimer--; return {dx:0, dy:0}; }
     if (Math.random() < 0.012) {
       aiHesitateTimer = 28 + Math.floor(Math.random() * 30);
       return {dx:0, dy:0};
     }
-
     const dx=target.x-p.x, dy=target.y-p.y, m=Math.sqrt(dx*dx+dy*dy)||1;
     let nx = dx/m, ny = dy/m;
-
-    // Occasionally drift in a slightly wrong direction
     if (Math.random() < 0.04) {
       const angle = (Math.random() - 0.5) * Math.PI * 0.8;
       const cos = Math.cos(angle), sin = Math.sin(angle);
       nx = nx*cos - ny*sin;
       ny = nx*sin + ny*cos;
     }
-
-    // Move at 65% of full speed
     return {dx: nx * 0.65, dy: ny * 0.65};
   }
 
-  // Touch joystick input (takes priority on touch devices)
+  // Touch joystick input
   const tj = touchInput[p.index];
-  if (tj.dx !== 0 || tj.dy !== 0) return { dx: tj.dx, dy: tj.dy };
+  if (tj.dx !== 0 || tj.dy !== 0) {
+    if (window.online && window.online.active && !window.online.isHost && p.index === window.online.myIndex)
+      window.online.pushInput(tj.dx, tj.dy);
+    return { dx: tj.dx, dy: tj.dy };
+  }
 
   // Keyboard fallback
   const k=p.keys;
-  return {
+  const inp = {
     dx:(heldKeys[k.right]?1:0)-(heldKeys[k.left]?1:0),
     dy:(heldKeys[k.down] ?1:0)-(heldKeys[k.up]  ?1:0),
   };
+  if (window.online && window.online.active && !window.online.isHost && p.index === window.online.myIndex)
+    window.online.pushInput(inp.dx, inp.dy);
+  return inp;
 }
 
 function hypot(a,b){return Math.sqrt((a.x-b.x)**2+(a.y-b.y)**2);}
 
 function update() {
+  // Online guest: physics is driven by host — skip local update
+  if (window.online && window.online.active && !window.online.isHost) return;
+
   const alive = players.filter(p=>!p.eliminated);
   if (alive.length<2) return;
 
@@ -1047,6 +1507,10 @@ function update() {
     p.vx*=FRICTION; p.vy*=FRICTION;
     p.x+=p.vx; p.y+=p.vy;
   }
+
+  // Host: sync state to Firebase
+  if (window.online && window.online.active && window.online.isHost)
+    window.online.pushState(players, scores, round, gameActive);
 
   // Collisions between players
   for (let i=0;i<alive.length;i++) {
