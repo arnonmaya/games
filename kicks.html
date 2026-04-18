@@ -9,251 +9,536 @@
   *{box-sizing:border-box;margin:0;padding:0;}
   body{background:#0d1a0e;color:#f0f0e8;font-family:'Heebo',sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1rem;}
   body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 50% 0%,#1a3d1c 0%,#0d1a0e 65%);z-index:-1;}
-
-  #setup{text-align:center;padding:2rem 1rem;}
-  #setup h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.5rem,7vw,4rem);color:#e8d44d;letter-spacing:0.08em;margin-bottom:0.3rem;text-shadow:0 0 30px rgba(232,212,77,0.3);}
-  #setup p.sub{font-size:14px;color:rgba(240,240,232,0.45);margin-bottom:2rem;letter-spacing:0.05em;}
-  .setup-section{margin-bottom:1.5rem;}
+  .screen{display:none;width:100%;max-width:620px;text-align:center;}
+  .screen.active{display:block;}
+  h1.big{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.5rem,7vw,4rem);color:#e8d44d;letter-spacing:0.08em;margin-bottom:0.3rem;text-shadow:0 0 30px rgba(232,212,77,0.3);}
+  h2.panel-title{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;color:#e8d44d;letter-spacing:0.08em;margin-bottom:0.8rem;}
+  p.sub{font-size:14px;color:rgba(240,240,232,0.45);margin-bottom:1.5rem;}
+  .setup-section{margin-bottom:1.4rem;}
   .setup-label{font-size:12px;color:rgba(240,240,232,0.5);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:0.6rem;}
   .btn-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;}
   .opt-btn{padding:8px 22px;font-family:'Heebo',sans-serif;font-size:13px;border:0.5px solid rgba(255,255,255,0.2);border-radius:8px;background:rgba(255,255,255,0.07);color:#f0f0e8;cursor:pointer;transition:background 0.15s;}
   .opt-btn:hover{background:rgba(255,255,255,0.14);}
   .opt-btn.active{background:rgba(232,212,77,0.18);border-color:rgba(232,212,77,0.5);color:#e8d44d;}
-  #start-btn{margin-top:1.5rem;padding:12px 40px;font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:0.1em;border:1px solid rgba(232,212,77,0.4);border-radius:10px;background:rgba(232,212,77,0.12);color:#e8d44d;cursor:pointer;transition:background 0.2s;}
-  #start-btn:hover{background:rgba(232,212,77,0.22);}
-
-  #game{display:none;width:100%;max-width:620px;}
-  h1.game-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(1.6rem,5vw,2.4rem);color:#e8d44d;letter-spacing:0.08em;text-align:center;margin-bottom:0.5rem;}
-  #turn-label{text-align:center;font-size:13px;color:rgba(240,240,232,0.45);margin-bottom:0.4rem;min-height:18px;}
-  .hud{display:flex;gap:10px;justify-content:center;margin-bottom:0.8rem;flex-wrap:wrap;}
-  .player-stat{text-align:center;background:rgba(255,255,255,0.06);border:0.5px solid rgba(255,255,255,0.12);border-radius:10px;padding:0.4rem 0.9rem;min-width:70px;transition:border-color 0.2s,background 0.2s;}
-  .player-stat.current-player{border-color:#e8d44d;background:rgba(232,212,77,0.1);}
-  .p-name{font-size:11px;color:rgba(240,240,232,0.5);letter-spacing:0.05em;}
+  .btn-gold{padding:11px 36px;font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:0.1em;border:1px solid rgba(232,212,77,0.4);border-radius:10px;background:rgba(232,212,77,0.12);color:#e8d44d;cursor:pointer;transition:background 0.2s;margin:5px;}
+  .btn-gold:hover{background:rgba(232,212,77,0.22);}
+  .btn-ghost{padding:9px 24px;font-family:'Heebo',sans-serif;font-size:13px;border:0.5px solid rgba(255,255,255,0.2);border-radius:8px;background:rgba(255,255,255,0.07);color:rgba(240,240,232,0.65);cursor:pointer;transition:background 0.15s;margin:4px;text-decoration:none;display:inline-block;}
+  .btn-ghost:hover{background:rgba(255,255,255,0.14);}
+  #code-display{font-family:'Bebas Neue',sans-serif;font-size:3.5rem;color:#e8d44d;letter-spacing:0.3em;background:rgba(232,212,77,0.08);border:1px solid rgba(232,212,77,0.3);border-radius:12px;padding:0.5rem 1.8rem;margin:1rem auto;display:inline-block;}
+  #code-input{padding:10px 16px;font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:0.2em;border:1px solid rgba(255,255,255,0.25);border-radius:10px;background:rgba(255,255,255,0.07);color:#e8d44d;width:160px;text-align:center;text-transform:uppercase;outline:none;}
+  #code-input:focus{border-color:rgba(232,212,77,0.5);}
+  #status-txt{font-size:13px;color:rgba(240,240,232,0.45);min-height:20px;margin:0.5rem 0;}
+  #join-error{color:#e05050;font-size:13px;min-height:18px;margin-top:0.4rem;}
+  #game-screen h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(1.4rem,4vw,2rem);color:#e8d44d;letter-spacing:0.08em;margin-bottom:0.3rem;}
+  #turn-label{font-size:13px;color:rgba(240,240,232,0.45);margin-bottom:0.15rem;min-height:18px;}
+  #keeper-hint{font-size:11px;color:rgba(232,212,77,0.55);margin-bottom:0.4rem;min-height:15px;letter-spacing:0.04em;}
+  .hud{display:flex;gap:10px;justify-content:center;margin-bottom:0.7rem;}
+  .player-stat{text-align:center;background:rgba(255,255,255,0.06);border:0.5px solid rgba(255,255,255,0.12);border-radius:10px;padding:0.4rem 0.9rem;min-width:75px;}
+  .player-stat.me{border-color:#e8d44d;background:rgba(232,212,77,0.1);}
+  .p-name{font-size:11px;color:rgba(240,240,232,0.5);letter-spacing:0.04em;}
   .p-score{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;color:#e8d44d;line-height:1;}
-  #canvas-wrap{border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,0.1);cursor:crosshair;width:100%;}
+  #canvas-wrap{border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,0.1);cursor:crosshair;width:100%;position:relative;}
   canvas{display:block;width:100%;}
-  #msg{text-align:center;font-size:15px;color:rgba(240,240,232,0.65);min-height:22px;margin:0.7rem 0;letter-spacing:0.02em;}
+  #msg{text-align:center;font-size:15px;color:rgba(240,240,232,0.65);min-height:22px;margin:0.6rem 0;letter-spacing:0.02em;}
   #msg.goal-msg{color:#e8d44d;font-weight:700;font-size:17px;}
   #msg.save-msg{color:#e05050;font-size:17px;}
-  .controls{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:0.5rem;}
+  .ctrl-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:0.4rem;}
   .ctrl-btn{padding:7px 16px;font-family:'Heebo',sans-serif;font-size:12px;border:0.5px solid rgba(255,255,255,0.2);border-radius:8px;background:rgba(255,255,255,0.07);color:#f0f0e8;cursor:pointer;transition:background 0.15s;}
-  .ctrl-btn:hover{background:rgba(255,255,255,0.14);}
-  .ctrl-btn.active{background:rgba(232,212,77,0.18);border-color:rgba(232,212,77,0.5);color:#e8d44d;}
+  .ctrl-btn:hover,.ctrl-btn.active{background:rgba(232,212,77,0.18);border-color:rgba(232,212,77,0.5);color:#e8d44d;}
   #lang-corner{position:fixed;top:12px;right:12px;display:flex;gap:6px;z-index:100;}
-  #lang-corner button{padding:5px 12px;font-family:'Heebo',sans-serif;font-size:12px;border:0.5px solid rgba(255,255,255,0.25);border-radius:6px;background:rgba(0,0,0,0.4);color:#f0f0e8;cursor:pointer;transition:background 0.15s;}
-  #lang-corner button:hover{background:rgba(255,255,255,0.14);}
+  #lang-corner button{padding:5px 12px;font-family:'Heebo',sans-serif;font-size:12px;border:0.5px solid rgba(255,255,255,0.25);border-radius:6px;background:rgba(0,0,0,0.4);color:#f0f0e8;cursor:pointer;}
   #lang-corner button.active{background:rgba(232,212,77,0.18);border-color:rgba(232,212,77,0.5);color:#e8d44d;}
 </style>
 </head>
 <body>
 
 <div id="lang-corner">
-  <button id="lang-he" class="active" onclick="setLang('he')">עב</button>
-  <button id="lang-en" onclick="setLang('en')">EN</button>
+  <button id="lang-he" class="active">עב</button>
+  <button id="lang-en">EN</button>
 </div>
 
-<div id="setup">
-  <h1 id="title-txt">בעיטות לשער</h1>
-  <p class="sub" id="sub-txt">בחר הגדרות לפני המשחק</p>
-
-  <div class="setup-section">
-    <div class="setup-label" id="players-label">מספר שחקנים</div>
-    <div class="btn-row">
-      <button class="opt-btn active" id="p-1" onclick="setPlayers(1)">1</button>
-      <button class="opt-btn" id="p-2" onclick="setPlayers(2)">2</button>
-      <button class="opt-btn" id="p-3" onclick="setPlayers(3)">3</button>
-      <button class="opt-btn" id="p-4" onclick="setPlayers(4)">4</button>
-    </div>
-  </div>
-  <div class="setup-section">
-    <div class="setup-label" id="diff-setup-label">רמת קושי</div>
-    <div class="btn-row">
-      <button class="opt-btn active" id="ds-easy" onclick="setDiffSetup('easy')">קל</button>
-      <button class="opt-btn" id="ds-med" onclick="setDiffSetup('med')">בינוני</button>
-      <button class="opt-btn" id="ds-hard" onclick="setDiffSetup('hard')">קשה</button>
-    </div>
-  </div>
-  <button id="start-btn" onclick="startGame()">התחל</button>
-  <br>
-  <a href="https://arnonmaya.github.io/games/" style="display:inline-block;margin-top:0.8rem;padding:9px 28px;font-family:'Heebo',sans-serif;font-size:13px;border:0.5px solid rgba(255,255,255,0.2);border-radius:8px;background:rgba(255,255,255,0.07);color:rgba(240,240,232,0.65);text-decoration:none;transition:background 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.14)'" onmouseout="this.style.background='rgba(255,255,255,0.07)'"id="home-btn">← <span id="home-btn-txt">חזרה לדף הבית</span></a>
+<!-- LOBBY -->
+<div id="lobby-screen" class="screen active">
+  <h1 class="big" id="t-title">בעיטות לשער</h1>
+  <p class="sub" id="t-sub">בחר מצב משחק</p>
+  <button class="btn-gold" id="btn-local-menu">🖥️ אותו מחשב</button>
+  <button class="btn-gold" id="btn-online-menu">🌐 שני מחשבים</button>
+  <br><br>
+  <a href="https://arnonmaya.github.io/games/" class="btn-ghost" id="t-home">← חזרה לדף הבית</a>
 </div>
 
-<div id="game">
-  <h1 class="game-title" id="game-title">בעיטות לשער</h1>
+<!-- LOCAL SUB-MENU -->
+<div id="local-menu-screen" class="screen">
+  <h2 class="panel-title" id="t-local-title">אותו מחשב</h2>
+  <div class="setup-section">
+    <div class="setup-label" id="t-diff-label">רמת קושי (יחיד)</div>
+    <div class="btn-row">
+      <button class="opt-btn active" id="ds-easy">קל</button>
+      <button class="opt-btn" id="ds-med">בינוני</button>
+      <button class="opt-btn" id="ds-hard">קשה</button>
+    </div>
+  </div>
+  <button class="btn-gold" id="btn-solo">🎮 יחיד נגד AI</button>
+  <button class="btn-gold" id="btn-local-multi">👥 2 שחקנים</button>
+  <br><br>
+  <button class="btn-ghost" id="btn-back-local">← חזרה</button>
+</div>
+
+<!-- ONLINE SUB-MENU -->
+<div id="online-menu-screen" class="screen">
+  <h2 class="panel-title" id="t-online-title">שני מחשבים</h2>
+  <p class="sub" id="t-online-sub">בחר אם ליצור חדר חדש או להצטרף לחדר קיים</p>
+  <button class="btn-gold" id="btn-show-create">🏠 צור חדר</button>
+  <button class="btn-gold" id="btn-show-join">🔑 הצטרף לחדר</button>
+  <br><br>
+  <button class="btn-ghost" id="btn-back-online">← חזרה</button>
+</div>
+
+<!-- WAITING (host) -->
+<div id="waiting-screen" class="screen">
+  <h2 class="panel-title" id="t-wait-title">ממתין לשחקן שני</h2>
+  <p class="sub" id="t-share">שתף את הקוד הזה עם החבר שלך:</p>
+  <div id="code-display">----</div>
+  <p id="status-txt"></p>
+  <button class="btn-ghost" id="btn-cancel">ביטול</button>
+</div>
+
+<!-- JOIN -->
+<div id="join-screen" class="screen">
+  <h2 class="panel-title" id="t-join-title">הצטרף לחדר</h2>
+  <p class="sub" id="t-enter-code">הכנס קוד של החבר שלך:</p>
+  <input id="code-input" maxlength="4" placeholder="ABCD">
+  <br><br>
+  <button class="btn-gold" id="btn-join-confirm">הצטרף</button>
+  <button class="btn-ghost" id="btn-back-join">חזרה</button>
+  <div id="join-error"></div>
+</div>
+
+<!-- GAME -->
+<div id="game-screen" class="screen">
+  <h1 id="t-game-title">בעיטות לשער</h1>
   <div id="turn-label"></div>
+  <div id="keeper-hint"></div>
   <div class="hud" id="hud"></div>
   <div id="canvas-wrap"><canvas id="c" height="320"></canvas></div>
   <div id="msg"></div>
-  <div class="controls">
-    <button class="ctrl-btn active" id="d-easy" onclick="setDiff('easy')">קל</button>
-    <button class="ctrl-btn" id="d-med" onclick="setDiff('med')">בינוני</button>
-    <button class="ctrl-btn" id="d-hard" onclick="setDiff('hard')">קשה</button>
-    <button class="ctrl-btn" id="back-btn" onclick="goBack()">חזרה</button>
+  <div class="ctrl-row" id="diff-controls">
+    <button class="ctrl-btn active" id="d-easy">קל</button>
+    <button class="ctrl-btn" id="d-med">בינוני</button>
+    <button class="ctrl-btn" id="d-hard">קשה</button>
+    <button class="ctrl-btn" id="btn-back-game">חזרה</button>
   </div>
 </div>
 
-<script>
-const T={
-  he:{title:'בעיטות לשער',sub:'בחר הגדרות לפני המשחק',players:'מספר שחקנים',diff:'רמת קושי',easy:'קל',med:'בינוני',hard:'קשה',start:'התחל',player:'שחקן',turn:'תור של',shoot:'הזז את העכבר מעל השער ולחץ לבעוט',goal:'גוול! כדור בתוך הרשת!',saved:'השוער עצר!',miss:'החטאת!',back:'חזרה',reset:'אתחול',home:'חזרה לדף הבית',gameover:'המשחק נגמר!',winner:'מנצח',score:'שערים',playAgain:'שחק שוב'},
-  en:{title:'Penalty Kick',sub:'Choose settings before the game',players:'Number of Players',diff:'Difficulty',easy:'Easy',med:'Medium',hard:'Hard',start:'Start',player:'Player',turn:"It's",shoot:'Aim at the goal and click to shoot',goal:'GOAL! Ball in the net!',saved:'Saved! Great keeper!',miss:'Miss! Ball went wide!',back:'Back',reset:'Reset',home:'Back to Home',gameover:'Game Over!',winner:'Winner',score:'Goals',playAgain:'Play Again'}
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getDatabase, ref, set, get, update, onValue, off, remove, onDisconnect }
+  from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDbprzF4Kf01ejNHagZLrWoDEZUmMlcaJs",
+  authDomain: "games-on-d-mend.firebaseapp.com",
+  databaseURL: "https://games-on-d-mend-default-rtdb.firebaseio.com",
+  projectId: "games-on-d-mend",
+  storageBucket: "games-on-d-mend.firebasestorage.app",
+  messagingSenderId: "828376886522",
+  appId: "1:828376886522:web:6b2ca497c7b0ef0ccb2d43"
 };
+const app = initializeApp(firebaseConfig);
+const db  = getDatabase(app);
 
-let lang='he', numPlayers=1, difficulty='easy', setupDiff='easy';
+// ── translations ──
+const T = {
+  he: {
+    title:'בעיטות לשער', sub:'בחר מצב משחק', diffLabel:'רמת קושי (יחיד)',
+    easy:'קל', med:'בינוני', hard:'קשה',
+    localBtn:'🖥️ אותו מחשב', onlineBtn:'🌐 שני מחשבים',
+    localTitle:'אותו מחשב', onlineTitle:'שני מחשבים', onlineSub:'צור חדר חדש או הצטרף לקיים',
+    solo:'🎮 יחיד נגד AI', local:'👥 2 שחקנים',
+    onlineCreate:'🏠 צור חדר', onlineJoin:'🔑 הצטרף לחדר',
+    home:'← חזרה לדף הבית',
+    waitTitle:'ממתין לשחקן שני', share:'שתף את הקוד הזה עם החבר שלך:',
+    cancel:'ביטול', joinTitle:'הצטרף לחדר', enterCode:'הכנס קוד של החבר שלך:',
+    joinConfirm:'הצטרף', back:'חזרה', gameTitle:'בעיטות לשער',
+    youShoot:'אתה בועט 🖱️', youKeep:'אתה שוער ← →',
+    shoot:'הזז עכבר מעל השער ולחץ לבעוט', keepHint:'← → להזיז שוער',
+    goal:'גוול!', saved:'עצרת! 🧤', goalOpp:'הם כבשו!', savedOpp:'השוער עצר!',
+    miss:'החטאת!', missOpp:'הם החטיאו!',
+    roundSwap:'מתחלפים תפקידים!', round:'סיבוב',
+    gameover:'המשחק נגמר!', winner:'ניצחת! 🏆', loser:'הפסדת 😔', draw:'תיקו 🤝',
+    score:'שערים', playAgain:'שחק שוב',
+    oppLeft:'הצד השני התנתק', waiting:'ממתין לשחקן שני...',
+    roomNotFound:'חדר לא נמצא', roomFull:'החדר מלא',
+    you:'אתה', opp:'יריב', player:'שחקן', shooter:'בועט', keeper:'שוער',
+  },
+  en: {
+    title:'Penalty Kick', sub:'Choose game mode', diffLabel:'Difficulty (Solo)',
+    easy:'Easy', med:'Medium', hard:'Hard',
+    localBtn:'🖥️ Same Computer', onlineBtn:'🌐 Two Computers',
+    localTitle:'Same Computer', onlineTitle:'Two Computers', onlineSub:'Create a new room or join an existing one',
+    solo:'🎮 Solo vs AI', local:'👥 2 Players — Same Screen',
+    onlineCreate:'🏠 Create Online Room', onlineJoin:'🔑 Join Online Room',
+    home:'← Back to Home',
+    waitTitle:'Waiting for Player 2', share:'Share this code with your friend:',
+    cancel:'Cancel', joinTitle:'Join Room', enterCode:"Enter your friend's code:",
+    joinConfirm:'Join', back:'Back', gameTitle:'Penalty Kick',
+    youShoot:'You shoot 🖱️', youKeep:"You're keeper ← →",
+    shoot:'Aim with mouse and click to shoot', keepHint:'← → to move keeper',
+    goal:'GOAL!', saved:'Saved! 🧤', goalOpp:'They scored!', savedOpp:'Keeper saved it!',
+    miss:'Miss!', missOpp:'They missed!',
+    roundSwap:'Roles swapped!', round:'Round',
+    gameover:'Game Over!', winner:'You win! 🏆', loser:'You lose 😔', draw:'Draw 🤝',
+    score:'Goals', playAgain:'Play Again',
+    oppLeft:'Opponent disconnected', waiting:'Waiting for player 2...',
+    roomNotFound:'Room not found', roomFull:'Room is full',
+    you:'You', opp:'Opponent', player:'Player', shooter:'Shooter', keeper:'Keeper',
+  }
+};
+let lang = 'he';
+const t = k => (T[lang][k] || k);
 
-function setLang(l){
-  lang=l;
-  document.getElementById('lang-he').classList.toggle('active',l==='he');
-  document.getElementById('lang-en').classList.toggle('active',l==='en');
-  document.documentElement.lang=l;
-  document.documentElement.dir=l==='he'?'rtl':'ltr';
-  applySetupText();
-  const gameVisible = document.getElementById('game').style.display==='block';
-  if(gameVisible){
-    applyGameText();
-    updateHUD();
-    updateTurnLabel();
-    document.getElementById('msg').textContent=T[lang].shoot;
+function setLang(l) {
+  lang = l;
+  document.getElementById('lang-he').classList.toggle('active', l==='he');
+  document.getElementById('lang-en').classList.toggle('active', l==='en');
+  document.documentElement.dir = l==='he'?'rtl':'ltr';
+  applyText();
+}
+
+function applyText() {
+  // text-only elements
+  const textMap = {
+    't-title':'title','t-sub':'sub','t-diff-label':'diffLabel',
+    't-local-title':'localTitle','t-online-title':'onlineTitle','t-online-sub':'onlineSub',
+    't-wait-title':'waitTitle','t-share':'share',
+    't-join-title':'joinTitle','t-enter-code':'enterCode',
+    't-game-title':'gameTitle',
+    'ds-easy':'easy','ds-med':'med','ds-hard':'hard',
+    'd-easy':'easy','d-med':'med','d-hard':'hard',
+  };
+  for (const [id,key] of Object.entries(textMap)) {
+    const el=document.getElementById(id); if(el) el.textContent=t(key);
+  }
+  // buttons
+  const btnMap = {
+    'btn-local-menu':'localBtn','btn-online-menu':'onlineBtn',
+    'btn-solo':'solo','btn-local-multi':'local',
+    'btn-show-create':'onlineCreate','btn-show-join':'onlineJoin',
+    'btn-cancel':'cancel','btn-join-confirm':'joinConfirm',
+    'btn-back-local':'back','btn-back-online':'back','btn-back-join':'back','btn-back-game':'back',
+    't-home':'home',
+  };
+  for (const [id,key] of Object.entries(btnMap)) {
+    const el=document.getElementById(id); if(el) el.textContent=t(key);
   }
 }
 
-function applySetupText(){
-  const t=T[lang];
-  document.getElementById('title-txt').textContent=t.title;
-  document.getElementById('sub-txt').textContent=t.sub;
-  document.getElementById('players-label').textContent=t.players;
-  document.getElementById('diff-setup-label').textContent=t.diff;
-  document.getElementById('start-btn').textContent=t.start;
-  document.getElementById('ds-easy').textContent=t.easy;
-  document.getElementById('ds-med').textContent=t.med;
-  document.getElementById('ds-hard').textContent=t.hard;
-  const hb=document.getElementById('home-btn-txt');if(hb)hb.textContent=t.home;
+// ── screens ──
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
 }
+function showLocalMenu(){ showScreen('local-menu-screen'); applyText(); }
+function showOnlineMenu(){ showScreen('online-menu-screen'); applyText(); }
+function showJoin(){ showScreen('join-screen'); document.getElementById('join-error').textContent=''; }
+function goLobby(){ cleanupRoom(); showScreen('lobby-screen'); applyText(); }
 
-function setPlayers(n){
-  numPlayers=n;
-  [1,2,3,4].forEach(i=>document.getElementById('p-'+i).classList.toggle('active',i===n));
-}
+// ── wire up ALL buttons via addEventListener (module-safe, no onclick attrs needed) ──
+document.getElementById('lang-he').addEventListener('click', ()=>setLang('he'));
+document.getElementById('lang-en').addEventListener('click', ()=>setLang('en'));
+document.getElementById('btn-local-menu').addEventListener('click', showLocalMenu);
+document.getElementById('btn-online-menu').addEventListener('click', showOnlineMenu);
+document.getElementById('btn-back-local').addEventListener('click', goLobby);
+document.getElementById('btn-back-online').addEventListener('click', goLobby);
+document.getElementById('btn-back-join').addEventListener('click', goLobby);
+document.getElementById('btn-back-game').addEventListener('click', goLobby);
+document.getElementById('btn-cancel').addEventListener('click', ()=>goLobby());
+document.getElementById('btn-show-create').addEventListener('click', showCreate);
+document.getElementById('btn-show-join').addEventListener('click', showJoin);
+document.getElementById('btn-join-confirm').addEventListener('click', joinRoom);
+document.getElementById('btn-solo').addEventListener('click', ()=>startGame('solo'));
+document.getElementById('btn-local-multi').addEventListener('click', ()=>startGame('local'));
+document.getElementById('ds-easy').addEventListener('click', ()=>setDiffSetup('easy'));
+document.getElementById('ds-med').addEventListener('click', ()=>setDiffSetup('med'));
+document.getElementById('ds-hard').addEventListener('click', ()=>setDiffSetup('hard'));
+document.getElementById('d-easy').addEventListener('click', ()=>setDiff('easy'));
+document.getElementById('d-med').addEventListener('click', ()=>setDiff('med'));
+document.getElementById('d-hard').addEventListener('click', ()=>setDiff('hard'));
+document.getElementById('code-input').addEventListener('input', function(){ this.value=this.value.toUpperCase(); });
 
 function setDiffSetup(d){
   setupDiff=d;
   ['easy','med','hard'].forEach(x=>document.getElementById('ds-'+x).classList.toggle('active',x===d));
 }
-
-function startGame(){
-  difficulty=setupDiff;
-  document.getElementById('setup').style.display='none';
-  document.getElementById('game').style.display='block';
-  initGame();
-}
-
-function goBack(){
-  document.getElementById('game').style.display='none';
-  document.getElementById('setup').style.display='block';
-  if(animId) cancelAnimationFrame(animId);
-  applySetupText();
-}
-
-const canvas=document.getElementById('c');
-const ctx=canvas.getContext('2d');
-const W=600,H=320;
-canvas.width=W;canvas.height=H;
-
-const GOAL_L=W/2-180,GOAL_R=W/2+180;
-const GOAL_TOP=30,GOAL_BOT=145;
-const KEEPER_BASE=GOAL_BOT-18;
-
-// Keeper padding from goal posts (just enough not to clip through the post)
-const KEEPER_MARGIN = 20;
-
-const diffMap={
-  easy:{reactDelay:38,maxSpeed:2.5,catchRange:14,swayAmplitude:0.85,swaySpeed:0.008},
-  med:{reactDelay:28,maxSpeed:4,catchRange:18,swayAmplitude:1.0,swaySpeed:0.013},
-  hard:{reactDelay:18,maxSpeed:6.5,catchRange:22,swayAmplitude:1.0,swaySpeed:0.018}
-};
-
-const JERSEY_COLORS=['#f5c800','#e84040','#4080f5','#30c060'];
-const JERSEY_DARK=['#c8a000','#b02020','#1850c0','#108040'];
-
-let players=[], currentPlayer=0;
-let phase='aim';
-let ballX=W/2,ballY=H-55;
-let targetX=W/2,targetY=GOAL_TOP+40;
-let aimX=W/2,aimY=GOAL_TOP+40;
-let keeperX=W/2;
-let keeperSwayT=0;
-// Direction +1 or -1 for keeper sway
-let keeperSwayDir=1;
-let animFrame=0,animMax=45;
-let animId=null;
-let particles=[];
-
-function initGame(){
-  players=Array.from({length:numPlayers},()=>({goals:0,shots:0}));
-  currentPlayer=0;
-  phase='aim';ballX=W/2;ballY=H-55;keeperX=W/2;keeperSwayT=0;keeperSwayDir=1;
-  aimX=W/2;aimY=GOAL_TOP+40;particles=[];
-  applyGameText();
-  buildHUD();
-  updateTurnLabel();
-  document.getElementById('msg').textContent=T[lang].shoot;
-  document.getElementById('msg').className='';
-  draw();
-  startIdleSway();
-}
-
-function applyGameText(){
-  const t=T[lang];
-  document.getElementById('game-title').textContent=t.title;
-  document.getElementById('d-easy').textContent=t.easy;
-  document.getElementById('d-med').textContent=t.med;
-  document.getElementById('d-hard').textContent=t.hard;
-  document.getElementById('back-btn').textContent=t.back;
-  ['easy','med','hard'].forEach(d=>document.getElementById('d-'+d).classList.toggle('active',d===difficulty));
-}
-
-function buildHUD(){
-  const hud=document.getElementById('hud');
-  hud.innerHTML='';
-  players.forEach((p,i)=>{
-    const div=document.createElement('div');
-    div.className='player-stat'+(i===currentPlayer?' current-player':'');
-    div.id='pstat-'+i;
-    div.innerHTML=`<div class="p-name">${T[lang].player} ${i+1}</div><div class="p-score" id="pscore-${i}">${p.goals}</div>`;
-    hud.appendChild(div);
-  });
-}
-
-function updateHUD(){
-  players.forEach((p,i)=>{
-    const el=document.getElementById('pscore-'+i);
-    if(el) el.textContent=p.goals;
-    const stat=document.getElementById('pstat-'+i);
-    if(stat) stat.className='player-stat'+(i===currentPlayer?' current-player':'');
-  });
-}
-
-function updateTurnLabel(){
-  if(numPlayers===1){document.getElementById('turn-label').textContent='';return;}
-  const t=T[lang];
-  document.getElementById('turn-label').textContent=`${t.turn} ${t.player} ${currentPlayer+1}`;
-}
-
 function setDiff(d){
   difficulty=d;
   ['easy','med','hard'].forEach(x=>document.getElementById('d-'+x).classList.toggle('active',x===d));
 }
 
-function resetGame(){
-  if(animId) cancelAnimationFrame(animId);
-  if(idleAnimId) cancelAnimationFrame(idleAnimId);
-  if(window._cdInterval) clearInterval(window._cdInterval);
-  const ov=document.getElementById('gameover-overlay');
-  if(ov) ov.remove();
-  document.getElementById('game').style.display='none';
-  document.getElementById('setup').style.display='block';
-  applySetupText();
+// ── game constants ──
+const canvas=document.getElementById('c');
+const ctx=canvas.getContext('2d');
+const W=600,H=320;
+canvas.width=W; canvas.height=H;
+const GOAL_L=W/2-180,GOAL_R=W/2+180,GOAL_TOP=30,GOAL_BOT=145;
+const KEEPER_BASE=GOAL_BOT-18,KEEPER_MARGIN=20;
+const SHOTS_PER_ROUND=5;
+const JERSEY=['#f5c800','#4080f5'],JERSEY_D=['#c8a000','#1850c0'];
+const SOLO_DIFF={
+  easy:{reactDelay:38,maxSpeed:2.5,catchRange:14,swaySpeed:0.008},
+  med: {reactDelay:28,maxSpeed:4,  catchRange:18,swaySpeed:0.013},
+  hard:{reactDelay:18,maxSpeed:6.5,catchRange:22,swaySpeed:0.018}
+};
+const HUMAN_CATCH=26,HUMAN_SPEED=7;
+
+// ── state ──
+let gameMode='solo',difficulty='easy',setupDiff='easy';
+let scores=[0,0],round=1,shotsThisRound=0,shooterIdx=0;
+let myIdx=0,myRole='shooter';
+let phase='aim';
+let ballX=W/2,ballY=H-55;
+let targetX=W/2,targetY=GOAL_TOP+40;
+let aimX=W/2,aimY=GOAL_TOP+40;
+let remoteAimX=W/2,remoteAimY=GOAL_TOP+40;
+let keeperX=W/2,keeperSwayDir=1;
+let animFrame=0,animMax=45,animId=null,idleAnimId=null;
+let particles=[];
+let keysHeld={ArrowLeft:false,ArrowRight:false},keeperKeyInt=null;
+let roomCode=null,roomRef=null,listeners=[];
+
+// ── game start ──
+function startGame(mode){
+  gameMode=mode; difficulty=setupDiff;
+  scores=[0,0]; round=1; shotsThisRound=0; shooterIdx=0; myIdx=0; myRole='shooter';
+  showScreen('game-screen');
+  const dc=document.getElementById('diff-controls');
+  dc.style.display=(mode==='online')?'none':'';
+  ['d-easy','d-med','d-hard'].forEach(id=>document.getElementById(id).style.display=mode==='local'?'none':'');
+  initRound();
 }
 
+// ── Firebase ──
+function genCode(){ return Math.random().toString(36).substring(2,6).toUpperCase(); }
+
+async function showCreate(){
+  showScreen('waiting-screen');
+  document.getElementById('status-txt').textContent=t('waiting');
+  let code;
+  for(let i=0;i<10;i++){
+    code=genCode();
+    const snap=await get(ref(db,'rooms/'+code));
+    if(!snap.exists()) break;
+  }
+  roomCode=code; roomRef=ref(db,'rooms/'+roomCode);
+  document.getElementById('code-display').textContent=roomCode;
+  await set(roomRef,{
+    host:true,guest:false,round:1,shotsThisRound:0,scores:[0,0],shooterIdx:0,
+    phase:'waiting',aim:{x:W/2,y:GOAL_TOP+40},shoot:{x:null,y:null,fired:false},keeperX:W/2,result:null
+  });
+  onDisconnect(roomRef).remove();
+  myIdx=0; myRole='shooter';
+  const guestRef=ref(db,'rooms/'+roomCode+'/guest');
+  const unsub=onValue(guestRef,snap=>{
+    if(snap.val()===true){ off(guestRef); listeners=listeners.filter(l=>l!==unsub); startOnlineGame(); }
+  });
+  listeners.push(unsub);
+}
+
+async function joinRoom(){
+  const code=document.getElementById('code-input').value.trim().toUpperCase();
+  if(code.length!==4){ document.getElementById('join-error').textContent=t('roomNotFound'); return; }
+  document.getElementById('join-error').textContent='';
+  const snap=await get(ref(db,'rooms/'+code));
+  if(!snap.exists()){ document.getElementById('join-error').textContent=t('roomNotFound'); return; }
+  if(snap.val().guest===true){ document.getElementById('join-error').textContent=t('roomFull'); return; }
+  roomCode=code; roomRef=ref(db,'rooms/'+roomCode);
+  myIdx=1; myRole='keeper';
+  await update(roomRef,{guest:true});
+  onDisconnect(roomRef).remove();
+  startOnlineGame();
+}
+
+function startOnlineGame(){
+  gameMode='online'; difficulty='easy';
+  scores=[0,0]; round=1; shotsThisRound=0; shooterIdx=0;
+  myRole=myIdx===0?'shooter':'keeper';
+  showScreen('game-screen');
+  document.getElementById('diff-controls').style.display='none';
+  initRound(); listenFirebase();
+}
+
+function listenFirebase(){
+  if(myRole==='keeper'){
+    listeners.push(onValue(ref(db,'rooms/'+roomCode+'/aim'),snap=>{
+      const v=snap.val(); if(!v) return;
+      remoteAimX=v.x; remoteAimY=v.y;
+      if(phase==='aim') draw();
+    }));
+    listeners.push(onValue(ref(db,'rooms/'+roomCode+'/shoot'),snap=>{
+      const v=snap.val(); if(!v||!v.fired||phase!=='aim') return;
+      targetX=v.x; targetY=v.y;
+      phase='flying'; animFrame=0; ballX=W/2; ballY=H-55;
+      if(animId) cancelAnimationFrame(animId);
+      animateFly();
+    }));
+  }
+  if(myRole==='shooter'){
+    listeners.push(onValue(ref(db,'rooms/'+roomCode+'/keeperX'),snap=>{
+      const v=snap.val(); if(v===null) return;
+      keeperX=v; if(phase==='aim'||phase==='flying') draw();
+    }));
+  }
+  listeners.push(onValue(ref(db,'rooms/'+roomCode+'/result'),snap=>{
+    const v=snap.val(); if(!v) return; handleOnlineResult(v);
+  }));
+  listeners.push(onValue(ref(db,'rooms/'+roomCode+'/phase'),snap=>{
+    const v=snap.val();
+    if(v==='nextShot'&&phase==='result'){
+      phase='aim'; ballX=W/2; ballY=H-55; keeperX=W/2; remoteAimX=W/2; remoteAimY=GOAL_TOP+40;
+      document.getElementById('msg').textContent=myRole==='shooter'?t('shoot'):t('keepHint');
+      document.getElementById('msg').className=''; draw();
+    }
+  }));
+  listeners.push(onValue(ref(db,'rooms/'+roomCode+'/host'),snap=>{
+    if(snap.val()===null&&myIdx===1) showOverlay(t('oppLeft'),true);
+  }));
+  listeners.push(onValue(ref(db,'rooms/'+roomCode+'/guest'),snap=>{
+    if(snap.val()===null&&myIdx===0) showOverlay(t('oppLeft'),true);
+  }));
+  listeners.push(onValue(ref(db,'rooms/'+roomCode+'/swapRound'),snap=>{
+    const v=snap.val(); if(!v) return;
+    scores=[...v.scores]; round=2; shooterIdx=v.newShooterIdx; shotsThisRound=0;
+    myRole=myIdx===shooterIdx?'shooter':'keeper';
+    cleanupListeners();
+    setTimeout(()=>showRoleSwapOverlay(()=>{ rebuildHUD(); updateTurnLabel(); updateKeeperHint(); listenFirebase(); nextShot(); }),300);
+  }));
+  listeners.push(onValue(ref(db,'rooms/'+roomCode+'/gameover'),snap=>{
+    const v=snap.val(); if(!v) return;
+    scores=[...v.scores]; setTimeout(()=>showGameOverOverlay(),600);
+  }));
+}
+
+function cleanupListeners(){
+  listeners.forEach(u=>{ try{ if(typeof u==='function') u(); }catch(e){} }); listeners=[];
+}
+function cleanupRoom(){
+  cleanupListeners(); stopKeys();
+  if(roomRef){ remove(roomRef); roomRef=null; } roomCode=null;
+}
+
+function handleOnlineResult(v){
+  const msgEl=document.getElementById('msg');
+  const iScored=v.scorerIdx===myIdx;
+  if(v.inGoal&&!v.caught){
+    if(iScored){ scores[myIdx]++; msgEl.textContent=t('goal'); msgEl.className='goal-msg'; spawnParticles(targetX,targetY,'#e8d44d',30); spawnParticles(targetX,targetY,'#fff',15); }
+    else{ scores[1-myIdx]++; msgEl.textContent=t('goalOpp'); msgEl.className='save-msg'; }
+  } else if(v.caught){
+    if(iScored){ msgEl.textContent=t('savedOpp'); msgEl.className='save-msg'; }
+    else{ msgEl.textContent=t('saved'); msgEl.className='goal-msg'; spawnParticles(keeperX,KEEPER_BASE,'#e8d44d',20); }
+  } else {
+    msgEl.textContent=iScored?t('miss'):t('missOpp'); msgEl.className='save-msg';
+  }
+  updateHUD(); phase='result';
+}
+
+// ── round management ──
+function initRound(){
+  phase='aim'; ballX=W/2; ballY=H-55; keeperX=W/2; keeperSwayDir=1;
+  aimX=W/2; aimY=GOAL_TOP+40; remoteAimX=W/2; remoteAimY=GOAL_TOP+40; particles=[];
+  stopKeys(); rebuildHUD(); updateTurnLabel(); updateKeeperHint();
+  const msgEl=document.getElementById('msg');
+  msgEl.textContent=(gameMode==='online')?(myRole==='shooter'?t('shoot'):t('keepHint')):t('shoot');
+  msgEl.className=''; draw();
+  if(gameMode==='solo') startIdleSway();
+  else if(gameMode!=='online') startKeys();
+  else if(myRole==='keeper') startKeys();
+}
+
+function nextShot(){
+  phase='aim'; ballX=W/2; ballY=H-55; keeperX=W/2; keeperSwayDir=Math.random()<0.5?1:-1;
+  remoteAimX=W/2; remoteAimY=GOAL_TOP+40;
+  const msgEl=document.getElementById('msg');
+  msgEl.textContent=(gameMode==='online')?(myRole==='shooter'?t('shoot'):t('keepHint')):t('shoot');
+  msgEl.className=''; rebuildHUD(); updateTurnLabel();
+  if(gameMode==='solo') startIdleSway(); draw();
+}
+
+function rebuildHUD(){
+  const hud=document.getElementById('hud'); hud.innerHTML='';
+  if(gameMode==='online'){
+    for(let i=0;i<2;i++){
+      const isMe=i===myIdx;
+      const div=document.createElement('div');
+      div.className='player-stat'+(isMe?' me':''); div.id='pstat-'+i;
+      div.innerHTML=`<div class="p-name">${isMe?t('you'):t('opp')}</div><div class="p-score" id="pscore-${i}">${scores[i]}</div>`;
+      hud.appendChild(div);
+    }
+  } else if(gameMode==='local'){
+    for(let i=0;i<2;i++){
+      const isShooter=i===shooterIdx;
+      const div=document.createElement('div');
+      div.className='player-stat'+(isShooter?' me':''); div.id='pstat-'+i;
+      div.innerHTML=`<div class="p-name">${t('player')} ${i+1} <span style="opacity:0.55;font-size:10px">(${isShooter?t('shooter'):t('keeper')})</span></div><div class="p-score" id="pscore-${i}">${scores[i]}</div>`;
+      hud.appendChild(div);
+    }
+  } else {
+    const div=document.createElement('div');
+    div.className='player-stat me';
+    div.innerHTML=`<div class="p-name">${t('player')} 1</div><div class="p-score" id="pscore-0">${scores[0]}</div>`;
+    hud.appendChild(div);
+  }
+}
+function updateHUD(){ for(let i=0;i<2;i++){ const el=document.getElementById('pscore-'+i); if(el) el.textContent=scores[i]; } }
+function updateTurnLabel(){
+  if(gameMode==='online') document.getElementById('turn-label').textContent=`${myRole==='shooter'?t('youShoot'):t('youKeep')} — ${t('round')} ${round}/2`;
+  else if(gameMode==='local') document.getElementById('turn-label').textContent=`${t('player')} ${shooterIdx+1} ${t('shooter')} · ${t('player')} ${1-shooterIdx+1} ${t('keeper')} — ${t('round')} ${round}/2`;
+  else document.getElementById('turn-label').textContent='';
+}
+function updateKeeperHint(){
+  const hint=document.getElementById('keeper-hint');
+  if(gameMode==='local') hint.textContent=t('keepHint');
+  else if(gameMode==='online'&&myRole==='keeper') hint.textContent=t('keepHint');
+  else hint.textContent='';
+}
+
+// ── keyboard ──
+function startKeys(){
+  stopKeys();
+  document.addEventListener('keydown',onKD);
+  document.addEventListener('keyup',onKU);
+  keeperKeyInt=setInterval(()=>{
+    if(phase!=='aim'&&phase!=='flying') return;
+    const minX=GOAL_L+KEEPER_MARGIN,maxX=GOAL_R-KEEPER_MARGIN;
+    let moved=false;
+    if(keysHeld.ArrowLeft){ keeperX=Math.max(minX,keeperX-HUMAN_SPEED); moved=true; }
+    if(keysHeld.ArrowRight){ keeperX=Math.min(maxX,keeperX+HUMAN_SPEED); moved=true; }
+    if(moved){ if(gameMode==='online') update(roomRef,{keeperX}); draw(); }
+  },16);
+}
+function stopKeys(){
+  document.removeEventListener('keydown',onKD); document.removeEventListener('keyup',onKU);
+  if(keeperKeyInt){ clearInterval(keeperKeyInt); keeperKeyInt=null; }
+  keysHeld={ArrowLeft:false,ArrowRight:false};
+}
+function onKD(e){ if(e.key==='ArrowLeft'||e.key==='ArrowRight'){e.preventDefault();keysHeld[e.key]=true;}}
+function onKU(e){ keysHeld[e.key]=false; }
+
+// ── idle sway ──
+function startIdleSway(){
+  if(idleAnimId) cancelAnimationFrame(idleAnimId);
+  const minX=GOAL_L+KEEPER_MARGIN,maxX=GOAL_R-KEEPER_MARGIN;
+  function loop(){
+    if(phase!=='aim'){idleAnimId=null;return;}
+    const step=(maxX-minX)*SOLO_DIFF[difficulty].swaySpeed;
+    keeperX+=keeperSwayDir*step;
+    if(keeperX>=maxX){keeperX=maxX;keeperSwayDir=-1;}
+    else if(keeperX<=minX){keeperX=minX;keeperSwayDir=1;}
+    draw(); idleAnimId=requestAnimationFrame(loop);
+  }
+  idleAnimId=requestAnimationFrame(loop);
+}
+
+// ── particles ──
 function spawnParticles(x,y,color,count){
   for(let i=0;i<count;i++){
     const a=Math.random()*Math.PI*2,s=1.5+Math.random()*3;
@@ -269,6 +554,7 @@ function drawParticles(){
   ctx.globalAlpha=1;
 }
 
+// ── drawing ──
 function drawField(){
   ctx.fillStyle='#1e5e20';ctx.fillRect(0,0,W,H);
   const sw=W/12;
@@ -279,29 +565,26 @@ function drawField(){
   ctx.beginPath();ctx.arc(W/2,H/2,55,0,Math.PI*2);ctx.stroke();
   ctx.beginPath();ctx.arc(W/2,H-18,25,Math.PI,0);ctx.stroke();
 }
-
 function drawGoal(){
   ctx.strokeStyle='#e8e8e8';ctx.lineWidth=4;
   ctx.strokeRect(GOAL_L,GOAL_TOP,GOAL_R-GOAL_L,GOAL_BOT-GOAL_TOP);
   ctx.strokeStyle='rgba(255,255,255,0.1)';ctx.lineWidth=1;
   for(let i=1;i<5;i++){const x=GOAL_L+(GOAL_R-GOAL_L)/5*i;ctx.beginPath();ctx.moveTo(x,GOAL_TOP);ctx.lineTo(x,GOAL_BOT);ctx.stroke();}
   for(let i=1;i<3;i++){const y=GOAL_TOP+(GOAL_BOT-GOAL_TOP)/3*i;ctx.beginPath();ctx.moveTo(GOAL_L,y);ctx.lineTo(GOAL_R,y);ctx.stroke();}
-  ctx.fillStyle='rgba(100,200,100,0.06)';
-  ctx.fillRect(GOAL_L,GOAL_TOP,GOAL_R-GOAL_L,GOAL_BOT-GOAL_TOP);
+  ctx.fillStyle='rgba(100,200,100,0.06)';ctx.fillRect(GOAL_L,GOAL_TOP,GOAL_R-GOAL_L,GOAL_BOT-GOAL_TOP);
 }
-
 function drawKeeper(kx){
-  const ky=KEEPER_BASE;
+  const ky=KEEPER_BASE,ki=1-shooterIdx,jc=JERSEY[ki%2],jd=JERSEY_D[ki%2];
   ctx.strokeStyle='#1a3a8a';ctx.lineWidth=7;ctx.lineCap='round';
   ctx.beginPath();ctx.moveTo(kx-7,ky);ctx.lineTo(kx-9,ky+22);ctx.stroke();
   ctx.beginPath();ctx.moveTo(kx+7,ky);ctx.lineTo(kx+9,ky+22);ctx.stroke();
   ctx.fillStyle='#111';
   ctx.beginPath();ctx.ellipse(kx-10,ky+23,7,4,0,0,Math.PI*2);ctx.fill();
   ctx.beginPath();ctx.ellipse(kx+10,ky+23,7,4,0,0,Math.PI*2);ctx.fill();
-  ctx.fillStyle='#f5c800';
+  ctx.fillStyle=jc;
   ctx.beginPath();ctx.moveTo(kx-14,ky-2);ctx.lineTo(kx-16,ky-30);ctx.lineTo(kx+16,ky-30);ctx.lineTo(kx+14,ky-2);ctx.closePath();ctx.fill();
-  ctx.strokeStyle='#c8a000';ctx.lineWidth=1;ctx.stroke();
-  ctx.strokeStyle='#f5c800';ctx.lineWidth=6;ctx.lineCap='round';
+  ctx.strokeStyle=jd;ctx.lineWidth=1;ctx.stroke();
+  ctx.strokeStyle=jc;ctx.lineWidth=6;ctx.lineCap='round';
   ctx.beginPath();ctx.moveTo(kx-14,ky-24);ctx.lineTo(kx-30,ky-14);ctx.stroke();
   ctx.beginPath();ctx.moveTo(kx+14,ky-24);ctx.lineTo(kx+30,ky-14);ctx.stroke();
   ctx.fillStyle='#ff4400';
@@ -311,20 +594,17 @@ function drawKeeper(kx){
   ctx.beginPath();ctx.rect(kx-4,ky-34,8,7);ctx.fill();
   ctx.beginPath();ctx.arc(kx,ky-42,12,0,Math.PI*2);ctx.fill();
   ctx.strokeStyle='#d4956a';ctx.lineWidth=0.8;ctx.stroke();
-  ctx.fillStyle='#3a2010';
-  ctx.beginPath();ctx.arc(kx,ky-42,12,Math.PI,0);ctx.fill();
+  ctx.fillStyle='#3a2010';ctx.beginPath();ctx.arc(kx,ky-42,12,Math.PI,0);ctx.fill();
   ctx.beginPath();ctx.rect(kx-12,ky-48,24,8);ctx.fill();
   ctx.fillStyle='#222';
   ctx.beginPath();ctx.arc(kx-4,ky-41,2,0,Math.PI*2);ctx.fill();
   ctx.beginPath();ctx.arc(kx+4,ky-41,2,0,Math.PI*2);ctx.fill();
   ctx.strokeStyle='#a0604a';ctx.lineWidth=1.2;
   ctx.beginPath();ctx.arc(kx,ky-36,3,0.2,Math.PI-0.2);ctx.stroke();
-  ctx.fillStyle='#1a3a8a';ctx.font='bold 8px sans-serif';ctx.textAlign='center';
-  ctx.fillText('1',kx,ky-18);
+  ctx.fillStyle=jd;ctx.font='bold 8px sans-serif';ctx.textAlign='center';ctx.fillText(ki+1,kx,ky-18);
 }
-
-function drawShooter(px,py,pi){
-  const jc=JERSEY_COLORS[pi%4], jd=JERSEY_DARK[pi%4];
+function drawShooter(px,py){
+  const si=shooterIdx,jc=JERSEY[si%2],jd=JERSEY_D[si%2];
   ctx.strokeStyle='#333';ctx.lineWidth=6;ctx.lineCap='round';
   ctx.beginPath();ctx.moveTo(px-6,py);ctx.lineTo(px-8,py+18);ctx.stroke();
   ctx.beginPath();ctx.moveTo(px+6,py);ctx.lineTo(px+8,py+18);ctx.stroke();
@@ -341,248 +621,220 @@ function drawShooter(px,py,pi){
   ctx.beginPath();ctx.rect(px-3,py-30,6,6);ctx.fill();
   ctx.beginPath();ctx.arc(px,py-38,10,0,Math.PI*2);ctx.fill();
   ctx.strokeStyle='#d4956a';ctx.lineWidth=0.7;ctx.stroke();
-  ctx.fillStyle='#222';
-  ctx.beginPath();ctx.arc(px,py-42,10,Math.PI,0);ctx.fill();
+  ctx.fillStyle='#222';ctx.beginPath();ctx.arc(px,py-42,10,Math.PI,0);ctx.fill();
   ctx.fillStyle='#333';
   ctx.beginPath();ctx.arc(px-3,py-37,1.5,0,Math.PI*2);ctx.fill();
   ctx.beginPath();ctx.arc(px+3,py-37,1.5,0,Math.PI*2);ctx.fill();
-  ctx.fillStyle=jd;ctx.font='bold 7px sans-serif';ctx.textAlign='center';
-  ctx.fillText(pi+1,px,py-14);
+  ctx.fillStyle=jd;ctx.font='bold 7px sans-serif';ctx.textAlign='center';ctx.fillText(si+1,px,py-14);
 }
-
 function drawBall(bx,by,scale){
-  scale=scale||1;
-  const r=10*scale;
+  scale=scale||1; const r=10*scale;
   ctx.save();ctx.beginPath();ctx.arc(bx,by,r,0,Math.PI*2);ctx.clip();
   ctx.fillStyle='white';ctx.fillRect(bx-r,by-r,r*2,r*2);
   ctx.fillStyle='#111';
   drawPentagon(bx,by,r*0.38);
-  [[0,-r*0.62],[r*0.59,-r*0.19],[r*0.365,r*0.5],[-r*0.365,r*0.5],[-r*0.59,-r*0.19]].forEach(function(o){drawPentagon(bx+o[0],by+o[1],r*0.3);});
+  [[0,-r*0.62],[r*0.59,-r*0.19],[r*0.365,r*0.5],[-r*0.365,r*0.5],[-r*0.59,-r*0.19]].forEach(o=>drawPentagon(bx+o[0],by+o[1],r*0.3));
   ctx.restore();
   ctx.beginPath();ctx.arc(bx,by,r,0,Math.PI*2);ctx.strokeStyle='#888';ctx.lineWidth=0.8;ctx.stroke();
 }
-
 function drawPentagon(cx,cy,r){
   ctx.beginPath();
   for(let i=0;i<5;i++){const a=-Math.PI/2+(Math.PI*2/5)*i;i===0?ctx.moveTo(cx+Math.cos(a)*r,cy+Math.sin(a)*r):ctx.lineTo(cx+Math.cos(a)*r,cy+Math.sin(a)*r);}
   ctx.closePath();ctx.fill();
 }
-
 function drawAimLine(){
   if(phase!=='aim') return;
-  const inGoal=aimX>GOAL_L&&aimX<GOAL_R&&aimY>GOAL_TOP&&aimY<GOAL_BOT;
+  const ax=(gameMode==='online'&&myRole==='keeper')?remoteAimX:aimX;
+  const ay=(gameMode==='online'&&myRole==='keeper')?remoteAimY:aimY;
+  const inGoal=ax>GOAL_L&&ax<GOAL_R&&ay>GOAL_TOP&&ay<GOAL_BOT;
   ctx.strokeStyle=inGoal?'rgba(232,212,77,0.7)':'rgba(255,100,100,0.5)';
   ctx.lineWidth=1.5;ctx.setLineDash([8,5]);
-  ctx.beginPath();ctx.moveTo(ballX,ballY);ctx.lineTo(aimX,aimY);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(ballX,ballY);ctx.lineTo(ax,ay);ctx.stroke();
   ctx.setLineDash([]);
   ctx.fillStyle=inGoal?'rgba(232,212,77,0.8)':'rgba(255,100,100,0.7)';
-  ctx.beginPath();ctx.arc(aimX,aimY,7,0,Math.PI*2);ctx.fill();
+  ctx.beginPath();ctx.arc(ax,ay,7,0,Math.PI*2);ctx.fill();
 }
-
 function draw(){
   ctx.clearRect(0,0,W,H);
   drawField();drawGoal();drawKeeper(keeperX);
   updateParticles();drawParticles();
   const bScale=phase==='flying'?1-0.3*(animFrame/animMax):1;
   drawBall(ballX,ballY,bScale);
-  drawShooter(W/2,H-35,currentPlayer);
+  drawShooter(W/2,H-35);
   drawAimLine();
 }
 
-let idleAnimId=null;
-
+// ── animation ──
 function easeInOut(t){return t<0.5?2*t*t:-1+(4-2*t)*t;}
-
-function startIdleSway(){
-  if(idleAnimId) cancelAnimationFrame(idleAnimId);
-
-  // Keeper moves wall-to-wall using a ping-pong style
-  const minX = GOAL_L + KEEPER_MARGIN;
-  const maxX = GOAL_R - KEEPER_MARGIN;
-
-  function swayLoop(){
-    if(phase!=='aim'){idleAnimId=null;return;}
-    const cfg = diffMap[difficulty];
-    // Speed proportional to goal width so keeper traverses the whole goal
-    const step = (maxX - minX) * cfg.swaySpeed * cfg.swayAmplitude;
-
-    keeperX += keeperSwayDir * step;
-
-    // Bounce off the goal posts
-    if(keeperX >= maxX){
-      keeperX = maxX;
-      keeperSwayDir = -1;
-    } else if(keeperX <= minX){
-      keeperX = minX;
-      keeperSwayDir = 1;
-    }
-
-    draw();
-    idleAnimId=requestAnimationFrame(swayLoop);
-  }
-  idleAnimId=requestAnimationFrame(swayLoop);
-}
-
 function animateFly(){
   if(phase!=='flying') return;
-  const t=easeInOut(animFrame/animMax);
-  ballX=W/2+(targetX-W/2)*t;
-  ballY=(H-55)+(targetY-(H-55))*t;
-  const rd=diffMap[difficulty].reactDelay, ms=diffMap[difficulty].maxSpeed;
-  const minX=GOAL_L+KEEPER_MARGIN, maxX=GOAL_R-KEEPER_MARGIN;
-  // Always move toward ball, but speed ramps up from 0 -> full after reactDelay
-  const progress = Math.min(animFrame / rd, 1);
-  const curSpeed = ms * progress;
-  if(keeperX < targetX) keeperX = Math.min(keeperX + curSpeed, targetX);
-  else if(keeperX > targetX) keeperX = Math.max(keeperX - curSpeed, targetX);
-  keeperX=Math.max(minX,Math.min(maxX,keeperX));
+  const tt=easeInOut(animFrame/animMax);
+  ballX=W/2+(targetX-W/2)*tt; ballY=(H-55)+(targetY-(H-55))*tt;
+  if(gameMode==='solo'){
+    const rd=SOLO_DIFF[difficulty].reactDelay,ms=SOLO_DIFF[difficulty].maxSpeed;
+    const minX=GOAL_L+KEEPER_MARGIN,maxX=GOAL_R-KEEPER_MARGIN;
+    const cs=ms*Math.min(animFrame/rd,1);
+    if(keeperX<targetX) keeperX=Math.min(keeperX+cs,targetX);
+    else if(keeperX>targetX) keeperX=Math.max(keeperX-cs,targetX);
+    keeperX=Math.max(minX,Math.min(maxX,keeperX));
+  }
   animFrame++;draw();
   if(animFrame>animMax){resolveShot();return;}
   animId=requestAnimationFrame(animateFly);
 }
 
+// ── resolve ──
 function resolveShot(){
-  const t=T[lang];
   const inGoal=targetX>GOAL_L&&targetX<GOAL_R&&targetY>GOAL_TOP&&targetY<GOAL_BOT;
-  const caught=Math.abs(keeperX-targetX)<diffMap[difficulty].catchRange&&inGoal;
+  const catchRange=(gameMode==='solo')?SOLO_DIFF[difficulty].catchRange:HUMAN_CATCH;
+  const caught=Math.abs(keeperX-targetX)<catchRange&&inGoal;
   const msgEl=document.getElementById('msg');
-  if(inGoal&&!caught){
-    players[currentPlayer].goals++;
-    spawnParticles(targetX,targetY,'#e8d44d',30);
-    spawnParticles(targetX,targetY,'#ffffff',15);
-    msgEl.textContent=t.goal;msgEl.className='goal-msg';
-  } else if(caught){
-    spawnParticles(keeperX,KEEPER_BASE,'#e05050',20);
-    msgEl.textContent=t.saved;msgEl.className='save-msg';
-  } else {
-    msgEl.textContent=t.miss;msgEl.className='save-msg';
-  }
-  players[currentPlayer].shots++;
-  updateHUD();
-  phase='result';
 
-  // Check if game is over (each player has taken 5 shots)
-  const totalShots = players.reduce((sum,p)=>sum+p.shots,0);
-  const shotsPerPlayer = 5;
-  const gameOver = players[currentPlayer].shots >= shotsPerPlayer &&
-    (numPlayers===1 || players.every(p=>p.shots>=shotsPerPlayer));
-
-  setTimeout(function(){
-    if(gameOver){
-      showGameOver();
-    } else {
-      if(numPlayers>1){
-        // advance to next player who still has shots left
-        let next=(currentPlayer+1)%numPlayers;
-        let tries=0;
-        while(players[next].shots>=shotsPerPlayer && tries<numPlayers){next=(next+1)%numPlayers;tries++;}
-        currentPlayer=next;
-      }
-      phase='aim';ballX=W/2;ballY=H-55;keeperX=W/2;
-      keeperSwayDir=Math.random()<0.5?1:-1;
-      msgEl.textContent=T[lang].shoot;msgEl.className='';
-      updateHUD();updateTurnLabel();
-      startIdleSway();
+  if(gameMode==='online'){
+    if(myRole==='shooter'){
+      update(roomRef,{result:{inGoal,caught,scorerIdx:myIdx,processed:false},phase:'result'});
+      if(inGoal&&!caught){ msgEl.textContent=t('goal');msgEl.className='goal-msg';scores[myIdx]++;spawnParticles(targetX,targetY,'#e8d44d',30);spawnParticles(targetX,targetY,'#fff',15); }
+      else if(caught){ msgEl.textContent=t('savedOpp');msgEl.className='save-msg'; }
+      else { msgEl.textContent=t('miss');msgEl.className='save-msg'; }
+      updateHUD();
     }
+    phase='result'; shotsThisRound++;
+    const roundDone=shotsThisRound>=SHOTS_PER_ROUND,gameOver=roundDone&&round===2;
+    setTimeout(()=>{
+      if(gameOver){ if(myRole==='shooter') update(roomRef,{gameover:{scores}}); showGameOverOverlay(); }
+      else if(roundDone&&round===1){ if(myRole==='shooter') update(roomRef,{swapRound:{scores,newShooterIdx:1},phase:'swap'}); }
+      else { if(myRole==='shooter') update(roomRef,{phase:'nextShot'}); nextShot(); }
+    },1400);
+    return;
+  }
+
+  if(inGoal&&!caught){ scores[shooterIdx]++;spawnParticles(targetX,targetY,'#e8d44d',30);spawnParticles(targetX,targetY,'#ffffff',15);msgEl.textContent=t('goal');msgEl.className='goal-msg'; }
+  else if(caught){ spawnParticles(keeperX,KEEPER_BASE,'#e05050',20);msgEl.textContent=t('saved');msgEl.className='save-msg'; }
+  else { msgEl.textContent=t('miss');msgEl.className='save-msg'; }
+  shotsThisRound++; updateHUD(); phase='result';
+  const roundDone=shotsThisRound>=SHOTS_PER_ROUND;
+  const gameOver=roundDone&&(gameMode==='solo'||round===2);
+  setTimeout(()=>{
+    if(gameOver) showGameOverOverlay();
+    else if(gameMode==='local'&&roundDone) showRoleSwapOverlay(()=>{rebuildHUD();updateTurnLabel();updateKeeperHint();nextShot();});
+    else nextShot();
   },1400);
 }
 
-function showGameOver(){
-  const t=T[lang];
-  // Build overlay
-  let html='<div style="position:absolute;inset:0;background:rgba(0,0,0,0.82);display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:14px;gap:12px;z-index:10;">';
-  html+=`<div style="font-family:'Bebas Neue',sans-serif;font-size:2.2rem;color:#e8d44d;letter-spacing:0.1em;">${t.gameover}</div>`;
-  // Scores
-  players.forEach((p,i)=>{
-    html+=`<div style="font-size:14px;color:#f0f0e8;">${t.player} ${i+1}: ${p.goals} ${t.score}</div>`;
-  });
-  // Winner (multi-player)
-  if(numPlayers>1){
-    const maxGoals=Math.max(...players.map(p=>p.goals));
-    const winners=players.map((p,i)=>p.goals===maxGoals?i:-1).filter(i=>i>=0);
-    if(winners.length===1){
-      html+=`<div style="font-size:15px;color:#e8d44d;font-weight:700;">${t.winner}: ${t.player} ${winners[0]+1} 🏆</div>`;
-    } else {
-      html+=`<div style="font-size:15px;color:#e8d44d;font-weight:700;">🤝 ${winners.map(i=>t.player+' '+(i+1)).join(' / ')}</div>`;
-    }
-  }
-  html+=`<button id="play-again-btn" style="margin-top:8px;padding:10px 32px;font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:0.1em;border:1px solid rgba(232,212,77,0.4);border-radius:10px;background:rgba(232,212,77,0.14);color:#e8d44d;cursor:pointer;">${t.playAgain}</button>`;
-  html+=`<div id="countdown-txt" style="font-size:12px;color:rgba(240,240,232,0.4);margin-top:4px;">5</div>`;
-  html+='</div>';
+// ── overlays ──
+function showOverlay(msg,withBack=false){
   const wrap=document.getElementById('canvas-wrap');
-  wrap.style.position='relative';
-  const overlay=document.createElement('div');
-  overlay.id='gameover-overlay';
-  overlay.innerHTML=html;
-  wrap.appendChild(overlay);
-
-  // Attach play again button properly after DOM insertion
-  document.getElementById('play-again-btn').addEventListener('click', function(){
-    if(animId) cancelAnimationFrame(animId);
-    if(idleAnimId) cancelAnimationFrame(idleAnimId);
-    if(window._cdInterval) clearInterval(window._cdInterval);
-    const ov=document.getElementById('gameover-overlay');
-    if(ov) ov.remove();
-    initGame();
-  });
-
-  // Countdown 5 seconds then go back to setup
-  let secs = 5;
-  const cdEl = document.getElementById('countdown-txt');
-  const cdInterval = setInterval(function(){
-    secs--;
-    if(cdEl) cdEl.textContent = secs;
-    if(secs <= 0){
-      clearInterval(cdInterval);
-      const ov2 = document.getElementById('gameover-overlay');
-      if(ov2) ov2.remove();
-      document.getElementById('game').style.display='none';
-      document.getElementById('setup').style.display='block';
-      applySetupText();
-    }
-  }, 1000);
-  // Store so resetGame can clear it
-  window._cdInterval = cdInterval;
+  const ov=document.createElement('div');
+  ov.style.cssText='position:absolute;inset:0;background:rgba(0,0,0,0.85);display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:14px;gap:14px;z-index:20;';
+  ov.innerHTML=`<div style="font-family:'Bebas Neue',sans-serif;font-size:1.8rem;color:#e8d44d;letter-spacing:0.1em;text-align:center;padding:0 1rem;">${msg}</div>`;
+  if(withBack){
+    const btn=document.createElement('button'); btn.className='btn-ghost'; btn.textContent=t('back');
+    btn.addEventListener('click',()=>goLobby()); ov.appendChild(btn);
+  }
+  wrap.appendChild(ov);
 }
 
+function showRoleSwapOverlay(cb){
+  round=2; shooterIdx=1-shooterIdx; shotsThisRound=0;
+  const wrap=document.getElementById('canvas-wrap');
+  const ov=document.createElement('div');
+  ov.style.cssText='position:absolute;inset:0;background:rgba(0,0,0,0.88);display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:14px;gap:12px;z-index:15;';
+  ov.innerHTML=`
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:2rem;color:#e8d44d;letter-spacing:0.1em;">🔄 ${t('roundSwap')}</div>
+    <div style="font-size:14px;color:#f0f0e8;">${t('player')} ${shooterIdx+1} → ${t('shooter')} 🖱️</div>
+    <div style="font-size:14px;color:#f0f0e8;">${t('player')} ${(1-shooterIdx)+1} → ${t('keeper')} ← →</div>
+    <div id="swap-cd" style="font-family:'Bebas Neue',sans-serif;font-size:2.5rem;color:rgba(232,212,77,0.8);">3</div>`;
+  wrap.appendChild(ov);
+  let s=3;
+  const iv=setInterval(()=>{
+    s--; const el=document.getElementById('swap-cd'); if(el) el.textContent=s;
+    if(s<=0){ clearInterval(iv); ov.remove(); cb(); }
+  },1000);
+}
+
+function showGameOverOverlay(){
+  const wrap=document.getElementById('canvas-wrap');
+  let html=`<div style="position:absolute;inset:0;background:rgba(0,0,0,0.88);display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:14px;gap:11px;z-index:15;">`;
+  html+=`<div style="font-family:'Bebas Neue',sans-serif;font-size:2.2rem;color:#e8d44d;letter-spacing:0.1em;">${t('gameover')}</div>`;
+  if(gameMode==='solo'){
+    html+=`<div style="font-size:15px;color:#f0f0e8;">${scores[0]} ${t('score')}</div>`;
+  } else {
+    for(let i=0;i<2;i++){
+      const label=gameMode==='online'?(i===myIdx?t('you'):t('opp')):(t('player')+' '+(i+1));
+      html+=`<div style="font-size:14px;color:#f0f0e8;">${label}: ${scores[i]} ${t('score')}</div>`;
+    }
+    const max=Math.max(...scores);
+    const winners=scores.map((s,i)=>s===max?i:-1).filter(i=>i>=0);
+    if(gameMode==='online'){
+      html+=`<div style="font-size:16px;color:#e8d44d;font-weight:700;">${winners.length===1?(winners[0]===myIdx?t('winner'):t('loser')):t('draw')}</div>`;
+    } else {
+      html+=`<div style="font-size:16px;color:#e8d44d;font-weight:700;">${winners.length===1?('🏆 '+t('player')+' '+(winners[0]+1)):t('draw')}</div>`;
+    }
+  }
+  html+=`<button id="pa-btn" style="margin-top:6px;padding:10px 32px;font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:0.1em;border:1px solid rgba(232,212,77,0.4);border-radius:10px;background:rgba(232,212,77,0.14);color:#e8d44d;cursor:pointer;">${t('playAgain')}</button>`;
+  html+=`<div id="go-cd" style="font-size:12px;color:rgba(240,240,232,0.4);">5</div></div>`;
+  const ov=document.createElement('div'); ov.id='gameover-ov'; ov.innerHTML=html;
+  wrap.appendChild(ov);
+  document.getElementById('pa-btn').addEventListener('click',()=>{
+    if(window._goCd) clearInterval(window._goCd);
+    ov.remove(); cleanupRoom();
+    if(gameMode==='online') goLobby();
+    else{ shotsThisRound=0;round=1;shooterIdx=0;scores=[0,0];initRound(); }
+  });
+  let s=5;
+  window._goCd=setInterval(()=>{
+    s--; const el=document.getElementById('go-cd'); if(el) el.textContent=s;
+    if(s<=0){ clearInterval(window._goCd); ov.remove(); cleanupRoom(); goLobby(); }
+  },1000);
+}
+
+// ── input ──
 function getPos(e){
   const r=canvas.getBoundingClientRect();
   return{x:(e.clientX-r.left)*(W/r.width),y:(e.clientY-r.top)*(H/r.height)};
 }
-
-canvas.addEventListener('mousemove',function(e){
-  if(phase!=='aim') return;
+function canShoot(){
+  if(phase!=='aim') return false;
+  if(gameMode==='online'&&myRole!=='shooter') return false;
+  return true;
+}
+canvas.addEventListener('mousemove',e=>{
+  if(!canShoot()) return;
   const p=getPos(e);
   aimX=Math.max(GOAL_L-30,Math.min(GOAL_R+30,p.x));
   aimY=Math.max(GOAL_TOP-10,Math.min(GOAL_BOT+10,p.y));
+  if(gameMode==='online') update(roomRef,{'aim/x':aimX,'aim/y':aimY});
   draw();
 });
-canvas.addEventListener('click',function(e){
-  if(phase!=='aim') return;
+canvas.addEventListener('click',e=>{
+  if(!canShoot()) return;
   const p=getPos(e);
   targetX=Math.max(GOAL_L-40,Math.min(GOAL_R+40,p.x));
   targetY=Math.max(GOAL_TOP-15,Math.min(GOAL_BOT+15,p.y));
-  phase='flying';animFrame=0;ballX=W/2;ballY=H-55;
+  if(gameMode==='online') update(roomRef,{shoot:{x:targetX,y:targetY,fired:true}});
+  phase='flying'; animFrame=0; ballX=W/2; ballY=H-55;
   if(idleAnimId){cancelAnimationFrame(idleAnimId);idleAnimId=null;}
   if(animId) cancelAnimationFrame(animId);
   animateFly();
 });
-canvas.addEventListener('touchmove',function(e){
-  e.preventDefault();if(phase!=='aim') return;
+canvas.addEventListener('touchmove',e=>{
+  e.preventDefault(); if(!canShoot()) return;
   const p=getPos(e.touches[0]);
   aimX=Math.max(GOAL_L-30,Math.min(GOAL_R+30,p.x));
   aimY=Math.max(GOAL_TOP-10,Math.min(GOAL_BOT+10,p.y));
+  if(gameMode==='online') update(roomRef,{'aim/x':aimX,'aim/y':aimY});
 },{passive:false});
-canvas.addEventListener('touchend',function(e){
-  if(phase!=='aim') return;
-  targetX=aimX;targetY=aimY;
-  phase='flying';animFrame=0;ballX=W/2;ballY=H-55;
+canvas.addEventListener('touchend',e=>{
+  if(!canShoot()) return;
+  targetX=aimX; targetY=aimY;
+  if(gameMode==='online') update(roomRef,{shoot:{x:targetX,y:targetY,fired:true}});
+  phase='flying'; animFrame=0; ballX=W/2; ballY=H-55;
   if(idleAnimId){cancelAnimationFrame(idleAnimId);idleAnimId=null;}
   if(animId) cancelAnimationFrame(animId);
   animateFly();
 });
 
-applySetupText();
+applyText();
 </script>
 </body>
 </html>
