@@ -1046,14 +1046,10 @@ function spawnEnemy() {
 
 function checkWinCondition() {
     const alive = gameState.players.filter(p => p.alive);
-    if (numPlayers > 1 && alive.length === 1) { endGame(alive[0]); return true; }
-    if (alive.length === 0) { endGame(null); return true; }
-    if (gameState.timeRemaining <= 0) {
-        let winner = gameState.players[0];
-        gameState.players.forEach(p => { if (p.score > winner.score) winner = p; });
-        endGame(winner);
-        return true;
-    }
+    const topScorer = () => [...gameState.players].sort((a, b) => b.score - a.score)[0];
+    if (numPlayers > 1 && alive.length === 1) { endGame(topScorer()); return true; }
+    if (alive.length === 0) { endGame(topScorer()); return true; }
+    if (gameState.timeRemaining <= 0) { endGame(topScorer()); return true; }
     return false;
 }
 
@@ -1163,8 +1159,7 @@ function endGame(winner) {
         winnerTitleEl.textContent = t.gameOver;
         finalScoresEl.innerHTML = `<div style="font-size:24px;">${t.finalScore}: ${sorted[0].score}</div>`;
     } else {
-        if (winner && gameState.timeRemaining > 0) winnerTitleEl.innerHTML = `${winner.color.name} ${t.wins}`;
-        else if (sorted[0].score > sorted[1].score) winnerTitleEl.innerHTML = `${sorted[0].color.name} ${t.wins}`;
+        if (winner && sorted[0].score > (sorted[1]?.score ?? -1)) winnerTitleEl.innerHTML = `${sorted[0].color.name} ${t.wins}`;
         else winnerTitleEl.innerHTML = t.tieGame;
         finalScoresEl.innerHTML = sorted.map(p => `<div><span class="${p.color.class}">${p.color.name}:</span> ${p.score} ${currentLang === 'he' ? '&#1504;&#1511;&#1493;&#1491;&#1493;&#1514;' : 'points'}</div>`).join('');
     }
@@ -1417,7 +1412,7 @@ function updateOnlineLoop(roomId, myPlayer) {
         if (isHost) {
             const sorted = [...gameState.players].sort((a, b) => b.score - a.score);
             set(ref(db, 'sd_rooms/' + roomId + '/gameEnd'), {
-                winnerId: alive[0]?.id ?? null,
+                winnerId: sorted[0].id,
                 scores: gameState.players.map(p => ({ name: p.color.name, score: p.score, colorClass: p.color.class }))
             });
         }
