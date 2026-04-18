@@ -32,13 +32,8 @@
             border: 2px solid #fbbf24;
         }
 
-        .page {
-            display: none;
-        }
-
-        .page.active {
-            display: block;
-        }
+        .page { display: none; }
+        .page.active { display: block; }
 
         .header {
             background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
@@ -48,9 +43,7 @@
             position: relative;
         }
 
-        .header.hide {
-            display: none;
-        }
+        .header.hide { display: none; }
 
         .header-lang-selector {
             position: absolute;
@@ -72,16 +65,8 @@
             transition: all 0.2s ease;
         }
 
-        .header-lang-btn:hover {
-            background: rgba(251, 191, 36, 0.2);
-            border-color: #fbbf24;
-        }
-
-        .header-lang-btn.active {
-            background: #fbbf24;
-            color: #000000;
-            border-color: #fbbf24;
-        }
+        .header-lang-btn:hover { background: rgba(251, 191, 36, 0.2); border-color: #fbbf24; }
+        .header-lang-btn.active { background: #fbbf24; color: #000000; border-color: #fbbf24; }
 
         .header h1 {
             font-size: 48px;
@@ -93,17 +78,12 @@
         .header p {
             font-size: 18px;
             opacity: 0.9;
-            font-weight: 400;
             color: rgba(251, 191, 36, 0.8);
         }
 
-        .content {
-            padding: 30px;
-        }
+        .content { padding: 30px; }
 
-        .section {
-            margin-bottom: 30px;
-        }
+        .section { margin-bottom: 30px; }
 
         .section-title {
             font-size: 14px;
@@ -112,34 +92,6 @@
             letter-spacing: 1px;
             color: #fbbf24;
             margin-bottom: 12px;
-        }
-
-        .language-selector {
-            display: flex;
-            gap: 8px;
-            justify-content: flex-start;
-            margin-bottom: 20px;
-        }
-
-        .lang-btn {
-            padding: 8px 16px;
-            border: 2px solid #fbbf24;
-            background: #000000;
-            color: #fbbf24;
-            border-radius: 8px;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .lang-btn:hover {
-            transform: translateY(-2px);
-        }
-
-        .lang-btn.active {
-            background: #fbbf24;
-            color: #000000;
         }
 
         .player-selector {
@@ -163,16 +115,33 @@
             transition: all 0.2s ease;
         }
 
-        .player-btn:hover {
-            transform: translateY(-2px);
-            border-color: #fbbf24;
+        .player-btn:hover { transform: translateY(-2px); }
+        .player-btn.active { background: #fbbf24; color: #000000; }
+
+        /* Mode buttons - NEW */
+        .mode-select {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
         }
 
-        .player-btn.active {
-            background: #fbbf24;
-            color: #000000;
-            border-color: #fbbf24;
+        .mode-btn {
+            flex: 1;
+            padding: 18px 12px;
+            border: 2px solid #fbbf24;
+            background: #000;
+            color: #fbbf24;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
         }
+
+        .mode-btn .mode-icon { font-size: 28px; display: block; margin-bottom: 6px; }
+        .mode-btn:hover { background: #1a1a1a; transform: translateY(-2px); }
+        .mode-btn.active { background: #fbbf24; color: #000; }
 
         .start-btn {
             width: 100%;
@@ -188,17 +157,8 @@
             box-shadow: 0 4px 15px rgba(251, 191, 36, 0.4);
         }
 
-        .start-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(251, 191, 36, 0.6);
-            background: #f59e0b;
-        }
-
-        .start-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
+        .start-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(251, 191, 36, 0.6); background: #f59e0b; }
+        .start-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
         .p1 { color: #3b82f6; }
         .p2 { color: #10b981; }
@@ -236,11 +196,7 @@
             text-shadow: 0 2px 4px rgba(0,0,0,0.5);
         }
 
-        .player-scores-inline {
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
+        .player-scores-inline { display: flex; gap: 15px; flex-wrap: wrap; }
 
         .player-info-inline {
             color: #fbbf24;
@@ -249,26 +205,16 @@
             text-shadow: 0 1px 3px rgba(0,0,0,0.8);
         }
 
-        .player-info-inline .name-score {
-            font-weight: 700;
-            margin-bottom: 2px;
-        }
+        .player-info-inline .name-score { font-weight: 700; margin-bottom: 2px; }
+        .player-info-inline .lives { font-size: 12px; }
 
-        .player-info-inline .lives {
-            font-size: 12px;
-        }
-
-        canvas {
-            display: block;
-        }
+        canvas { display: block; }
 
         .game-over-overlay {
             display: none;
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
             background: rgba(0,0,0,0.9);
             align-items: center;
             justify-content: center;
@@ -277,9 +223,7 @@
             padding: 40px;
         }
 
-        .game-over-overlay.show {
-            display: flex;
-        }
+        .game-over-overlay.show { display: flex; }
 
         .game-over-title {
             font-size: 48px;
@@ -288,16 +232,8 @@
             text-shadow: 0 4px 20px rgba(251, 191, 36, 0.5);
         }
 
-        .final-scores {
-            color: #fbbf24;
-            font-size: 18px;
-            text-align: center;
-        }
-
-        .final-scores div {
-            margin: 8px 0;
-            font-weight: 600;
-        }
+        .final-scores { color: #fbbf24; font-size: 18px; text-align: center; }
+        .final-scores div { margin: 8px 0; font-weight: 600; }
 
         .replay-btn {
             padding: 15px 40px;
@@ -311,10 +247,7 @@
             transition: all 0.2s ease;
         }
 
-        .replay-btn:hover {
-            transform: scale(1.05);
-            background: #f59e0b;
-        }
+        .replay-btn:hover { transform: scale(1.05); background: #f59e0b; }
 
         .controls-info {
             background: #1a1a1a;
@@ -332,37 +265,23 @@
             color: #fbbf24;
         }
 
-        .control-row span:first-child {
-            font-weight: 700;
-            min-width: 80px;
-        }
+        .control-row span:first-child { font-weight: 700; min-width: 80px; }
 
         .touch-controls {
             display: none;
             position: absolute;
             bottom: 20px;
-            left: 0;
-            right: 0;
+            left: 0; right: 0;
             z-index: 20;
             pointer-events: none;
         }
 
-        .touch-controls.active {
-            display: flex;
-            pointer-events: auto;
-        }
+        .touch-controls.active { display: flex; pointer-events: auto; }
 
-        .touch-joystick {
-            position: absolute;
-            left: 40px;
-            bottom: 0;
-            width: 120px;
-            height: 120px;
-        }
+        .touch-joystick { position: absolute; left: 40px; bottom: 0; width: 120px; height: 120px; }
 
         .joystick-base {
-            width: 120px;
-            height: 120px;
+            width: 120px; height: 120px;
             border-radius: 50%;
             background: rgba(251, 191, 36, 0.2);
             border: 3px solid rgba(251, 191, 36, 0.5);
@@ -370,23 +289,19 @@
         }
 
         .joystick-stick {
-            width: 50px;
-            height: 50px;
+            width: 50px; height: 50px;
             border-radius: 50%;
             background: #fbbf24;
             position: absolute;
-            top: 50%;
-            left: 50%;
+            top: 50%; left: 50%;
             transform: translate(-50%, -50%);
             transition: all 0.1s;
         }
 
         .touch-shoot {
             position: absolute;
-            right: 40px;
-            bottom: 0;
-            width: 100px;
-            height: 100px;
+            right: 40px; bottom: 0;
+            width: 100px; height: 100px;
             border-radius: 50%;
             background: rgba(251, 191, 36, 0.3);
             border: 3px solid #fbbf24;
@@ -399,10 +314,7 @@
             cursor: pointer;
         }
 
-        .touch-shoot:active {
-            background: rgba(251, 191, 36, 0.5);
-            transform: scale(0.95);
-        }
+        .touch-shoot:active { background: rgba(251, 191, 36, 0.5); transform: scale(0.95); }
 
         .back-home-btn {
             margin-top: 15px;
@@ -418,17 +330,12 @@
             transition: all 0.2s ease;
         }
 
-        .back-home-btn:hover {
-            background: #2a2a2a;
-            transform: translateY(-2px);
-        }
+        .back-home-btn:hover { background: #2a2a2a; transform: translateY(-2px); }
 
         .back-arrow {
             position: absolute;
-            top: 20px;
-            left: 20px;
-            width: 50px;
-            height: 50px;
+            top: 20px; left: 20px;
+            width: 50px; height: 50px;
             background: rgba(251, 191, 36, 0.2);
             border: 2px solid #fbbf24;
             border-radius: 50%;
@@ -440,32 +347,163 @@
             transition: all 0.2s ease;
         }
 
-        .back-arrow:hover {
-            background: rgba(251, 191, 36, 0.4);
-            transform: scale(1.1);
+        .back-arrow:hover { background: rgba(251, 191, 36, 0.4); transform: scale(1.1); }
+        .back-arrow::before { content: '←'; font-size: 28px; color: #fbbf24; font-weight: bold; }
+
+        /* ── ONLINE LOBBY STYLES ── */
+        .lobby-section {
+            background: #1a1a1a;
+            border: 2px solid #fbbf24;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 16px;
         }
 
-        .back-arrow::before {
-            content: '←';
-            font-size: 28px;
+        .lobby-section h3 {
             color: #fbbf24;
-            font-weight: bold;
+            font-size: 16px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .room-code-big {
+            font-size: 52px;
+            font-weight: 700;
+            color: #fbbf24;
+            letter-spacing: 10px;
+            font-family: monospace;
+            text-align: center;
+            text-shadow: 0 0 20px rgba(251,191,36,0.4);
+            margin: 12px 0;
+        }
+
+        .code-label {
+            text-align: center;
+            color: rgba(251,191,36,0.6);
+            font-size: 13px;
+            letter-spacing: 1px;
+        }
+
+        .join-input {
+            width: 100%;
+            padding: 16px;
+            background: #000;
+            border: 2px solid #fbbf24;
+            border-radius: 12px;
+            color: #fbbf24;
+            font-size: 28px;
+            text-align: center;
+            letter-spacing: 6px;
+            text-transform: uppercase;
+            font-family: monospace;
+            margin-bottom: 12px;
+            outline: none;
+        }
+
+        .join-input::placeholder { color: rgba(251,191,36,0.25); }
+        .join-input:focus { border-color: #f59e0b; box-shadow: 0 0 12px rgba(251,191,36,0.3); }
+
+        .lobby-btn {
+            width: 100%;
+            padding: 14px;
+            background: #fbbf24;
+            color: #000;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-bottom: 8px;
+            transition: all 0.2s;
+        }
+
+        .lobby-btn:hover { background: #f59e0b; }
+        .lobby-btn:disabled { background: #555; color: #999; cursor: not-allowed; }
+        .lobby-btn.secondary { background: transparent; border: 2px solid #fbbf24; color: #fbbf24; }
+        .lobby-btn.secondary:hover { background: #1a1a1a; }
+
+        .lobby-player-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 14px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            background: rgba(251,191,36,0.08);
+            border: 1px solid rgba(251,191,36,0.25);
+            color: #fbbf24;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .lobby-badge {
+            font-size: 11px;
+            padding: 3px 8px;
+            border-radius: 8px;
+            background: rgba(16,185,129,0.2);
+            color: #10b981;
+            border: 1px solid rgba(16,185,129,0.4);
+        }
+
+        .lobby-badge.host {
+            background: rgba(251,191,36,0.2);
+            color: #fbbf24;
+            border-color: rgba(251,191,36,0.4);
+        }
+
+        .error-msg { color: #ef4444; font-size: 13px; text-align: center; margin: 6px 0; min-height: 18px; }
+        .info-msg { color: rgba(251,191,36,0.65); font-size: 13px; text-align: center; margin: 6px 0; }
+
+        /* online hud badge */
+        .online-badge {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 11px;
+            color: #10b981;
+            background: rgba(16,185,129,0.15);
+            border: 1px solid rgba(16,185,129,0.4);
+            border-radius: 8px;
+            padding: 3px 8px;
+            z-index: 20;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <div class="header-lang-selector">
-                <button class="header-lang-btn active" data-lang="en">EN</button>
-                <button class="header-lang-btn" data-lang="he">עב</button>
-            </div>
-            <h1>🚀 Space Defender</h1>
-            <p>Destroy enemy ships and survive!</p>
+<div class="container">
+    <div class="header" id="mainHeader">
+        <div class="header-lang-selector">
+            <button class="header-lang-btn active" data-lang="en">EN</button>
+            <button class="header-lang-btn" data-lang="he">&#1506;&#1489;</button>
         </div>
+        <h1>&#128640; Space Defender</h1>
+        <p>Destroy enemy ships and survive!</p>
+    </div>
 
-        <div class="page active" id="menuPage">
-            <div class="content">
+    <!-- ═══ MENU PAGE ═══ -->
+    <div class="page active" id="menuPage">
+        <div class="content">
+
+            <!-- Mode selector NEW -->
+            <div class="section">
+                <div class="section-title" id="modeTitle">Game Mode</div>
+                <div class="mode-select">
+                    <button class="mode-btn active" id="localModeBtn" onclick="selectGameMode('local')">
+                        <span class="mode-icon">&#128421;&#65039;</span>
+                        <span id="localModeLabel">Local</span>
+                    </button>
+                    <button class="mode-btn" id="onlineModeBtn" onclick="selectGameMode('online')">
+                        <span class="mode-icon">&#127760;</span>
+                        <span id="onlineModeLabel">Online</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Local options (shown in local mode) -->
+            <div id="localOptions">
                 <div class="section">
                     <div class="section-title" id="playersTitle">Number of Players</div>
                     <div class="player-selector">
@@ -475,703 +513,1007 @@
                         <button class="player-btn" data-players="4">4</button>
                     </div>
                 </div>
-
                 <button class="start-btn" id="startBtn">Start Game</button>
+            </div>
 
-                <button class="back-home-btn" id="backHomeBtn" onclick="window.location.href='https://arnonmaya.github.io/games/'">Back to Home Page</button>
-
-                <div class="controls-info">
-                    <div class="control-row" id="c1">
-                        <span class="p1">Player 1:</span>
-                        <span id="controls1Text">Arrow Keys ← → to move, Spacebar to shoot</span>
-                    </div>
-                    <div class="control-row" id="c2" style="display: none;">
-                        <span class="p2">Player 2:</span>
-                        <span id="controls2Text">A D to move, W to shoot</span>
-                    </div>
-                    <div class="control-row" id="c3" style="display: none;">
-                        <span class="p3">Player 3:</span>
-                        <span id="controls3Text">J L to move, I to shoot</span>
-                    </div>
-                    <div class="control-row" id="c4" style="display: none;">
-                        <span class="p4">Player 4:</span>
-                        <span id="controls4Text">Numpad 4 6 to move, 8 to shoot</span>
+            <!-- Online lobby (shown in online mode) -->
+            <div id="onlineOptions" style="display:none;">
+                <!-- Create -->
+                <div class="lobby-section">
+                    <h3>&#127918; Create Room</h3>
+                    <button class="lobby-btn" id="createRoomBtn" onclick="createRoom()">Create New Room</button>
+                    <div id="createdRoomInfo" style="display:none;">
+                        <div class="code-label">Share this code with friends:</div>
+                        <div class="room-code-big" id="createdCode">----</div>
+                        <button class="lobby-btn" id="startOnlineBtn" onclick="startOnlineGame()" style="margin-top:8px;">
+                            &#9654;&#65039; Start Game
+                        </button>
+                        <p class="info-msg" id="onlineWaitMsg">Waiting for players...</p>
                     </div>
                 </div>
+                <!-- Join -->
+                <div class="lobby-section">
+                    <h3>&#128682; Join Room</h3>
+                    <input type="text" class="join-input" id="joinCodeInput" placeholder="XXXX" maxlength="4">
+                    <div class="error-msg" id="joinError"></div>
+                    <button class="lobby-btn" id="joinRoomBtn" onclick="joinRoom()">Join Game</button>
+                    <p class="info-msg" id="joinWaitMsg" style="display:none;">&#8987; Waiting for host to start...</p>
+                </div>
+                <!-- Players list -->
+                <div id="lobbyPlayersList" style="display:none;">
+                    <div class="section-title" style="margin-bottom:10px;">
+                        Players in Room (<span id="lobbyPlayerCount">0</span>/4)
+                    </div>
+                    <div id="lobbyPlayers"></div>
+                </div>
             </div>
-        </div>
 
-        <div class="page" id="gamePage">
-            <div class="content">
-                <div class="back-arrow" id="backArrow"></div>
-                <div class="game-area">
-                    <div class="game-ui">
-                        <div class="player-scores-inline" id="playerScores"></div>
-                        <div class="timer-inline" id="timerDisplay">60</div>
-                    </div>
-                    <canvas id="gameCanvas" width="740" height="500"></canvas>
-                    <div class="touch-controls" id="touchControls">
-                        <div class="touch-joystick">
-                            <div class="joystick-base">
-                                <div class="joystick-stick" id="joystickStick"></div>
-                            </div>
-                        </div>
-                        <div class="touch-shoot" id="touchShoot">🚀</div>
-                    </div>
-                    <div class="game-over-overlay" id="gameOver">
-                        <div class="game-over-title" id="winnerTitle">Game Over</div>
-                        <div class="final-scores" id="finalScores"></div>
-                        <button class="replay-btn" id="replayBtn">Play Again (5s)</button>
-                    </div>
+            <button class="back-home-btn" id="backHomeBtn" onclick="window.location.href='https://arnonmaya.github.io/games/'">Back to Home Page</button>
+
+            <div class="controls-info" id="controlsInfo">
+                <div class="control-row" id="c1">
+                    <span class="p1">Player 1:</span>
+                    <span id="controls1Text">Arrow Keys &#8592; &#8594; to move, Spacebar to shoot</span>
+                </div>
+                <div class="control-row" id="c2" style="display:none;">
+                    <span class="p2">Player 2:</span>
+                    <span id="controls2Text">A D to move, W to shoot</span>
+                </div>
+                <div class="control-row" id="c3" style="display:none;">
+                    <span class="p3">Player 3:</span>
+                    <span id="controls3Text">J L to move, I to shoot</span>
+                </div>
+                <div class="control-row" id="c4" style="display:none;">
+                    <span class="p4">Player 4:</span>
+                    <span id="controls4Text">Numpad 4 6 to move, 8 to shoot</span>
                 </div>
             </div>
         </div>
     </div>
 
-    <script>
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
-        const timerDisplay = document.getElementById('timerDisplay');
-        const gameOverEl = document.getElementById('gameOver');
-        const winnerTitleEl = document.getElementById('winnerTitle');
-        const finalScoresEl = document.getElementById('finalScores');
-        const startBtn = document.getElementById('startBtn');
-        const replayBtn = document.getElementById('replayBtn');
-        const playerBtns = document.querySelectorAll('.player-btn');
-        const playerScoresEl = document.getElementById('playerScores');
-        const menuPage = document.getElementById('menuPage');
-        const gamePage = document.getElementById('gamePage');
-        const header = document.querySelector('.header');
-        const touchControls = document.getElementById('touchControls');
-        const touchShoot = document.getElementById('touchShoot');
-        const joystickStick = document.getElementById('joystickStick');
+    <!-- ═══ GAME PAGE ═══ -->
+    <div class="page" id="gamePage">
+        <div class="content">
+            <div class="back-arrow" id="backArrow"></div>
+            <div class="game-area">
+                <div id="onlineBadge" class="online-badge" style="display:none;">&#127760; ONLINE</div>
+                <div class="game-ui">
+                    <div class="player-scores-inline" id="playerScores"></div>
+                    <div class="timer-inline" id="timerDisplay">60</div>
+                </div>
+                <canvas id="gameCanvas" width="740" height="500"></canvas>
+                <div class="touch-controls" id="touchControls">
+                    <div class="touch-joystick">
+                        <div class="joystick-base">
+                            <div class="joystick-stick" id="joystickStick"></div>
+                        </div>
+                    </div>
+                    <div class="touch-shoot" id="touchShoot">&#128640;</div>
+                </div>
+                <div class="game-over-overlay" id="gameOver">
+                    <div class="game-over-title" id="winnerTitle">Game Over</div>
+                    <div class="final-scores" id="finalScores"></div>
+                    <button class="replay-btn" id="replayBtn">Play Again (5s)</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-        let numPlayers = 1;
-        let gameState = null;
-        let touchState = { active: false, direction: 0, shooting: false };
-        let autoMenuTimer = null;
-        let isTouchDevice = false;
-        let currentLang = 'en';
+<!-- Firebase via module import -->
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getDatabase, ref, set, get, onValue, off, remove, update as fbUpdate } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
 
-        const translations = {
-            en: {
-                title: '🚀 Space Defender',
-                subtitle: 'Destroy enemy ships and survive!',
-                langTitle: 'Language / שפה',
-                playersTitle: 'Number of Players',
-                startBtn: 'Start Game',
-                backHomeBtn: 'Back to Home Page',
-                controls1: 'Arrow Keys ← → to move, Spacebar to shoot',
-                controls2: 'A D to move, W to shoot',
-                controls3: 'J L to move, I to shoot',
-                controls4: 'Numpad 4 6 to move, 8 to shoot',
-                gameOver: 'Game Over',
-                finalScore: 'Final Score',
-                wins: 'Wins! 🏆',
-                tieGame: 'Tie Game!',
-                playAgain: 'Play Again'
-            },
-            he: {
-                title: '🚀 מגן החלל',
-                subtitle: 'השמד ספינות אויב ושרוד!',
-                langTitle: 'Language / שפה',
-                playersTitle: 'מספר שחקנים',
-                startBtn: 'התחל משחק',
-                backHomeBtn: 'חזרה לדף הבית',
-                controls1: 'חצים ← → להזזה, רווח לירי',
-                controls2: 'A D להזזה, W לירי',
-                controls3: 'J L להזזה, I לירי',
-                controls4: 'Numpad 4 6 להזזה, 8 לירי',
-                gameOver: 'המשחק נגמר',
-                finalScore: 'ניקוד סופי',
-                wins: 'ניצח! 🏆',
-                tieGame: 'תיקו!',
-                playAgain: 'שחק שוב'
-            }
-        };
+// ══════════════════════════════════════════
+// FIREBASE SETUP
+// ══════════════════════════════════════════
+const firebaseConfig = {
+    apiKey: "AIzaSyDbprzF4Kf01ejNHagZLrWoDEZUmMlcaJs",
+    authDomain: "games-on-d-mend.firebaseapp.com",
+    databaseURL: "https://games-on-d-mend-default-rtdb.firebaseio.com",
+    projectId: "games-on-d-mend",
+    storageBucket: "games-on-d-mend.firebasestorage.app",
+    messagingSenderId: "828376886522",
+    appId: "1:828376886522:web:6b2ca497c7b0ef0ccb2d43"
+};
 
-        function updateLanguage(lang) {
-            currentLang = lang;
-            const t = translations[lang];
-            
-            // Update header
-            document.querySelector('.header h1').textContent = t.title;
-            document.querySelector('.header p').textContent = t.subtitle;
-            
-            // Update menu
-            document.getElementById('playersTitle').textContent = t.playersTitle;
-            document.getElementById('startBtn').textContent = t.startBtn;
-            document.getElementById('backHomeBtn').textContent = t.backHomeBtn;
-            
-            // Update controls
-            document.getElementById('controls1Text').textContent = t.controls1;
-            document.getElementById('controls2Text').textContent = t.controls2;
-            document.getElementById('controls3Text').textContent = t.controls3;
-            document.getElementById('controls4Text').textContent = t.controls4;
-            
-            // Update direction for Hebrew
-            if (lang === 'he') {
-                document.body.style.direction = 'rtl';
-            } else {
-                document.body.style.direction = 'ltr';
-            }
+const fbApp = initializeApp(firebaseConfig);
+const db = getDatabase(fbApp);
+
+// ══════════════════════════════════════════
+// GAME CONSTANTS
+// ══════════════════════════════════════════
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+const timerDisplay = document.getElementById('timerDisplay');
+const gameOverEl = document.getElementById('gameOver');
+const winnerTitleEl = document.getElementById('winnerTitle');
+const finalScoresEl = document.getElementById('finalScores');
+const startBtn = document.getElementById('startBtn');
+const replayBtn = document.getElementById('replayBtn');
+const playerBtns = document.querySelectorAll('.player-btn');
+const playerScoresEl = document.getElementById('playerScores');
+const menuPage = document.getElementById('menuPage');
+const gamePage = document.getElementById('gamePage');
+const header = document.getElementById('mainHeader');
+const touchControls = document.getElementById('touchControls');
+const touchShoot = document.getElementById('touchShoot');
+const joystickStick = document.getElementById('joystickStick');
+
+let numPlayers = 1;
+let gameState = null;
+let touchState = { active: false, direction: 0, shooting: false };
+let autoMenuTimer = null;
+let isTouchDevice = false;
+let currentLang = 'en';
+
+// Online state
+let gameMode = 'local'; // 'local' | 'online'
+let myPlayerId = 'p_' + Math.random().toString(36).substr(2, 9);
+let myPlayerIndex = 0;
+let isHost = false;
+let currentRoomId = null;
+let onlineListeners = [];
+let lastPushTime = 0;
+
+const playerColors = [
+    { fill: '#3b82f6', dark: '#2563eb', name: 'P1', class: 'p1' },
+    { fill: '#10b981', dark: '#059669', name: 'P2', class: 'p2' },
+    { fill: '#f59e0b', dark: '#d97706', name: 'P3', class: 'p3' },
+    { fill: '#ec4899', dark: '#db2777', name: 'P4', class: 'p4' }
+];
+
+const playerControls = [
+    { left: 'ArrowLeft', right: 'ArrowRight', shoot: ' ' },
+    { left: 'a', right: 'd', shoot: 'w' },
+    { left: 'j', right: 'l', shoot: 'i' },
+    { left: '4', right: '6', shoot: '8' }
+];
+
+const translations = {
+    en: {
+        title: '&#128640; Space Defender', subtitle: 'Destroy enemy ships and survive!',
+        playersTitle: 'Number of Players', modeTitle: 'Game Mode',
+        localMode: 'Local', onlineMode: 'Online',
+        startBtn: 'Start Game', backHomeBtn: 'Back to Home Page',
+        controls1: 'Arrow Keys &#8592; &#8594; to move, Spacebar to shoot',
+        controls2: 'A D to move, W to shoot',
+        controls3: 'J L to move, I to shoot',
+        controls4: 'Numpad 4 6 to move, 8 to shoot',
+        gameOver: 'Game Over', finalScore: 'Final Score',
+        wins: 'Wins! &#127942;', tieGame: 'Tie Game!', playAgain: 'Play Again'
+    },
+    he: {
+        title: '&#128640; &#1502;&#1490;&#1503; &#1492;&#1495;&#1500;&#1500;', subtitle: '&#1492;&#1513;&#1502;&#1491; &#1505;&#1508;&#1497;&#1504;&#1493;&#1514; &#1488;&#1493;&#1497;&#1489; &#1493;&#1513;&#1512;&#1493;&#1491;!',
+        playersTitle: '&#1502;&#1505;&#1508;&#1512; &#1513;&#1495;&#1511;&#1504;&#1497;&#1501;', modeTitle: '&#1502;&#1510;&#1489; &#1502;&#1513;&#1495;&#1511;',
+        localMode: '&#1502;&#1511;&#1493;&#1502;&#1497;', onlineMode: '&#1502;&#1511;&#1493;&#1493;&#1503;',
+        startBtn: '&#1492;&#1514;&#1495;&#1500; &#1502;&#1513;&#1495;&#1511;', backHomeBtn: '&#1495;&#1494;&#1512;&#1492; &#1500;&#1491;&#1507; &#1492;&#1489;&#1497;&#1514;',
+        controls1: '&#1495;&#1510;&#1497;&#1501; &#8592; &#8594; &#1500;&#1492;&#1494;&#1494;&#1492;, &#1512;&#1493;&#1493;&#1495; &#1500;&#1497;&#1512;&#1497;',
+        controls2: 'A D &#1500;&#1492;&#1494;&#1494;&#1492;, W &#1500;&#1497;&#1512;&#1497;',
+        controls3: 'J L &#1500;&#1492;&#1494;&#1494;&#1492;, I &#1500;&#1497;&#1512;&#1497;',
+        controls4: 'Numpad 4 6 &#1500;&#1492;&#1494;&#1494;&#1492;, 8 &#1500;&#1497;&#1512;&#1497;',
+        gameOver: '&#1492;&#1502;&#1513;&#1495;&#1511; &#1504;&#1490;&#1502;&#1512;', finalScore: '&#1504;&#1497;&#1511;&#1493;&#1491; &#1505;&#1493;&#1508;&#1497;',
+        wins: '&#1504;&#1497;&#1510;&#1495;! &#127942;', tieGame: '&#1514;&#1497;&#1511;&#1493;!', playAgain: '&#1513;&#1495;&#1511; &#1513;&#1493;&#1489;'
+    }
+};
+
+// ══════════════════════════════════════════
+// LANGUAGE
+// ══════════════════════════════════════════
+function updateLanguage(lang) {
+    currentLang = lang;
+    const t = translations[lang];
+    document.querySelector('.header h1').innerHTML = t.title;
+    document.querySelector('.header p').innerHTML = t.subtitle;
+    document.getElementById('playersTitle').innerHTML = t.playersTitle;
+    document.getElementById('modeTitle').innerHTML = t.modeTitle;
+    document.getElementById('localModeLabel').innerHTML = t.localMode;
+    document.getElementById('onlineModeLabel').innerHTML = t.onlineMode;
+    document.getElementById('startBtn').innerHTML = t.startBtn;
+    document.getElementById('backHomeBtn').innerHTML = t.backHomeBtn;
+    document.getElementById('controls1Text').innerHTML = t.controls1;
+    document.getElementById('controls2Text').innerHTML = t.controls2;
+    document.getElementById('controls3Text').innerHTML = t.controls3;
+    document.getElementById('controls4Text').innerHTML = t.controls4;
+    document.body.style.direction = lang === 'he' ? 'rtl' : 'ltr';
+}
+
+document.querySelectorAll('.header-lang-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.header-lang-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        updateLanguage(btn.dataset.lang);
+    });
+});
+
+// ══════════════════════════════════════════
+// MODE SWITCHING
+// ══════════════════════════════════════════
+window.selectGameMode = function(mode) {
+    gameMode = mode;
+    document.getElementById('localModeBtn').classList.toggle('active', mode === 'local');
+    document.getElementById('onlineModeBtn').classList.toggle('active', mode === 'online');
+    document.getElementById('localOptions').style.display = mode === 'local' ? 'block' : 'none';
+    document.getElementById('onlineOptions').style.display = mode === 'online' ? 'block' : 'none';
+    document.getElementById('controlsInfo').style.display = mode === 'local' ? 'block' : 'none';
+};
+
+// ══════════════════════════════════════════
+// ONLINE LOBBY
+// ══════════════════════════════════════════
+window.createRoom = function() {
+    document.getElementById('createRoomBtn').disabled = true;
+    currentRoomId = Math.random().toString(36).substr(2, 4).toUpperCase();
+    isHost = true;
+    myPlayerIndex = 0;
+
+    const roomData = {
+        host: myPlayerId,
+        status: 'waiting',
+        created: Date.now(),
+        players: {
+            [myPlayerId]: { name: 'Player 1', index: 0, isHost: true, x: 185, lives: 3, score: 0, alive: true }
         }
+    };
 
-        // Language selection
-        const langBtns = document.querySelectorAll('.header-lang-btn');
-        langBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                langBtns.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                updateLanguage(btn.dataset.lang);
-            });
+    set(ref(db, 'sd_rooms/' + currentRoomId), roomData).then(() => {
+        document.getElementById('createdCode').textContent = currentRoomId;
+        document.getElementById('createdRoomInfo').style.display = 'block';
+        document.getElementById('lobbyPlayersList').style.display = 'block';
+        listenLobby(currentRoomId);
+    }).catch(err => {
+        document.getElementById('createRoomBtn').disabled = false;
+        alert('Error: ' + err.message);
+    });
+};
+
+window.joinRoom = function() {
+    const code = document.getElementById('joinCodeInput').value.toUpperCase().trim();
+    const errEl = document.getElementById('joinError');
+    errEl.textContent = '';
+
+    if (code.length !== 4) { errEl.textContent = 'Enter 4 characters.'; return; }
+    document.getElementById('joinRoomBtn').disabled = true;
+
+    get(ref(db, 'sd_rooms/' + code)).then(snap => {
+        if (!snap.exists()) { errEl.textContent = 'Room not found!'; document.getElementById('joinRoomBtn').disabled = false; return; }
+        const room = snap.val();
+        if (room.status !== 'waiting') { errEl.textContent = 'Game already started!'; document.getElementById('joinRoomBtn').disabled = false; return; }
+
+        const players = room.players || {};
+        const count = Object.keys(players).length;
+        if (count >= 4) { errEl.textContent = 'Room is full!'; document.getElementById('joinRoomBtn').disabled = false; return; }
+
+        currentRoomId = code;
+        isHost = false;
+        myPlayerIndex = count;
+
+        const startX = 740 / (count + 2); // rough initial position
+        set(ref(db, 'sd_rooms/' + code + '/players/' + myPlayerId), {
+            name: 'Player ' + (count + 1),
+            index: count,
+            isHost: false,
+            x: startX * (count + 1),
+            lives: 3, score: 0, alive: true
+        }).then(() => {
+            document.getElementById('createdCode').textContent = currentRoomId;
+            document.getElementById('createdRoomInfo').style.display = 'none';
+            document.getElementById('joinWaitMsg').style.display = 'block';
+            document.getElementById('lobbyPlayersList').style.display = 'block';
+            listenLobby(code);
         });
+    });
+};
 
-        // Detect touch device
-        function checkTouchDevice() {
-            isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
-            if (isTouchDevice && touchControls) {
-                touchControls.classList.add('active');
-            }
-        }
+function listenLobby(roomId) {
+    // Listen player list
+    const playersRef = ref(db, 'sd_rooms/' + roomId + '/players');
+    const unsubPlayers = onValue(playersRef, snap => {
+        const players = snap.val() || {};
+        updateLobbyList(players);
+    });
+    onlineListeners.push(() => off(playersRef));
 
-        // Sound effects
-        const sounds = {
-            shoot: () => {
-                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                const oscillator = audioCtx.createOscillator();
-                const gainNode = audioCtx.createGain();
-                oscillator.connect(gainNode);
-                gainNode.connect(audioCtx.destination);
-                oscillator.frequency.value = 800;
-                oscillator.type = 'square';
-                gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
-                oscillator.start(audioCtx.currentTime);
-                oscillator.stop(audioCtx.currentTime + 0.1);
-            },
-            explosion: () => {
-                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                const oscillator = audioCtx.createOscillator();
-                const gainNode = audioCtx.createGain();
-                oscillator.connect(gainNode);
-                gainNode.connect(audioCtx.destination);
-                oscillator.frequency.value = 200;
-                oscillator.type = 'sawtooth';
-                gainNode.gain.setValueAtTime(0.4, audioCtx.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
-                oscillator.start(audioCtx.currentTime);
-                oscillator.stop(audioCtx.currentTime + 0.3);
-            },
-            hit: () => {
-                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                const oscillator = audioCtx.createOscillator();
-                const gainNode = audioCtx.createGain();
-                oscillator.connect(gainNode);
-                gainNode.connect(audioCtx.destination);
-                oscillator.frequency.value = 150;
-                oscillator.type = 'sine';
-                gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
-                oscillator.start(audioCtx.currentTime);
-                oscillator.stop(audioCtx.currentTime + 0.2);
-            }
-        };
+    // Listen for game start
+    const statusRef = ref(db, 'sd_rooms/' + roomId + '/status');
+    const unsubStatus = onValue(statusRef, snap => {
+        if (snap.val() === 'playing') launchOnlineGame(roomId);
+    });
+    onlineListeners.push(() => off(statusRef));
+}
 
-        // Touch controls
-        let joystickTouch = null;
-        if (touchControls) {
-            const joystickBase = touchControls.querySelector('.joystick-base');
-            
-            joystickBase.addEventListener('touchstart', (e) => {
-                e.preventDefault();
-                joystickTouch = e.touches[0].identifier;
-                updateJoystick(e.touches[0]);
-            });
+function updateLobbyList(players) {
+    const count = Object.keys(players).length;
+    document.getElementById('lobbyPlayerCount').textContent = count;
+    const list = document.getElementById('lobbyPlayers');
+    list.innerHTML = '';
+    Object.values(players).forEach(p => {
+        const div = document.createElement('div');
+        div.className = 'lobby-player-item';
+        div.innerHTML = `<span style="color:${playerColors[p.index] ? playerColors[p.index].fill : '#fbbf24'}">${p.name}</span>
+            <span class="lobby-badge ${p.isHost ? 'host' : ''}">${p.isHost ? '&#128081; Host' : '&#9989; Ready'}</span>`;
+        list.appendChild(div);
+    });
+}
 
-            joystickBase.addEventListener('touchmove', (e) => {
-                e.preventDefault();
-                for (let touch of e.touches) {
-                    if (touch.identifier === joystickTouch) {
-                        updateJoystick(touch);
-                    }
-                }
-            });
-
-            joystickBase.addEventListener('touchend', (e) => {
-                e.preventDefault();
-                joystickTouch = null;
-                touchState.direction = 0;
-                joystickStick.style.transform = 'translate(-50%, -50%)';
-            });
-
-            function updateJoystick(touch) {
-                const rect = joystickBase.getBoundingClientRect();
-                const centerX = rect.left + rect.width / 2;
-                const centerY = rect.top + rect.height / 2;
-                const deltaX = touch.clientX - centerX;
-                const deltaY = touch.clientY - centerY;
-                const distance = Math.min(Math.sqrt(deltaX * deltaX + deltaY * deltaY), 35);
-                const angle = Math.atan2(deltaY, deltaX);
-                
-                const stickX = Math.cos(angle) * distance;
-                const stickY = Math.sin(angle) * distance;
-                joystickStick.style.transform = `translate(calc(-50% + ${stickX}px), calc(-50% + ${stickY}px))`;
-                
-                if (Math.abs(deltaX) > 20) {
-                    touchState.direction = deltaX > 0 ? 1 : -1;
-                } else {
-                    touchState.direction = 0;
-                }
-            }
-
-            touchShoot.addEventListener('touchstart', (e) => {
-                e.preventDefault();
-                touchState.shooting = true;
-                if (gameState && gameState.running) {
-                    gameState.players.forEach(player => {
-                        if (player.alive) {
-                            gameState.bullets.push({
-                                x: player.x,
-                                y: player.y,
-                                playerId: player.id
-                            });
-                            sounds.shoot();
-                        }
-                    });
-                }
-            });
-
-            touchShoot.addEventListener('touchend', (e) => {
-                e.preventDefault();
-                touchState.shooting = false;
-            });
-        }
-
-        const playerColors = [
-            { fill: '#3b82f6', dark: '#2563eb', name: 'P1', class: 'p1' },
-            { fill: '#10b981', dark: '#059669', name: 'P2', class: 'p2' },
-            { fill: '#f59e0b', dark: '#d97706', name: 'P3', class: 'p3' },
-            { fill: '#ec4899', dark: '#db2777', name: 'P4', class: 'p4' }
-        ];
-
-        const playerControls = [
-            { left: 'ArrowLeft', right: 'ArrowRight', shoot: ' ' },
-            { left: 'a', right: 'd', shoot: 'w' },
-            { left: 'j', right: 'l', shoot: 'i' },
-            { left: '4', right: '6', shoot: '8' }
-        ];
-
-        function showPage(pageId) {
-            menuPage.classList.remove('active');
-            gamePage.classList.remove('active');
-            document.getElementById(pageId).classList.add('active');
-            
-            if (pageId === 'gamePage') {
-                header.classList.add('hide');
-            } else {
-                header.classList.remove('hide');
-            }
-        }
-
-        playerBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                playerBtns.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                numPlayers = parseInt(btn.dataset.players);
-                updatePlayerScoreDisplay();
-                for (let i = 1; i <= 4; i++) {
-                    document.getElementById('c' + i).style.display = i <= numPlayers ? 'flex' : 'none';
-                }
-            });
+window.startOnlineGame = function() {
+    if (!currentRoomId || !isHost) return;
+    get(ref(db, 'sd_rooms/' + currentRoomId + '/players')).then(snap => {
+        const count = Object.keys(snap.val() || {}).length;
+        if (count < 2) { alert('Need at least 2 players!'); return; }
+        // Write initial enemy/game state
+        set(ref(db, 'sd_rooms/' + currentRoomId + '/gameData'), {
+            enemies: {}, bullets: {}, startTime: Date.now(), timeRemaining: 60
+        }).then(() => {
+            set(ref(db, 'sd_rooms/' + currentRoomId + '/status'), 'playing');
         });
+    });
+};
 
-        function updatePlayerScoreDisplay() {
-            playerScoresEl.innerHTML = '';
-            for (let i = 0; i < numPlayers; i++) {
-                const div = document.createElement('div');
-                div.className = 'player-info-inline';
-                div.id = 'card' + i;
-                div.innerHTML = `
-                    <div class="name-score"><span class="${playerColors[i].class}">${playerColors[i].name}:</span> <span class="${playerColors[i].class}">0</span></div>
-                    <div class="lives">❤️❤️❤️</div>
-                `;
-                playerScoresEl.appendChild(div);
-            }
+function launchOnlineGame(roomId) {
+    // Stop lobby listeners
+    onlineListeners.forEach(fn => fn());
+    onlineListeners = [];
+
+    get(ref(db, 'sd_rooms/' + roomId + '/players')).then(snap => {
+        const playersData = snap.val() || {};
+        const playerList = Object.entries(playersData).sort((a, b) => a[1].index - b[1].index);
+        numPlayers = playerList.length;
+
+        // Find my index
+        const me = playersData[myPlayerId];
+        if (me) myPlayerIndex = me.index;
+
+        startOnlineGameClient(roomId, playerList);
+    });
+}
+
+// ══════════════════════════════════════════
+// TOUCH / UTILS
+// ══════════════════════════════════════════
+function checkTouchDevice() {
+    isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+    if (isTouchDevice && touchControls) touchControls.classList.add('active');
+}
+
+const sounds = {
+    shoot: () => { try {
+        const a = new (window.AudioContext || window.webkitAudioContext)();
+        const o = a.createOscillator(), g = a.createGain();
+        o.connect(g); g.connect(a.destination);
+        o.frequency.value = 800; o.type = 'square';
+        g.gain.setValueAtTime(0.3, a.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.01, a.currentTime + 0.1);
+        o.start(); o.stop(a.currentTime + 0.1);
+    } catch(e){} },
+    explosion: () => { try {
+        const a = new (window.AudioContext || window.webkitAudioContext)();
+        const o = a.createOscillator(), g = a.createGain();
+        o.connect(g); g.connect(a.destination);
+        o.frequency.value = 200; o.type = 'sawtooth';
+        g.gain.setValueAtTime(0.4, a.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.01, a.currentTime + 0.3);
+        o.start(); o.stop(a.currentTime + 0.3);
+    } catch(e){} },
+    hit: () => { try {
+        const a = new (window.AudioContext || window.webkitAudioContext)();
+        const o = a.createOscillator(), g = a.createGain();
+        o.connect(g); g.connect(a.destination);
+        o.frequency.value = 150; o.type = 'sine';
+        g.gain.setValueAtTime(0.2, a.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.01, a.currentTime + 0.2);
+        o.start(); o.stop(a.currentTime + 0.2);
+    } catch(e){} }
+};
+
+let joystickTouch = null;
+if (touchControls) {
+    const joystickBase = touchControls.querySelector('.joystick-base');
+    joystickBase.addEventListener('touchstart', e => { e.preventDefault(); joystickTouch = e.touches[0].identifier; updateJoystick(e.touches[0]); });
+    joystickBase.addEventListener('touchmove', e => { e.preventDefault(); for (let t of e.touches) if (t.identifier === joystickTouch) updateJoystick(t); });
+    joystickBase.addEventListener('touchend', e => { e.preventDefault(); joystickTouch = null; touchState.direction = 0; joystickStick.style.transform = 'translate(-50%, -50%)'; });
+
+    function updateJoystick(touch) {
+        const rect = touchControls.querySelector('.joystick-base').getBoundingClientRect();
+        const dx = touch.clientX - (rect.left + rect.width / 2);
+        const dy = touch.clientY - (rect.top + rect.height / 2);
+        const dist = Math.min(Math.sqrt(dx*dx+dy*dy), 35);
+        const angle = Math.atan2(dy, dx);
+        joystickStick.style.transform = `translate(calc(-50% + ${Math.cos(angle)*dist}px), calc(-50% + ${Math.sin(angle)*dist}px))`;
+        touchState.direction = Math.abs(dx) > 20 ? (dx > 0 ? 1 : -1) : 0;
+    }
+
+    touchShoot.addEventListener('touchstart', e => {
+        e.preventDefault();
+        if (gameState && gameState.running) {
+            gameState.players.forEach(p => { if (p.alive && (gameMode === 'local' || p.id === myPlayerIndex)) {
+                gameState.bullets.push({ x: p.x, y: p.y, playerId: p.id });
+                if (gameMode === 'online') pushMyBullet(p.x, p.y);
+                sounds.shoot();
+            }});
         }
+    });
+    touchShoot.addEventListener('touchend', e => e.preventDefault());
+}
 
-        function initGame() {
-            const spacing = canvas.width / (numPlayers + 1);
-            const players = [];
-            
-            for (let i = 0; i < numPlayers; i++) {
-                players.push({
-                    id: i,
-                    x: spacing * (i + 1),
-                    y: 440,
-                    speed: 5,
-                    color: playerColors[i],
-                    controls: playerControls[i],
-                    score: 0,
-                    lives: 3,
-                    alive: true
-                });
-            }
-            
-            return {
-                running: false,
-                players: players,
-                bullets: [],
-                enemyMissiles: [],
-                enemies: [],
-                keys: {},
-                lastEnemy: 0,
-                enemyInterval: 1500,
-                startTime: 0,
-                timeRemaining: 60
-            };
-        }
+// ══════════════════════════════════════════
+// PAGE NAVIGATION
+// ══════════════════════════════════════════
+function showPage(pageId) {
+    menuPage.classList.remove('active');
+    gamePage.classList.remove('active');
+    document.getElementById(pageId).classList.add('active');
+    header.classList.toggle('hide', pageId === 'gamePage');
+}
 
-        function updateScoreDisplay() {
-            gameState.players.forEach((player, i) => {
-                const card = document.getElementById('card' + i);
-                if (card) {
-                    const hearts = '❤️'.repeat(Math.max(0, player.lives));
-                    const dead = player.alive ? '' : ' 💀';
-                    card.innerHTML = `
-                        <div class="name-score"><span class="${player.color.class}">${player.color.name}:</span> <span class="${player.color.class}">${player.score}</span></div>
-                        <div class="lives">${hearts}${dead}</div>
-                    `;
-                }
-            });
-        }
-
-        function drawPlayer(player) {
-            if (!player.alive) return;
-            
-            ctx.fillStyle = player.color.fill;
-            ctx.beginPath();
-            ctx.moveTo(player.x, player.y);
-            ctx.lineTo(player.x - 20, player.y + 30);
-            ctx.lineTo(player.x + 20, player.y + 30);
-            ctx.closePath();
-            ctx.fill();
-            
-            ctx.fillStyle = player.color.dark;
-            ctx.fillRect(player.x - 3, player.y + 10, 6, 15);
-        }
-
-        function drawBullet(bullet) {
-            ctx.fillStyle = '#fbbf24';
-            ctx.fillRect(bullet.x - 2, bullet.y, 4, 12);
-        }
-
-        function drawEnemyMissile(missile) {
-            ctx.fillStyle = '#ef4444';
-            ctx.fillRect(missile.x - 2, missile.y, 4, 10);
-        }
-
-        function drawEnemy(enemy) {
-            ctx.fillStyle = enemy.color.fill;
-            ctx.beginPath();
-            ctx.moveTo(enemy.x, enemy.y + enemy.size);
-            ctx.lineTo(enemy.x - enemy.size * 0.7, enemy.y - enemy.size);
-            ctx.lineTo(enemy.x + enemy.size * 0.7, enemy.y - enemy.size);
-            ctx.closePath();
-            ctx.fill();
-            
-            ctx.fillStyle = enemy.color.dark;
-            ctx.fillRect(enemy.x - 2, enemy.y - enemy.size * 0.5, 4, enemy.size * 0.8);
-        }
-
-        function spawnEnemy() {
-            const size = 15 + Math.random() * 15;
-            const enemyColors = [
-                { fill: '#ef4444', dark: '#dc2626' },
-                { fill: '#ec4899', dark: '#db2777' },
-                { fill: '#a855f7', dark: '#9333ea' },
-                { fill: '#06b6d4', dark: '#0891b2' },
-                { fill: '#f59e0b', dark: '#d97706' }
-            ];
-            const color = enemyColors[Math.floor(Math.random() * enemyColors.length)];
-            
-            gameState.enemies.push({
-                x: Math.random() * (canvas.width - size * 2) + size,
-                y: -size,
-                size: size,
-                speed: 1 + Math.random() * 2,
-                color: color,
-                lastShot: 0
-            });
-        }
-
-        function checkWinCondition() {
-            const alive = gameState.players.filter(p => p.alive);
-            
-            if (numPlayers > 1 && alive.length === 1) {
-                endGame(alive[0]);
-                return true;
-            }
-            
-            if (alive.length === 0) {
-                endGame(null);
-                return true;
-            }
-            
-            if (gameState.timeRemaining <= 0) {
-                let winner = gameState.players[0];
-                gameState.players.forEach(p => {
-                    if (p.score > winner.score) winner = p;
-                });
-                endGame(winner);
-                return true;
-            }
-            
-            return false;
-        }
-
-        function update() {
-            if (!gameState || !gameState.running) return;
-            
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            const elapsed = (Date.now() - gameState.startTime) / 1000;
-            gameState.timeRemaining = Math.max(0, 60 - Math.floor(elapsed));
-            timerDisplay.textContent = gameState.timeRemaining;
-            
-            if (checkWinCondition()) return;
-            
-            gameState.players.forEach((player) => {
-                if (!player.alive) return;
-                if (gameState.keys[player.controls.left] && player.x > 20) {
-                    player.x -= player.speed;
-                }
-                if (gameState.keys[player.controls.right] && player.x < canvas.width - 20) {
-                    player.x += player.speed;
-                }
-                
-                // Touch controls (only for player 1 on touch devices)
-                if (isTouchDevice && player.id === 0) {
-                    if (touchState.direction === -1 && player.x > 20) {
-                        player.x -= player.speed;
-                    }
-                    if (touchState.direction === 1 && player.x < canvas.width - 20) {
-                        player.x += player.speed;
-                    }
-                }
-            });
-            
-            for (let i = gameState.bullets.length - 1; i >= 0; i--) {
-                const bullet = gameState.bullets[i];
-                bullet.y -= 8;
-                if (bullet.y < 0) {
-                    gameState.bullets.splice(i, 1);
-                } else {
-                    drawBullet(bullet);
-                }
-            }
-
-            for (let i = gameState.enemyMissiles.length - 1; i >= 0; i--) {
-                const missile = gameState.enemyMissiles[i];
-                missile.y += 3;
-                
-                if (missile.y > canvas.height) {
-                    gameState.enemyMissiles.splice(i, 1);
-                    continue;
-                }
-                
-                let hitPlayer = null;
-                for (const player of gameState.players) {
-                    if (!player.alive) continue;
-                    const dx = missile.x - player.x;
-                    const dy = missile.y - player.y;
-                    if (Math.sqrt(dx * dx + dy * dy) < 20) {
-                        hitPlayer = player;
-                        break;
-                    }
-                }
-                
-                if (hitPlayer) {
-                    gameState.enemyMissiles.splice(i, 1);
-                    hitPlayer.lives--;
-                    if (hitPlayer.lives <= 0) hitPlayer.alive = false;
-                    sounds.hit();
-                    updateScoreDisplay();
-                    continue;
-                }
-                
-                drawEnemyMissile(missile);
-            }
-            
-            const now = Date.now();
-            if (now - gameState.lastEnemy > gameState.enemyInterval) {
-                spawnEnemy();
-                gameState.lastEnemy = now;
-                gameState.enemyInterval = Math.max(400, gameState.enemyInterval - 8);
-            }
-            
-            for (let i = gameState.enemies.length - 1; i >= 0; i--) {
-                const enemy = gameState.enemies[i];
-                enemy.y += enemy.speed;
-                
-                if (now - enemy.lastShot > 2000 && enemy.y > 50 && enemy.y < canvas.height - 100) {
-                    enemy.lastShot = now;
-                    gameState.enemyMissiles.push({ x: enemy.x, y: enemy.y + enemy.size });
-                }
-                
-                if (enemy.y - enemy.size > canvas.height) {
-                    gameState.enemies.splice(i, 1);
-                    continue;
-                }
-                
-                let hitPlayer = null;
-                for (const player of gameState.players) {
-                    if (!player.alive) continue;
-                    const dx = enemy.x - player.x;
-                    const dy = enemy.y - player.y;
-                    if (Math.sqrt(dx * dx + dy * dy) < enemy.size + 15) {
-                        hitPlayer = player;
-                        break;
-                    }
-                }
-                
-                if (hitPlayer) {
-                    gameState.enemies.splice(i, 1);
-                    hitPlayer.lives--;
-                    if (hitPlayer.lives <= 0) hitPlayer.alive = false;
-                    sounds.hit();
-                    updateScoreDisplay();
-                    continue;
-                }
-                
-                let hitBullet = null;
-                let hitBulletPlayer = null;
-                for (let j = gameState.bullets.length - 1; j >= 0; j--) {
-                    const bullet = gameState.bullets[j];
-                    const dx = enemy.x - bullet.x;
-                    const dy = enemy.y - bullet.y;
-                    if (Math.sqrt(dx * dx + dy * dy) < enemy.size) {
-                        hitBullet = j;
-                        hitBulletPlayer = bullet.playerId;
-                        break;
-                    }
-                }
-                
-                if (hitBullet !== null) {
-                    gameState.enemies.splice(i, 1);
-                    gameState.bullets.splice(hitBullet, 1);
-                    gameState.players[hitBulletPlayer].score += Math.round(enemy.size * 2);
-                    sounds.explosion();
-                    updateScoreDisplay();
-                    continue;
-                }
-                
-                drawEnemy(enemy);
-            }
-            
-            gameState.players.forEach(player => drawPlayer(player));
-            
-            if (gameState.running) requestAnimationFrame(update);
-        }
-
-        function startGame() {
-            showPage('gamePage');
-            gameState = initGame();
-            gameState.running = true;
-            gameState.startTime = Date.now();
-            timerDisplay.textContent = '60';
-            updateScoreDisplay();
-            gameOverEl.classList.remove('show');
-            update();
-        }
-
-        function endGame(winner) {
-            gameState.running = false;
-            const sorted = [...gameState.players].sort((a, b) => b.score - a.score);
-            const t = translations[currentLang];
-            
-            if (numPlayers === 1) {
-                winnerTitleEl.textContent = t.gameOver;
-                finalScoresEl.innerHTML = `<div style="font-size: 24px;">${t.finalScore}: ${sorted[0].score}</div>`;
-            } else {
-                if (winner && gameState.timeRemaining > 0) {
-                    winnerTitleEl.textContent = `${winner.color.name} ${t.wins}`;
-                } else if (sorted[0].score > sorted[1].score) {
-                    winnerTitleEl.textContent = `${sorted[0].color.name} ${t.wins}`;
-                } else {
-                    winnerTitleEl.textContent = t.tieGame;
-                }
-                
-                finalScoresEl.innerHTML = sorted.map(p => 
-                    `<div><span class="${p.color.class}">${p.color.name}:</span> ${p.score} ${currentLang === 'he' ? 'נקודות' : 'points'}</div>`
-                ).join('');
-            }
-            
-            gameOverEl.classList.add('show');
-            
-            // Start 5 second countdown
-            let countdown = 5;
-            replayBtn.textContent = `${t.playAgain} (${countdown}s)`;
-            
-            if (autoMenuTimer) clearInterval(autoMenuTimer);
-            autoMenuTimer = setInterval(() => {
-                countdown--;
-                if (countdown > 0) {
-                    replayBtn.textContent = `${t.playAgain} (${countdown}s)`;
-                } else {
-                    clearInterval(autoMenuTimer);
-                    backToMenu();
-                }
-            }, 1000);
-        }
-
-        function backToMenu() {
-            if (autoMenuTimer) {
-                clearInterval(autoMenuTimer);
-                autoMenuTimer = null;
-            }
-            showPage('menuPage');
-            gameOverEl.classList.remove('show');
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-        }
-        
-        function playAgain() {
-            if (autoMenuTimer) {
-                clearInterval(autoMenuTimer);
-                autoMenuTimer = null;
-            }
-            startGame();
-        }
-
-        document.addEventListener('keydown', (e) => {
-            if (!gameState || !gameState.running) return;
-            gameState.keys[e.key] = true;
-            
-            for (const player of gameState.players) {
-                if (!player.alive) continue;
-                if (e.key === player.controls.shoot) {
-                    e.preventDefault();
-                    gameState.bullets.push({ x: player.x, y: player.y, playerId: player.id });
-                    sounds.shoot();
-                }
-            }
-        });
-
-        document.addEventListener('keyup', (e) => {
-            if (gameState) gameState.keys[e.key] = false;
-        });
-
-        startBtn.addEventListener('click', startGame);
-        replayBtn.addEventListener('click', playAgain);
-        
-        const backArrow = document.getElementById('backArrow');
-        if (backArrow) {
-            backArrow.addEventListener('click', backToMenu);
-        }
-
+playerBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+        playerBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        numPlayers = parseInt(btn.dataset.players);
         updatePlayerScoreDisplay();
-        gameState = initGame();
-        checkTouchDevice();
-    </script>
+        for (let i = 1; i <= 4; i++)
+            document.getElementById('c' + i).style.display = i <= numPlayers ? 'flex' : 'none';
+    });
+});
+
+function updatePlayerScoreDisplay() {
+    playerScoresEl.innerHTML = '';
+    for (let i = 0; i < numPlayers; i++) {
+        const div = document.createElement('div');
+        div.className = 'player-info-inline';
+        div.id = 'card' + i;
+        div.innerHTML = `<div class="name-score"><span class="${playerColors[i].class}">${playerColors[i].name}:</span> <span class="${playerColors[i].class}">0</span></div><div class="lives">&#10084;&#65039;&#10084;&#65039;&#10084;&#65039;</div>`;
+        playerScoresEl.appendChild(div);
+    }
+}
+
+// ══════════════════════════════════════════
+// LOCAL GAME (original logic, unchanged)
+// ══════════════════════════════════════════
+function initGame() {
+    const spacing = canvas.width / (numPlayers + 1);
+    const players = [];
+    for (let i = 0; i < numPlayers; i++) {
+        players.push({
+            id: i, x: spacing * (i + 1), y: 440,
+            speed: 5, color: playerColors[i], controls: playerControls[i],
+            score: 0, lives: 3, alive: true
+        });
+    }
+    return { running: false, players, bullets: [], enemyMissiles: [], enemies: [], keys: {}, lastEnemy: 0, enemyInterval: 1500, startTime: 0, timeRemaining: 60 };
+}
+
+function updateScoreDisplay() {
+    gameState.players.forEach((player, i) => {
+        const card = document.getElementById('card' + i);
+        if (card) {
+            const hearts = '&#10084;&#65039;'.repeat(Math.max(0, player.lives));
+            card.innerHTML = `<div class="name-score"><span class="${player.color.class}">${player.color.name}:</span> <span class="${player.color.class}">${player.score}</span></div><div class="lives">${hearts}${player.alive ? '' : ' &#128128;'}</div>`;
+        }
+    });
+}
+
+function drawPlayer(player) {
+    if (!player.alive) return;
+    ctx.fillStyle = player.color.fill;
+    ctx.beginPath();
+    ctx.moveTo(player.x, player.y);
+    ctx.lineTo(player.x - 20, player.y + 30);
+    ctx.lineTo(player.x + 20, player.y + 30);
+    ctx.closePath();
+    ctx.fill();
+    ctx.fillStyle = player.color.dark;
+    ctx.fillRect(player.x - 3, player.y + 10, 6, 15);
+}
+
+function drawBullet(bullet) {
+    ctx.fillStyle = '#fbbf24';
+    ctx.fillRect(bullet.x - 2, bullet.y, 4, 12);
+}
+
+function drawEnemyMissile(missile) {
+    ctx.fillStyle = '#ef4444';
+    ctx.fillRect(missile.x - 2, missile.y, 4, 10);
+}
+
+function drawEnemy(enemy) {
+    ctx.fillStyle = enemy.color.fill;
+    ctx.beginPath();
+    ctx.moveTo(enemy.x, enemy.y + enemy.size);
+    ctx.lineTo(enemy.x - enemy.size * 0.7, enemy.y - enemy.size);
+    ctx.lineTo(enemy.x + enemy.size * 0.7, enemy.y - enemy.size);
+    ctx.closePath();
+    ctx.fill();
+    ctx.fillStyle = enemy.color.dark;
+    ctx.fillRect(enemy.x - 2, enemy.y - enemy.size * 0.5, 4, enemy.size * 0.8);
+}
+
+function spawnEnemy() {
+    const size = 15 + Math.random() * 15;
+    const cols = [
+        { fill: '#ef4444', dark: '#dc2626' }, { fill: '#ec4899', dark: '#db2777' },
+        { fill: '#a855f7', dark: '#9333ea' }, { fill: '#06b6d4', dark: '#0891b2' },
+        { fill: '#f59e0b', dark: '#d97706' }
+    ];
+    const color = cols[Math.floor(Math.random() * cols.length)];
+    gameState.enemies.push({
+        x: Math.random() * (canvas.width - size * 2) + size,
+        y: -size, size, speed: 1 + Math.random() * 2, color, lastShot: 0
+    });
+}
+
+function checkWinCondition() {
+    const alive = gameState.players.filter(p => p.alive);
+    if (numPlayers > 1 && alive.length === 1) { endGame(alive[0]); return true; }
+    if (alive.length === 0) { endGame(null); return true; }
+    if (gameState.timeRemaining <= 0) {
+        let winner = gameState.players[0];
+        gameState.players.forEach(p => { if (p.score > winner.score) winner = p; });
+        endGame(winner);
+        return true;
+    }
+    return false;
+}
+
+function update() {
+    if (!gameState || !gameState.running) return;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    const elapsed = (Date.now() - gameState.startTime) / 1000;
+    gameState.timeRemaining = Math.max(0, 60 - Math.floor(elapsed));
+    timerDisplay.textContent = gameState.timeRemaining;
+
+    if (checkWinCondition()) return;
+
+    gameState.players.forEach(player => {
+        if (!player.alive) return;
+        if (gameState.keys[player.controls.left] && player.x > 20) player.x -= player.speed;
+        if (gameState.keys[player.controls.right] && player.x < canvas.width - 20) player.x += player.speed;
+        if (isTouchDevice && player.id === 0) {
+            if (touchState.direction === -1 && player.x > 20) player.x -= player.speed;
+            if (touchState.direction === 1 && player.x < canvas.width - 20) player.x += player.speed;
+        }
+    });
+
+    for (let i = gameState.bullets.length - 1; i >= 0; i--) {
+        const b = gameState.bullets[i];
+        b.y -= 8;
+        if (b.y < 0) { gameState.bullets.splice(i, 1); continue; }
+        drawBullet(b);
+    }
+
+    for (let i = gameState.enemyMissiles.length - 1; i >= 0; i--) {
+        const m = gameState.enemyMissiles[i];
+        m.y += 3;
+        if (m.y > canvas.height) { gameState.enemyMissiles.splice(i, 1); continue; }
+        let hit = null;
+        for (const p of gameState.players) {
+            if (!p.alive) continue;
+            if (Math.sqrt((m.x-p.x)**2 + (m.y-p.y)**2) < 20) { hit = p; break; }
+        }
+        if (hit) { gameState.enemyMissiles.splice(i, 1); hit.lives--; if (hit.lives <= 0) hit.alive = false; sounds.hit(); updateScoreDisplay(); continue; }
+        drawEnemyMissile(m);
+    }
+
+    const now = Date.now();
+    if (now - gameState.lastEnemy > gameState.enemyInterval) {
+        spawnEnemy();
+        gameState.lastEnemy = now;
+        gameState.enemyInterval = Math.max(400, gameState.enemyInterval - 8);
+    }
+
+    for (let i = gameState.enemies.length - 1; i >= 0; i--) {
+        const e = gameState.enemies[i];
+        e.y += e.speed;
+        if (now - e.lastShot > 2000 && e.y > 50 && e.y < canvas.height - 100) {
+            e.lastShot = now;
+            gameState.enemyMissiles.push({ x: e.x, y: e.y + e.size });
+        }
+        if (e.y - e.size > canvas.height) { gameState.enemies.splice(i, 1); continue; }
+
+        let hitPlayer = null;
+        for (const p of gameState.players) {
+            if (!p.alive) continue;
+            if (Math.sqrt((e.x-p.x)**2 + (e.y-p.y)**2) < e.size + 15) { hitPlayer = p; break; }
+        }
+        if (hitPlayer) { gameState.enemies.splice(i, 1); hitPlayer.lives--; if (hitPlayer.lives <= 0) hitPlayer.alive = false; sounds.hit(); updateScoreDisplay(); continue; }
+
+        let hitBullet = null, hitBulletPlayer = null;
+        for (let j = gameState.bullets.length - 1; j >= 0; j--) {
+            const b = gameState.bullets[j];
+            if (Math.sqrt((e.x-b.x)**2 + (e.y-b.y)**2) < e.size) { hitBullet = j; hitBulletPlayer = b.playerId; break; }
+        }
+        if (hitBullet !== null) {
+            gameState.enemies.splice(i, 1);
+            gameState.bullets.splice(hitBullet, 1);
+            gameState.players[hitBulletPlayer].score += Math.round(e.size * 2);
+            sounds.explosion();
+            updateScoreDisplay();
+            continue;
+        }
+        drawEnemy(e);
+    }
+
+    gameState.players.forEach(p => drawPlayer(p));
+    if (gameState.running) requestAnimationFrame(update);
+}
+
+function startGame() {
+    showPage('gamePage');
+    document.getElementById('onlineBadge').style.display = 'none';
+    gameMode = 'local';
+    gameState = initGame();
+    gameState.running = true;
+    gameState.startTime = Date.now();
+    timerDisplay.textContent = '60';
+    updatePlayerScoreDisplay();
+    updateScoreDisplay();
+    gameOverEl.classList.remove('show');
+    update();
+}
+
+function endGame(winner) {
+    gameState.running = false;
+    const sorted = [...gameState.players].sort((a, b) => b.score - a.score);
+    const t = translations[currentLang];
+
+    if (numPlayers === 1) {
+        winnerTitleEl.textContent = t.gameOver;
+        finalScoresEl.innerHTML = `<div style="font-size:24px;">${t.finalScore}: ${sorted[0].score}</div>`;
+    } else {
+        if (winner && gameState.timeRemaining > 0) winnerTitleEl.innerHTML = `${winner.color.name} ${t.wins}`;
+        else if (sorted[0].score > sorted[1].score) winnerTitleEl.innerHTML = `${sorted[0].color.name} ${t.wins}`;
+        else winnerTitleEl.innerHTML = t.tieGame;
+        finalScoresEl.innerHTML = sorted.map(p => `<div><span class="${p.color.class}">${p.color.name}:</span> ${p.score} ${currentLang === 'he' ? '&#1504;&#1511;&#1493;&#1491;&#1493;&#1514;' : 'points'}</div>`).join('');
+    }
+
+    gameOverEl.classList.add('show');
+    let countdown = 5;
+    replayBtn.textContent = `${t.playAgain} (${countdown}s)`;
+    if (autoMenuTimer) clearInterval(autoMenuTimer);
+    autoMenuTimer = setInterval(() => {
+        countdown--;
+        if (countdown > 0) replayBtn.textContent = `${t.playAgain} (${countdown}s)`;
+        else { clearInterval(autoMenuTimer); backToMenu(); }
+    }, 1000);
+}
+
+function backToMenu() {
+    if (autoMenuTimer) { clearInterval(autoMenuTimer); autoMenuTimer = null; }
+    if (gameMode === 'online') cleanupOnline();
+    showPage('menuPage');
+    gameOverEl.classList.remove('show');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+function playAgain() {
+    if (autoMenuTimer) { clearInterval(autoMenuTimer); autoMenuTimer = null; }
+    if (gameMode === 'local') startGame();
+    else backToMenu();
+}
+
+// ══════════════════════════════════════════
+// ONLINE GAME CLIENT
+// ══════════════════════════════════════════
+function startOnlineGameClient(roomId, playerList) {
+    showPage('gamePage');
+    document.getElementById('onlineBadge').style.display = 'block';
+
+    numPlayers = playerList.length;
+    updatePlayerScoreDisplay();
+
+    const spacing = canvas.width / (numPlayers + 1);
+    const players = playerList.map(([pid, pdata], idx) => ({
+        id: idx,
+        firebaseId: pid,
+        x: spacing * (idx + 1),
+        y: 440,
+        speed: 5,
+        color: playerColors[idx],
+        controls: playerControls[idx],
+        score: pdata.score || 0,
+        lives: 3,
+        alive: true,
+        isMe: pid === myPlayerId
+    }));
+
+    gameState = {
+        running: true,
+        players,
+        bullets: [],
+        enemyMissiles: [],
+        enemies: [],
+        keys: {},
+        lastEnemy: 0,
+        enemyInterval: 1500,
+        startTime: Date.now(),
+        timeRemaining: 60
+    };
+
+    gameOverEl.classList.remove('show');
+
+    // Host manages enemies; all clients sync their own ship + bullets
+    const myPlayer = players.find(p => p.isMe);
+
+    // Listen to other players' positions
+    const shipsRef = ref(db, 'sd_rooms/' + roomId + '/ships');
+    onValue(shipsRef, snap => {
+        const ships = snap.val() || {};
+        players.forEach(p => {
+            if (!p.isMe && ships[p.firebaseId]) {
+                p.x = ships[p.firebaseId].x;
+                p.lives = ships[p.firebaseId].lives;
+                p.score = ships[p.firebaseId].score;
+                p.alive = ships[p.firebaseId].alive;
+            }
+        });
+    });
+    onlineListeners.push(() => off(shipsRef));
+
+    // Listen to enemies (host writes, all read)
+    const enemiesRef = ref(db, 'sd_rooms/' + roomId + '/liveEnemies');
+    onValue(enemiesRef, snap => {
+        if (!isHost) {
+            const data = snap.val();
+            if (data) {
+                gameState.enemies = Object.values(data).filter(e => e.alive !== false);
+            } else {
+                gameState.enemies = [];
+            }
+        }
+    });
+    onlineListeners.push(() => off(enemiesRef));
+
+    // Listen to remote bullets
+    const bulletsRef = ref(db, 'sd_rooms/' + roomId + '/liveBullets');
+    onValue(bulletsRef, snap => {
+        const data = snap.val() || {};
+        // Merge remote bullets (not mine) into local
+        const remoteBullets = Object.entries(data)
+            .filter(([bid]) => !bid.startsWith('my_' + myPlayerId))
+            .map(([bid, b]) => ({ ...b, _remoteId: bid }));
+        gameState.bullets = [
+            ...gameState.bullets.filter(b => !b._remoteId),
+            ...remoteBullets
+        ];
+    });
+    onlineListeners.push(() => off(bulletsRef));
+
+    // Listen for game end signal
+    const endRef = ref(db, 'sd_rooms/' + roomId + '/gameEnd');
+    onValue(endRef, snap => {
+        if (snap.val() && gameState.running) {
+            gameState.running = false;
+            showOnlineResults(snap.val());
+        }
+    });
+    onlineListeners.push(() => off(endRef));
+
+    updateOnlineLoop(roomId, myPlayer);
+}
+
+function updateOnlineLoop(roomId, myPlayer) {
+    if (!gameState || !gameState.running) return;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    const elapsed = (Date.now() - gameState.startTime) / 1000;
+    gameState.timeRemaining = Math.max(0, 60 - Math.floor(elapsed));
+    timerDisplay.textContent = gameState.timeRemaining;
+
+    // Move my ship
+    if (myPlayer && myPlayer.alive) {
+        if (gameState.keys[myPlayer.controls.left] && myPlayer.x > 20) myPlayer.x -= myPlayer.speed;
+        if (gameState.keys[myPlayer.controls.right] && myPlayer.x < canvas.width - 20) myPlayer.x += myPlayer.speed;
+        if (isTouchDevice && myPlayer.id === 0) {
+            if (touchState.direction === -1 && myPlayer.x > 20) myPlayer.x -= myPlayer.speed;
+            if (touchState.direction === 1 && myPlayer.x < canvas.width - 20) myPlayer.x += myPlayer.speed;
+        }
+    }
+
+    // Push my ship every 3 frames
+    const now = Date.now();
+    if (myPlayer && now - lastPushTime > 50) {
+        lastPushTime = now;
+        fbUpdate(ref(db, 'sd_rooms/' + roomId + '/ships/' + myPlayerId), {
+            x: myPlayer.x, lives: myPlayer.lives, score: myPlayer.score, alive: myPlayer.alive
+        });
+    }
+
+    // Host: spawn and move enemies
+    if (isHost) {
+        if (now - gameState.lastEnemy > gameState.enemyInterval) {
+            const size = 15 + Math.random() * 15;
+            const cols = [
+                { fill: '#ef4444', dark: '#dc2626' }, { fill: '#a855f7', dark: '#9333ea' }
+            ];
+            const color = cols[Math.floor(Math.random() * cols.length)];
+            const eid = 'e_' + now;
+            const enemy = { id: eid, x: Math.random() * (canvas.width - size*2) + size, y: -size, size, speed: 1 + Math.random() * 2, fill: color.fill, dark: color.dark, lastShot: 0, alive: true };
+            gameState.enemies.push(enemy);
+            gameState.lastEnemy = now;
+            gameState.enemyInterval = Math.max(400, gameState.enemyInterval - 8);
+        }
+
+        // Move enemies and push to Firebase
+        const enemyUpdates = {};
+        for (let i = gameState.enemies.length - 1; i >= 0; i--) {
+            const e = gameState.enemies[i];
+            e.y += e.speed;
+
+            // Enemy shoots
+            if (now - e.lastShot > 2000 && e.y > 50 && e.y < canvas.height - 100) {
+                e.lastShot = now;
+                gameState.enemyMissiles.push({ x: e.x, y: e.y + e.size });
+            }
+
+            if (e.y - e.size > canvas.height) {
+                e.alive = false;
+                gameState.enemies.splice(i, 1);
+            } else {
+                enemyUpdates[e.id] = { x: e.x, y: e.y, size: e.size, speed: e.speed, fill: e.fill, dark: e.dark, alive: true };
+            }
+
+            // Check bullet hits (host decides)
+            for (let j = gameState.bullets.length - 1; j >= 0; j--) {
+                const b = gameState.bullets[j];
+                if (Math.sqrt((e.x-b.x)**2 + (e.y-b.y)**2) < e.size) {
+                    const shooter = gameState.players.find(p => p.id === b.playerId);
+                    if (shooter) { shooter.score += Math.round(e.size * 2); sounds.explosion(); }
+                    e.alive = false;
+                    gameState.enemies.splice(i, 1);
+                    gameState.bullets.splice(j, 1);
+                    break;
+                }
+            }
+        }
+        if (Object.keys(enemyUpdates).length > 0 && now - lastPushTime < 100)
+            set(ref(db, 'sd_rooms/' + roomId + '/liveEnemies'), enemyUpdates);
+    }
+
+    // Draw enemies
+    gameState.enemies.forEach(e => {
+        ctx.fillStyle = e.fill || e.color?.fill || '#ef4444';
+        ctx.beginPath();
+        ctx.moveTo(e.x, e.y + e.size);
+        ctx.lineTo(e.x - e.size * 0.7, e.y - e.size);
+        ctx.lineTo(e.x + e.size * 0.7, e.y - e.size);
+        ctx.closePath();
+        ctx.fill();
+    });
+
+    // Move & draw enemy missiles
+    for (let i = gameState.enemyMissiles.length - 1; i >= 0; i--) {
+        const m = gameState.enemyMissiles[i];
+        m.y += 3;
+        if (m.y > canvas.height) { gameState.enemyMissiles.splice(i, 1); continue; }
+        if (myPlayer && myPlayer.alive && Math.sqrt((m.x-myPlayer.x)**2 + (m.y-myPlayer.y)**2) < 20) {
+            gameState.enemyMissiles.splice(i, 1);
+            myPlayer.lives--;
+            if (myPlayer.lives <= 0) myPlayer.alive = false;
+            sounds.hit();
+        } else {
+            drawEnemyMissile(m);
+        }
+    }
+
+    // Draw bullets
+    gameState.bullets.forEach(b => drawBullet(b));
+    // Move my bullets
+    for (let i = gameState.bullets.length - 1; i >= 0; i--) {
+        const b = gameState.bullets[i];
+        if (!b._remoteId) { b.y -= 8; if (b.y < 0) { gameState.bullets.splice(i, 1); remove(ref(db, 'sd_rooms/' + roomId + '/liveBullets/my_' + myPlayerId + '_' + i)); } }
+    }
+
+    // Draw all ships
+    gameState.players.forEach(p => drawPlayer(p));
+    updateScoreDisplay();
+
+    // Check end
+    const alive = gameState.players.filter(p => p.alive);
+    if ((numPlayers > 1 && alive.length <= 1) || gameState.timeRemaining <= 0) {
+        if (isHost) {
+            const sorted = [...gameState.players].sort((a, b) => b.score - a.score);
+            set(ref(db, 'sd_rooms/' + roomId + '/gameEnd'), {
+                winnerId: alive[0]?.id ?? null,
+                scores: gameState.players.map(p => ({ name: p.color.name, score: p.score, colorClass: p.color.class }))
+            });
+        }
+        return;
+    }
+
+    if (gameState.running) requestAnimationFrame(() => updateOnlineLoop(roomId, myPlayer));
+}
+
+function pushMyBullet(x, y) {
+    if (!currentRoomId) return;
+    const bid = 'my_' + myPlayerId + '_' + Date.now();
+    set(ref(db, 'sd_rooms/' + currentRoomId + '/liveBullets/' + bid), { x, y, playerId: myPlayerIndex });
+    setTimeout(() => remove(ref(db, 'sd_rooms/' + currentRoomId + '/liveBullets/' + bid)), 3000);
+}
+
+function showOnlineResults(endData) {
+    const t = translations[currentLang];
+    if (endData.winnerId !== null && endData.winnerId !== undefined) {
+        const w = gameState.players[endData.winnerId];
+        if (w) winnerTitleEl.innerHTML = `${w.color.name} ${t.wins}`;
+    } else {
+        winnerTitleEl.innerHTML = t.tieGame;
+    }
+    finalScoresEl.innerHTML = (endData.scores || []).map(s =>
+        `<div><span class="${s.colorClass}">${s.name}:</span> ${s.score} points</div>`
+    ).join('');
+    gameOverEl.classList.add('show');
+
+    let countdown = 5;
+    replayBtn.textContent = `${t.playAgain} (${countdown}s)`;
+    if (autoMenuTimer) clearInterval(autoMenuTimer);
+    autoMenuTimer = setInterval(() => {
+        countdown--;
+        if (countdown > 0) replayBtn.textContent = `${t.playAgain} (${countdown}s)`;
+        else { clearInterval(autoMenuTimer); backToMenu(); }
+    }, 1000);
+}
+
+function cleanupOnline() {
+    onlineListeners.forEach(fn => fn());
+    onlineListeners = [];
+    if (currentRoomId) {
+        remove(ref(db, 'sd_rooms/' + currentRoomId + '/players/' + myPlayerId));
+        currentRoomId = null;
+    }
+    isHost = false;
+    // Reset lobby UI
+    document.getElementById('createRoomBtn').disabled = false;
+    document.getElementById('joinRoomBtn').disabled = false;
+    document.getElementById('createdRoomInfo').style.display = 'none';
+    document.getElementById('lobbyPlayersList').style.display = 'none';
+    document.getElementById('joinWaitMsg').style.display = 'none';
+    document.getElementById('joinError').textContent = '';
+    document.getElementById('joinCodeInput').value = '';
+}
+
+// ══════════════════════════════════════════
+// KEYBOARD
+// ══════════════════════════════════════════
+document.addEventListener('keydown', e => {
+    if (!gameState || !gameState.running) return;
+    gameState.keys[e.key] = true;
+
+    if (gameMode === 'local') {
+        for (const player of gameState.players) {
+            if (!player.alive) continue;
+            if (e.key === player.controls.shoot) {
+                e.preventDefault();
+                gameState.bullets.push({ x: player.x, y: player.y, playerId: player.id });
+                sounds.shoot();
+            }
+        }
+    } else {
+        const me = gameState.players[myPlayerIndex];
+        if (me && me.alive && e.key === me.controls.shoot) {
+            e.preventDefault();
+            gameState.bullets.push({ x: me.x, y: me.y, playerId: me.id });
+            pushMyBullet(me.x, me.y);
+            sounds.shoot();
+        }
+    }
+});
+
+document.addEventListener('keyup', e => { if (gameState) gameState.keys[e.key] = false; });
+
+// ══════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════
+startBtn.addEventListener('click', startGame);
+replayBtn.addEventListener('click', playAgain);
+document.getElementById('backArrow').addEventListener('click', backToMenu);
+
+updatePlayerScoreDisplay();
+gameState = initGame();
+checkTouchDevice();
+</script>
 </body>
 </html>
