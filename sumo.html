@@ -755,11 +755,11 @@ window.online = {
   _guestInputs: {},
   _stateCallback: null,
 
-  // Host: listen for guest inputs
+  // Host: listen for guest inputs (all 4 slots)
   listenInputs(numPlayers) {
-    for (let i = 1; i < numPlayers; i++) {
+    for (let i = 1; i <= 3; i++) {
       const r = ref(db, `sumo/${this.roomCode}/input/${i}`);
-      const unsub = onValue(r, snap => {
+      onValue(r, snap => {
         const v = snap.val();
         if (v) this._guestInputs[i] = v;
       });
@@ -901,6 +901,7 @@ const T = {
     roomFull:       'Room not found or full.',
     connecting:     'Connecting…',
     onlineLabel:    (me, code) => `🌐 Online · Room ${code} · You are P${me+1}`,
+    players:        'players',
   },
   he: {
     title:          'קרב התאבקות',
@@ -934,6 +935,7 @@ const T = {
     roomFull:       'החדר לא נמצא או מלא.',
     connecting:     'מתחבר…',
     onlineLabel:    (me, code) => `🌐 אונליין · חדר ${code} · אתה P${me+1}`,
+    players:        'שחקנים',
   }
 };
 
@@ -995,19 +997,41 @@ async function createRoom() {
   if (!window.fbCreateRoom) { alert('Firebase not loaded yet, please wait…'); return; }
   document.getElementById('createPane').style.display = 'none';
   document.getElementById('waitingPane').style.display = 'block';
+  // Remove any previous start btn
+  const oldBtn = document.getElementById('hostStartBtn');
+  if (oldBtn) oldBtn.remove();
   try {
     const code = await window.fbCreateRoom(numPlayers);
     document.getElementById('roomCodeDisplay').textContent = code;
     document.getElementById('waitingMsg').textContent = t('waitingPlayers');
+
+    // Add a "Start Game" button for host — enabled when ≥2 players joined
+    const startBtn = document.createElement('button');
+    startBtn.id = 'hostStartBtn';
+    startBtn.className = 'btn';
+    startBtn.style.cssText = 'margin-top:10px;display:none;font-size:0.8rem;padding:8px 20px;';
+    startBtn.textContent = t('startGame');
+    startBtn.onclick = () => {
+      window.fbStartGame(code, Object.keys(_roomPlayers).length);
+      startOnlineGame(true, Object.keys(_roomPlayers).length);
+    };
+    document.getElementById('waitingPane').appendChild(startBtn);
+
+    let _roomPlayers = { 0: true };
     // Listen for players joining
     window.online.listenRoom(room => {
-      const joined = Object.keys(room.players || {}).length;
+      _roomPlayers = room.players || { 0: true };
+      const joined = Object.keys(_roomPlayers).length;
+      const max = room.numPlayers;
       document.getElementById('waitingMsg').textContent =
-        `${joined} / ${room.numPlayers} ${t('waitingPlayers')}`;
-      if (joined >= room.numPlayers) {
-        // All players joined — start!
-        window.fbStartGame(code, numPlayers);
-        startOnlineGame(true, numPlayers);
+        `${joined} / ${max} ${t('waitingPlayers')}`;
+      // Show start button when ≥2 players are in
+      startBtn.style.display = joined >= 2 ? 'block' : 'none';
+      startBtn.textContent = `${t('startGame')} (${joined} ${t('players')})`;
+      // Auto-start when room is full
+      if (joined >= max) {
+        window.fbStartGame(code, joined);
+        startOnlineGame(true, joined);
       }
     });
   } catch(e) {
@@ -1053,13 +1077,12 @@ function startOnlineGame(isHost, np) {
   const st = document.getElementById('onlineStatus');
   st.textContent = t('onlineLabel', window.online.myIndex, window.online.roomCode);
   st.classList.add('show');
-  // If host, start listening to guest inputs
+  // If host, start listening to all guest inputs
   if (isHost) window.online.listenInputs(np);
-  // If guest, listen to game state
+  // If guest, listen to game state from host
   if (!isHost) {
     window.online.listenState(snap => {
       if (!snap || !snap.pl) return;
-      // Apply state to players array
       for (let i = 0; i < snap.pl.length && i < players.length; i++) {
         const sp = snap.pl[i];
         players[i].x = sp.x; players[i].y = sp.y;
@@ -1075,7 +1098,17 @@ function startOnlineGame(isHost, np) {
   buildUI();
   hideOverlay();
   document.getElementById('backToStartArrow').style.display = 'flex';
-  startRound();
+  // Reset players and mark remote slots as non-AI
+  resetPlayers();
+  for (let i = 0; i < players.length; i++) {
+    players[i].isAI = false; // all slots are human online
+  }
+  updateDots();
+  initJoysticks();
+  showControlsPopup();
+  gameActive = true;
+  if (animId) cancelAnimationFrame(animId);
+  loop();
 }
 
 let numPlayers = 2;
