@@ -354,14 +354,6 @@ html[dir=ltr] .ans-btn{text-align:left}
     </div>
   </div>
 
-  <div class="card">
-    <div class="card-title" data-he="🌐 שפת שאלות" data-en="🌐 QUESTION LANGUAGE">🌐 שפת שאלות</div>
-    <div class="pill-group" id="lqlangGroup">
-      <button class="pill active" data-val="he" data-he="🇮🇱 עברית" data-en="🇮🇱 Hebrew">🇮🇱 עברית</button>
-      <button class="pill"        data-val="en" data-he="🇺🇸 אנגלית" data-en="🇺🇸 English">🇺🇸 אנגלית</button>
-    </div>
-  </div>
-
   <button class="btn-main" onclick="startLocalGame()">
     <span data-he="🚀 התחל!" data-en="🚀 START!">🚀 התחל!</span>
   </button>
@@ -442,14 +434,6 @@ html[dir=ltr] .ans-btn{text-align:left}
       <button class="pill"        data-val-he="קל"     data-val-en="Easy"   data-he="😊 קל"    data-en="😊 Easy">😊 קל</button>
       <button class="pill"        data-val-he="בינוני" data-val-en="Medium" data-he="🤔 בינוני" data-en="🤔 Medium">🤔 בינוני</button>
       <button class="pill"        data-val-he="קשה"    data-val-en="Hard"   data-he="🔥 קשה"   data-en="🔥 Hard">🔥 קשה</button>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="card-title" data-he="🌐 שפת שאלות" data-en="🌐 QUESTION LANGUAGE">🌐 שפת שאלות</div>
-    <div class="pill-group" id="oqlangGroup">
-      <button class="pill active" data-val="he" data-he="🇮🇱 עברית" data-en="🇮🇱 Hebrew">🇮🇱 עברית</button>
-      <button class="pill"        data-val="en" data-he="🇺🇸 אנגלית" data-en="🇺🇸 English">🇺🇸 אנגלית</button>
     </div>
   </div>
 
@@ -634,6 +618,8 @@ const fbReady = new Promise(resolve => {
 let lang='he';
 function toggleLang(){
   lang=lang==='he'?'en':'he';
+  questionLang=lang;
+  bankLoaded=false; questionBank=[];
   const r=document.getElementById('htmlRoot');
   r.setAttribute('lang',lang); r.setAttribute('dir',lang==='he'?'rtl':'ltr');
   document.getElementById('langBtn').textContent=lang==='he'?'🇺🇸':'🇮🇱';
@@ -665,13 +651,11 @@ function setupPills(id,cb){
   });
 }
 let localNum=10, onlineNum=15;
-let questionLang='he';
+let questionLang=lang;
 setupPills('lcatGroup'); setupPills('ldiffGroup');
 setupPills('lnumGroup', v=>localNum=parseInt(v));
-setupPills('lqlangGroup', v=>questionLang=v);
 setupPills('ocatGroup'); setupPills('odiffGroup');
 setupPills('onumGroup', v=>onlineNum=parseInt(v));
-setupPills('oqlangGroup', v=>questionLang=v);
 
 // ── nav ──
 function showPage(id){
@@ -815,7 +799,7 @@ async function createRoom(){
       cat:pillVal('ocatGroup')||'General',
       diff:pillVal('odiffGroup')||'Mixed',
       numQ:onlineNum,lang,
-      questionLang:pillVal('oqlangGroup')||'he',
+      questionLang:questionLang,
       created:FL.serverTimestamp()
     });
     await FL.set(FL.ref(db,'rooms/'+code+'/players/'+myId),{
