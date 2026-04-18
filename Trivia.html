@@ -266,7 +266,7 @@ html[dir=ltr] .ans-btn{text-align:left}
 
 <div class="top-controls">
   <button class="ctrl-btn" id="soundBtn" onclick="toggleSound()">🔊</button>
-  <button class="ctrl-btn" id="langBtn"  onclick="toggleLang()">🇺🇸</button>
+  <button class="ctrl-btn" id="langBtn"  onclick="toggleLang()" style="background:#fff;border-color:#fff;color:#000">🇺🇸</button>
 </div>
 <div class="toast" id="toast"></div>
 
@@ -620,10 +620,18 @@ function toggleLang(){
   lang=lang==='he'?'en':'he';
   questionLang=lang;
   bankLoaded=false; questionBank=[];
+  playerQueues=playerQueues.map(()=>null);
+  nextQCache=null;
   const r=document.getElementById('htmlRoot');
   r.setAttribute('lang',lang); r.setAttribute('dir',lang==='he'?'rtl':'ltr');
   document.getElementById('langBtn').textContent=lang==='he'?'🇺🇸':'🇮🇱';
   applyLang(); syncPills(); buildLocalPlayersList(); playClick();
+  // If mid-game and question not yet answered, reload in new language
+  const gamePage=document.getElementById('pageGame');
+  if(gamePage&&gamePage.classList.contains('active')&&!answered){
+    if(mode==='local') playerQueues[localCurPlayer]=null;
+    loadQuestionBank().then(()=>loadQ()).catch(()=>{});
+  }
 }
 function applyLang(){
   document.querySelectorAll('[data-he][data-en]').forEach(el=>el.innerHTML=el.getAttribute('data-'+lang));
