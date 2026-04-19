@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>SHOOT FIGHT</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.2/peerjs.min.js"></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Orbitron:wght@400;700;900&display=swap');
   *{margin:0;padding:0;box-sizing:border-box;}
@@ -114,6 +115,39 @@
     #title{font-size:26px;margin-bottom:2px;}
     #back-arrow{top:8px;left:8px;width:36px;height:36px;font-size:17px;}
   }
+
+  /* ── GAME MODE TABS ── */
+  .tab-row{display:flex;gap:0;margin-top:12px;border:1px solid #2a2a2a;border-radius:8px;overflow:hidden;}
+  .tab-btn{padding:9px 22px;border:none;background:#0d0d0d;
+    font-family:'Orbitron',monospace;font-size:9px;letter-spacing:3px;color:#555;
+    cursor:pointer;transition:all .15s;flex:1;}
+  .tab-btn.active{background:#1a0a0a;color:#ff4444;}
+  .tab-btn:hover:not(.active){color:#888;background:#111;}
+
+  /* ── ONLINE SECTION ── */
+  #online-section{display:none;flex-direction:column;align-items:center;gap:10px;margin-top:12px;width:100%;}
+  .host-join-row{display:flex;gap:10px;justify-content:center;}
+  .hj-btn{padding:9px 22px;border-radius:7px;border:2px solid #2a2a2a;background:#0d0d0d;
+    font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;color:#555;cursor:pointer;transition:all .15s;}
+  .hj-btn.active{border-color:#44aaff;color:#44aaff;background:#00111f;}
+  .hj-btn:hover:not(.active){border-color:#555;color:#888;}
+  #room-code-display{font-family:'Bebas Neue',sans-serif;font-size:56px;letter-spacing:18px;
+    color:#44aaff;text-shadow:0 0 20px rgba(68,170,255,.35);text-align:center;cursor:pointer;
+    padding:4px 12px;border:1px dashed #1a3a5a;border-radius:6px;}
+  #room-code-display:hover{background:rgba(68,170,255,.06);}
+  #room-code-hint{font-size:8px;letter-spacing:2px;color:#444;text-align:center;}
+  #room-input{background:#0d0d0d;border:2px solid #2a2a2a;color:#44aaff;
+    font-family:'Bebas Neue',sans-serif;font-size:38px;letter-spacing:14px;
+    text-align:center;width:200px;padding:6px 10px;border-radius:6px;outline:none;text-transform:uppercase;}
+  #room-input:focus{border-color:#44aaff;box-shadow:0 0 12px rgba(68,170,255,.2);}
+  #online-status{font-size:10px;letter-spacing:2px;min-height:20px;text-align:center;color:#666;}
+  #online-status.ok{color:#44dd88;}#online-status.err{color:#ff5544;}#online-status.wait{color:#ffaa44;}
+  #join-btn{padding:10px 32px;background:transparent;border:2px solid #44aaff;
+    color:#44aaff;font-family:'Orbitron',monospace;font-size:10px;letter-spacing:4px;
+    cursor:pointer;transition:all .2s;border-radius:4px;}
+  #join-btn:hover{background:#44aaff;color:#000;}
+  #connected-players{font-size:9px;letter-spacing:2px;color:#555;text-align:center;}
+  #connected-players span{color:#44dd88;}
 </style>
 </head>
 <body>
@@ -136,7 +170,13 @@
     text-align:center;width:100%;">SHOOT FIGHT</h1>
   <p id="main-subtitle" style="font-size:9px;letter-spacing:4px;color:#444;text-align:center;width:100%;">ARENA SHOOTER · 60 SEC · MOST KILLS WINS</p>
 
-  <!-- Player count picker — hidden when showing end-of-game result -->
+  <!-- Game mode tabs: Local / Online -->
+  <div class="tab-row">
+    <button class="tab-btn active" id="tab-local" onclick="switchTab('local')">🎮 LOCAL</button>
+    <button class="tab-btn"        id="tab-online" onclick="switchTab('online')">🌐 ONLINE</button>
+  </div>
+
+  <!-- LOCAL: Player count picker -->
   <div id="setup-section">
     <div id="num-players-label" style="font-size:8px;letter-spacing:4px;color:#555;margin-top:14px;margin-bottom:0;text-align:center;width:100%;">NUMBER OF PLAYERS</div>
     <div id="pcount-row">
@@ -147,7 +187,43 @@
     <div id="char-rows"></div>
   </div>
 
-  <button id="start-btn" onclick="startGame()">START GAME</button>
+  <!-- ONLINE section -->
+  <div id="online-section">
+    <div class="host-join-row">
+      <button class="hj-btn active" id="hj-host" onclick="selectHostJoin('host')">CREATE ROOM</button>
+      <button class="hj-btn"        id="hj-join" onclick="selectHostJoin('join')">JOIN ROOM</button>
+    </div>
+
+    <!-- Host view -->
+    <div id="host-view">
+      <div style="font-size:8px;letter-spacing:3px;color:#555;margin-bottom:6px">HOW MANY PLAYERS?</div>
+      <div id="online-pcount-row" style="display:flex;gap:8px;justify-content:center;margin-bottom:10px">
+        <div class="pcount-btn" data-on="2" style="width:50px;height:50px" onclick="setOnlinePlayers(2)"><span class="num">2</span></div>
+        <div class="pcount-btn active" data-on="3" style="width:50px;height:50px" onclick="setOnlinePlayers(3)"><span class="num">3</span></div>
+        <div class="pcount-btn" data-on="4" style="width:50px;height:50px" onclick="setOnlinePlayers(4)"><span class="num">4</span></div>
+      </div>
+      <div id="room-code-display" onclick="copyRoomCode()" title="Click to copy">----</div>
+      <div id="room-code-hint">SHARE THIS CODE · CLICK TO COPY</div>
+      <div id="player-slots" style="display:flex;gap:8px;justify-content:center;margin-top:8px;flex-wrap:wrap"></div>
+      <div id="connected-players" style="margin-top:4px"></div>
+    </div>
+
+    <!-- Join view -->
+    <div id="join-view" style="display:none;flex-direction:column;align-items:center;gap:8px;">
+      <div style="font-size:8px;letter-spacing:3px;color:#555">ENTER ROOM CODE</div>
+      <input id="room-input" maxlength="4" placeholder="CODE" oninput="this.value=this.value.toUpperCase().replace(/[^A-Z0-9]/g,'')"/>
+      <button id="join-btn" onclick="joinRoom()">JOIN</button>
+      <!-- Character select for guest -->
+      <div id="guest-char-select" style="display:none;flex-direction:column;align-items:center;gap:6px;margin-top:4px">
+        <div style="font-size:8px;letter-spacing:3px;color:#555">CHOOSE YOUR CHARACTER</div>
+        <div id="guest-char-row" style="display:flex;gap:8px;justify-content:center"></div>
+      </div>
+    </div>
+
+    <div id="online-status"></div>
+  </div>
+
+  <button id="start-btn" onclick="gameMode==='online'?startOnlineGameHost():startGame()">START GAME</button>
   <button id="home-page-btn" onclick="try{window.top.location.replace('https://arnonmaya.github.io/games/')}catch(e){window.location.replace('https://arnonmaya.github.io/games/')}" style="margin-top:10px;padding:9px 32px;background:transparent;border:1px solid #444;color:#666;font-family:'Orbitron',monospace;font-size:9px;letter-spacing:3px;cursor:pointer;transition:all .2s;display:block;margin-left:auto;margin-right:auto;" onmouseover="this.style.borderColor='#888';this.style.color='#aaa'" onmouseout="this.style.borderColor='#444';this.style.color='#666'">← BACK TO HOME PAGE</button>
 
   <div id="winner-text"></div>
@@ -495,11 +571,17 @@ let overlayMode='setup'; // 'setup' | 'result'
 function showSetupScreen(){
   overlayMode='setup';
   hideBackArrow();
+  destroyPeer();
+  gameMode='local';
+  document.getElementById('tab-local').classList.add('active');
+  document.getElementById('tab-online').classList.remove('active');
   document.getElementById('setup-section').style.display='block';
+  document.getElementById('online-section').style.display='none';
   document.getElementById('home-page-btn').style.display='block';
   document.getElementById('winner-text').innerHTML='';
   document.getElementById('replay-ring-wrap').style.display='none';
   document.getElementById('replay-countdown').textContent='';
+  document.getElementById('start-btn').style.display='block';
   document.getElementById('start-btn').textContent=T('startGame');
   document.getElementById('overlay').style.display='flex';
   applyLanguage();
@@ -942,7 +1024,37 @@ document.getElementById('start-btn').addEventListener('click',()=>{
 // ═══════════════════════════════════════════════════════
 //  MAIN LOOP
 // ═══════════════════════════════════════════════════════
-function loop(){update();draw();drawTouchControls();if(gameRunning)requestAnimationFrame(loop);}
+function loop(){
+  if(gameMode==='online'){
+    if(isHost){
+      update();
+      broadcastState();
+    } else {
+      // Guest: move own player locally for responsiveness, send input to host
+      sendInputToHost();
+      // Also apply local movement for smooth feel
+      if(gameRunning && players[myPeerIndex]){
+        const p=players[myPeerIndex];
+        const def=CTRL_DEFS[0]; // guests always use P1 controls on their machine
+        const tk=touchKeys[0]||{dx:0,dy:0,shoot:false};
+        let dx=0,dy=0;
+        if(keys[def.up])dy=-1; if(keys[def.down])dy=1;
+        if(keys[def.left])dx=-1; if(keys[def.right])dx=1;
+        if(dx===0&&dy===0){dx=tk.dx||0;dy=tk.dy||0;}
+        movePlayer(p,dx,dy);
+        if(keys[def.shoot]||tk.shoot) shoot(p);
+        if(p.shootCooldown>0) p.shootCooldown--;
+      }
+      // Particles still need updating for visual feedback
+      particles=particles.filter(p=>p.life>0);
+      for(const p of particles){p.x+=p.vx;p.y+=p.vy;p.vy+=0.08;p.life--;p.r*=0.95;}
+    }
+  } else {
+    update();
+  }
+  draw();drawTouchControls();
+  if(gameRunning)requestAnimationFrame(loop);
+}
 
 // ═══════════════════════════════════════════════════════
 //  TOUCH CONTROLS  (only rendered on touch devices via CSS)
@@ -1083,6 +1195,285 @@ if(isTouchDevice){
 }
 
 window.addEventListener('resize',()=>{layoutTouchControls();drawTouchControls();});
+
+// ═══════════════════════════════════════════════════════
+//  GAME MODE & TAB SWITCHING
+// ═══════════════════════════════════════════════════════
+let gameMode = 'local'; // 'local' | 'online'
+let onlineTotalPlayers = 3; // host sets this (2/3/4)
+
+function switchTab(mode){
+  gameMode = mode;
+  document.getElementById('tab-local').classList.toggle('active', mode==='local');
+  document.getElementById('tab-online').classList.toggle('active', mode==='online');
+  document.getElementById('setup-section').style.display = mode==='local' ? 'block' : 'none';
+  document.getElementById('online-section').style.display = mode==='online' ? 'flex' : 'none';
+  document.getElementById('start-btn').style.display = 'none';
+  if(mode==='online') initPeer();
+}
+
+function setOnlinePlayers(n){
+  onlineTotalPlayers = n;
+  document.querySelectorAll('#online-pcount-row .pcount-btn').forEach(b=>{
+    b.classList.toggle('active', parseInt(b.dataset.on)===n);
+  });
+  updatePlayerSlots();
+}
+
+function updatePlayerSlots(){
+  const wrap = document.getElementById('player-slots');
+  wrap.innerHTML = '';
+  for(let i=0;i<onlineTotalPlayers;i++){
+    const slot = document.createElement('div');
+    const isMe = (i===0 && isHost);
+    const joined = i===0 || i <= guestConns.length;
+    slot.style.cssText = `width:44px;height:44px;border-radius:8px;border:2px solid ${joined?CHARACTERS[selectedChar[i]||i].color:'#2a2a2a'};
+      display:flex;flex-direction:column;align-items:center;justify-content:center;
+      font-size:8px;letter-spacing:1px;background:${joined?'rgba(255,255,255,.04)':'#0a0a0a'};
+      color:${joined?CHARACTERS[selectedChar[i]||i].color:'#333'}`;
+    slot.innerHTML = `<span style="font-family:'Bebas Neue',sans-serif;font-size:16px">P${i+1}</span>
+      <span>${joined?(i===0?'HOST':'IN'):i===1?'···':'···'}</span>`;
+    wrap.appendChild(slot);
+  }
+  // Show start if all players joined
+  const allJoined = guestConns.length >= onlineTotalPlayers - 1;
+  document.getElementById('start-btn').style.display = (isHost && allJoined) ? 'block' : 'none';
+  if(allJoined && isHost) document.getElementById('start-btn').textContent = '▶ START ONLINE GAME';
+}
+
+// ═══════════════════════════════════════════════════════
+//  ONLINE MULTIPLAYER — PeerJS P2P  (up to 4 players)
+// ═══════════════════════════════════════════════════════
+let peer = null;
+let hostConn = null;       // guest's connection to host
+let guestConns = [];       // host's array of guest connections
+let isHost = false;
+let onlineRole = 'host';
+let myPeerIndex = 0;       // my player slot index
+let peerReady = false;
+let guestSelectedChar = 0; // guest's chosen character
+
+function randCode(){
+  const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  return Array.from({length:4},()=>chars[Math.random()*chars.length|0]).join('');
+}
+
+function setStatus(msg, cls=''){
+  const el=document.getElementById('online-status');
+  el.textContent=msg; el.className=cls;
+}
+
+function selectHostJoin(role){
+  onlineRole=role;
+  document.getElementById('hj-host').classList.toggle('active',role==='host');
+  document.getElementById('hj-join').classList.toggle('active',role==='join');
+  document.getElementById('host-view').style.display=role==='host'?'block':'none';
+  document.getElementById('join-view').style.display=role==='join'?'flex':'none';
+  document.getElementById('start-btn').style.display='none';
+  if(role==='host') initPeerHost();
+  else { setStatus('Enter room code and press JOIN',''); destroyPeer(); }
+}
+
+function initPeer(){ selectHostJoin('host'); }
+
+function destroyPeer(){
+  if(peer){try{peer.destroy();}catch(e){} peer=null;}
+  guestConns=[]; hostConn=null; peerReady=false;
+}
+
+function initPeerHost(){
+  destroyPeer();
+  const code=randCode();
+  document.getElementById('room-code-display').textContent=code;
+  setStatus('Creating room...','wait');
+  updatePlayerSlots();
+  peer=new Peer('SHOOTFIGHT-'+code);
+  peer.on('open',()=>{
+    isHost=true; myPeerIndex=0; peerReady=true;
+    setStatus('Room ready! Share the code.','ok');
+  });
+  peer.on('connection',conn=>{
+    conn.on('open',()=>{
+      if(guestConns.length >= onlineTotalPlayers-1){
+        conn.send({type:'full'}); return;
+      }
+      guestConns.push(conn);
+      const guestIdx=guestConns.length;
+      // Send welcome with their index and total expected players
+      conn.send({type:'welcome', playerIndex:guestIdx, totalPlayers:onlineTotalPlayers});
+      setStatus(`${guestConns.length}/${onlineTotalPlayers-1} players joined`,'ok');
+      updatePlayerSlots();
+      // Broadcast updated lobby to all guests
+      broadcastLobby();
+    });
+    conn.on('data',d=>handlePeerData(d,conn));
+    conn.on('close',()=>{
+      guestConns=guestConns.filter(c=>c!==conn);
+      setStatus('A player disconnected','err');
+      updatePlayerSlots();
+    });
+  });
+  peer.on('error',e=>setStatus('Error: '+e.type,'err'));
+}
+
+function broadcastLobby(){
+  // Tell all guests current lobby state
+  const lobbyData={
+    type:'lobby',
+    connectedCount: guestConns.length,
+    totalPlayers: onlineTotalPlayers,
+    chars: [...selectedChar],
+  };
+  guestConns.forEach(c=>{try{c.send(lobbyData);}catch(e){}});
+}
+
+function joinRoom(){
+  const code=document.getElementById('room-input').value.trim().toUpperCase();
+  if(code.length<4){setStatus('Enter a 4-character code','err');return;}
+  destroyPeer();
+  setStatus('Connecting...','wait');
+  peer=new Peer();
+  peer.on('open',()=>{
+    hostConn=peer.connect('SHOOTFIGHT-'+code);
+    hostConn.on('open',()=>setStatus('Connected! Waiting for host...','ok'));
+    hostConn.on('data',d=>handlePeerData(d,hostConn));
+    hostConn.on('close',()=>{setStatus('Disconnected from host','err');destroyPeer();});
+  });
+  peer.on('error',e=>setStatus('Cannot connect: '+e.type,'err'));
+}
+
+function buildGuestCharSelect(){
+  const wrap=document.getElementById('guest-char-row');
+  wrap.innerHTML='';
+  CHARACTERS.forEach(ch=>{
+    const card=document.createElement('div');
+    card.className='ccard'+(guestSelectedChar===ch.id?' sel':'');
+    card.style.borderColor=guestSelectedChar===ch.id?ch.color:'#1e1e1e';
+    const cv=document.createElement('canvas');cv.width=cv.height=44;
+    const c=cv.getContext('2d');c.fillStyle='#0e0e18';c.fillRect(0,0,44,44);ch.draw(c,22,22,13,0);
+    card.appendChild(cv);
+    const nm=document.createElement('div');nm.className='cname';nm.textContent=ch.name;
+    nm.style.color=guestSelectedChar===ch.id?ch.color:'#444';
+    card.appendChild(nm);
+    card.addEventListener('click',()=>{
+      guestSelectedChar=ch.id;
+      buildGuestCharSelect();
+      // Tell host our char choice
+      if(hostConn) try{hostConn.send({type:'charChoice',charId:ch.id});}catch(e){}
+    });
+    wrap.appendChild(card);
+  });
+}
+
+function copyRoomCode(){
+  const code=document.getElementById('room-code-display').textContent;
+  navigator.clipboard?.writeText(code).then(()=>setStatus('Code copied!','ok'));
+}
+
+// ── Receive data ──
+function handlePeerData(data,conn){
+  if(!data) return;
+  switch(data.type){
+    case 'full':
+      setStatus('Room is full!','err'); break;
+    case 'welcome':
+      myPeerIndex=data.playerIndex; isHost=false;
+      setStatus(`You are Player ${myPeerIndex+1}. Choose character & wait for host.`,'ok');
+      // Show char select for guest
+      document.getElementById('guest-char-select').style.display='flex';
+      buildGuestCharSelect();
+      break;
+    case 'lobby':
+      setStatus(`${data.connectedCount}/${data.totalPlayers-1} players in room. Waiting for host to start...`,'wait');
+      break;
+    case 'charChoice':
+      // Host receives guest char choice — update selectedChar
+      if(isHost){
+        const gIdx=guestConns.indexOf(conn)+1;
+        if(gIdx>0) selectedChar[gIdx]=data.charId;
+        updatePlayerSlots();
+        broadcastLobby();
+      }
+      break;
+    case 'startOnline':
+      numPlayers=data.numPlayers;
+      selectedChar=[...data.selectedChar];
+      myPeerIndex=data.yourIndex;
+      startGame();
+      break;
+    case 'gameState':
+      if(!isHost) applyRemoteState(data.state); break;
+    case 'input':
+      if(isHost) applyGuestInput(data); break;
+    case 'endGame':
+      if(!isHost){ gameRunning=false; stopBgMusic(); endMatch(); } break;
+  }
+}
+
+// ── Host starts online game ──
+function startOnlineGameHost(){
+  if(!isHost){ startGame(); return; }
+  numPlayers=guestConns.length+1;
+  // Assign default chars for any slots without a choice
+  for(let i=0;i<numPlayers;i++) if(selectedChar[i]==null) selectedChar[i]=i%4;
+  const startData={type:'startOnline',numPlayers,selectedChar:[...selectedChar],yourIndex:0};
+  guestConns.forEach((c,i)=>{
+    try{c.send({...startData,yourIndex:i+1});}catch(e){}
+  });
+  startGame();
+}
+
+// ── Apply game state received from host (guest side) ──
+function applyRemoteState(state){
+  if(!gameRunning) return;
+  state.players.forEach((sp,i)=>{
+    if(i===myPeerIndex) return;
+    const p=players[i]; if(!p) return;
+    p.x=sp.x; p.y=sp.y; p.angle=sp.angle;
+    p.alive=sp.alive; p.kills=sp.kills; p.hp=sp.hp;
+    if(!sp.alive && p.alive) spawnDeathParticles(p.x+11,p.y+11,p.color);
+  });
+  bullets=state.bullets.map(b=>({...b,trail:[]}));
+  mines.forEach((m,i)=>{ if(state.mines[i]) m.alive=state.mines[i].alive; });
+  matchTimeLeft=state.matchTimeLeft; countdown=state.countdown;
+  if(state.gameOver && gameRunning){ gameRunning=false; stopBgMusic(); setTimeout(()=>endMatch(),200); }
+  updateHUD();
+}
+
+// ── Apply guest input received by host ──
+function applyGuestInput(data){
+  const p=players[data.playerIndex]; if(!p||!p.alive) return;
+  movePlayer(p,data.dx||0,data.dy||0);
+  if(data.shoot) shoot(p);
+}
+
+// ── Host broadcasts state every 2 frames ──
+let netFrameCount=0;
+function broadcastState(){
+  if(!isHost||guestConns.length===0) return;
+  if(++netFrameCount%2!==0) return;
+  const state={
+    players:players.map(p=>({x:p.x,y:p.y,angle:p.angle,alive:p.alive,kills:p.kills,hp:p.hp})),
+    bullets:bullets.map(b=>({x:b.x,y:b.y,vx:b.vx,vy:b.vy,owner:b.owner,alive:b.alive,r:b.r})),
+    mines:mines.map(m=>({alive:m.alive})),
+    matchTimeLeft,countdown,
+    gameOver:!gameRunning,
+  };
+  guestConns.forEach(c=>{try{c.send({type:'gameState',state});}catch(e){}});
+}
+
+// ── Guest sends input each frame ──
+function sendInputToHost(){
+  if(isHost||!hostConn) return;
+  const def=CTRL_DEFS[0]; // online guests always use P1 controls on their machine
+  const tk=touchKeys[0]||{dx:0,dy:0,shoot:false};
+  let dx=0,dy=0;
+  if(keys[def.up])dy=-1; if(keys[def.down])dy=1;
+  if(keys[def.left])dx=-1; if(keys[def.right])dx=1;
+  if(dx===0&&dy===0){dx=tk.dx||0;dy=tk.dy||0;}
+  const doShoot=!!(keys[def.shoot]||tk.shoot);
+  try{hostConn.send({type:'input',playerIndex:myPeerIndex,dx,dy,shoot:doShoot});}catch(e){}
+}
 
 // ═══════════════════════════════════════════════════════
 //  INIT
