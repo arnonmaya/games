@@ -35,12 +35,11 @@
     z-index: 0;
   }
 
-  #menu, #game-wrap, #result-screen {
+  #menu, #game-wrap, #result-screen, #lobby-screen {
     position: relative;
     z-index: 1;
     width: 100%;
     height: 100%;
-    display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
@@ -307,6 +306,41 @@
   }
 </script>
 
+<!-- LOBBY -->
+<div id="lobby-screen" style="display:none">
+  <h1 id="lobby-title" style="font-family:'Zen Dots',cursive; font-size:clamp(1.5rem,4vw,3rem); color:#f5e6c8; text-shadow:0 0 30px rgba(220,80,40,0.6); margin-bottom:0.5em;">🍣 SUSHI STACK</h1>
+  <div id="lobby-status" style="color:#c87840; font-size:1rem; letter-spacing:0.15em; margin-bottom:1.5em; text-align:center; min-height:2em;"></div>
+
+  <!-- Mode select (hidden - buttons moved to main menu) -->
+  <div id="lobby-mode" style="display:none;">
+  </div>
+
+  <!-- Join input -->
+  <div id="lobby-join-area" style="display:none; flex-direction:column; align-items:center; gap:0.8em; margin-bottom:1.5em;">
+    <input id="room-code-input" type="text" maxlength="4"
+      placeholder="ROOM CODE"
+      style="font-family:'Zen Dots',cursive; font-size:2rem; text-align:center; width:7rem; padding:0.4em 0.6em;
+             background:rgba(255,255,255,0.06); border:2px solid rgba(200,120,60,0.5); border-radius:8px;
+             color:#f5e6c8; letter-spacing:0.3em; text-transform:uppercase; outline:none;">
+    <button class="start-btn" id="btn-join-confirm">JOIN →</button>
+  </div>
+
+  <!-- Room code display for host -->
+  <div id="lobby-room-display" style="display:none; flex-direction:column; align-items:center; gap:0.5em; margin-bottom:1.5em;">
+    <div style="color:rgba(245,230,200,0.5); font-size:0.8rem; letter-spacing:0.2em;">ROOM CODE</div>
+    <div id="room-code-display" style="font-family:'Zen Dots',cursive; font-size:3.5rem; color:#f5e6c8; letter-spacing:0.4em; text-shadow:0 0 20px rgba(220,80,40,0.8);"></div>
+    <div style="color:rgba(245,230,200,0.4); font-size:0.75rem;">Share this code with other players</div>
+  </div>
+
+  <!-- Player slots -->
+  <div id="lobby-players" style="display:flex; gap:0.8rem; margin-bottom:2em; flex-wrap:wrap; justify-content:center;"></div>
+
+  <!-- Start button (host only) -->
+  <button class="start-btn" id="btn-lobby-start" style="display:none;">▶ START GAME</button>
+
+  <button class="start-btn" id="btn-lobby-back" style="margin-top:0.8rem; background:rgba(255,255,255,0.06); border:1px solid rgba(200,120,60,0.3); font-size:0.85rem;">← Back</button>
+</div>
+
 <!-- MENU -->
 <div id="menu">
   <div class="lang-toggle">
@@ -323,11 +357,15 @@
     <button class="player-btn" data-players="4">👨‍👩‍👧‍👦<span>4P</span></button>
   </div>
 
-  <div class="controls-info" id="controls-info">
-    Loading controls...
+  <div class="controls-info" id="controls-info">Loading controls...</div>
+
+  <!-- Online buttons -->
+  <div style="display:flex; gap:0.8rem; margin-bottom:0.8em; flex-wrap:wrap; justify-content:center;">
+    <button class="start-btn" id="btn-host">🏠 Host Game</button>
+    <button class="start-btn" id="btn-join" style="background:linear-gradient(135deg,#4090e8,#2060b0);">🔗 Join Game</button>
   </div>
 
-  <button class="start-btn" id="start-btn">START GAME</button>
+  <button class="start-btn" id="start-btn">🖥 Local Play</button>
   <button class="mute-btn" id="mute-btn" title="Toggle sound">🔊</button>
   <a href="https://arnonmaya.github.io/games/" class="home-btn" id="home-btn">Return to Home Page</a>
 </div>
@@ -347,6 +385,41 @@
   <div class="result-details" id="result-details"></div>
   <button class="start-btn" id="replay-btn">PLAY AGAIN</button>
 </div>
+
+<!-- Firebase -->
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getDatabase, ref, set, get, update, onValue, off, push, serverTimestamp, remove }
+  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDbprzF4Kf01ejNHagZLrWoDEZUmMlcaJs",
+  authDomain: "games-on-d-mend.firebaseapp.com",
+  databaseURL: "https://games-on-d-mend-default-rtdb.firebaseio.com",
+  projectId: "games-on-d-mend",
+  storageBucket: "games-on-d-mend.firebasestorage.app",
+  messagingSenderId: "828376886522",
+  appId: "1:828376886522:web:6b2ca497c7b0ef0ccb2d43",
+  measurementId: "G-93ELLMB69G"
+};
+
+const app = initializeApp(firebaseConfig);
+const db  = getDatabase(app);
+
+// Expose to global scope so the rest of the game can use it
+window._db  = db;
+window._ref = ref;
+window._set = set;
+window._get = get;
+window._update = update;
+window._onValue = onValue;
+window._off = off;
+window._push = push;
+window._serverTimestamp = serverTimestamp;
+window._remove = remove;
+window._firebaseReady = true;
+window.dispatchEvent(new Event('firebaseReady'));
+</script>
 
 <script>
 // ═══════════════════════════════════════════════════════════════
@@ -1376,15 +1449,17 @@ function setupInput() {
 
 // ── Screens ────────────────────────────────────────────────────
 function showMenu() {
-  document.getElementById('menu').style.display = 'flex';
-  document.getElementById('game-wrap').style.display = 'none';
+  document.getElementById('menu').style.display          = 'flex';
+  document.getElementById('game-wrap').style.display     = 'none';
   document.getElementById('result-screen').style.display = 'none';
+  document.getElementById('lobby-screen').style.display  = 'none';
 }
 
 function showGame() {
-  document.getElementById('menu').style.display = 'none';
-  document.getElementById('game-wrap').style.display = 'flex';
+  document.getElementById('menu').style.display          = 'none';
+  document.getElementById('game-wrap').style.display     = 'flex';
   document.getElementById('result-screen').style.display = 'none';
+  document.getElementById('lobby-screen').style.display  = 'none';
 }
 
 function showResult() {
@@ -1392,9 +1467,10 @@ function showResult() {
   gameOver = true;
   if (animFrame) { cancelAnimationFrame(animFrame); animFrame = null; }
 
-  document.getElementById('menu').style.display = 'none';
-  document.getElementById('game-wrap').style.display = 'none';
+  document.getElementById('menu').style.display          = 'none';
+  document.getElementById('game-wrap').style.display     = 'none';
   document.getElementById('result-screen').style.display = 'flex';
+  document.getElementById('lobby-screen').style.display  = 'none';
 
   const winner = players.find(p => p.id === winnerId);
   const titleEl = document.getElementById('result-title');
@@ -1463,6 +1539,428 @@ function startGame() {
   animFrame = requestAnimationFrame(gameLoop);
 }
 
+// Local play from lobby: set numPlayers from selector then startGame
+
+// ═══════════════════════════════════════════════════════════════
+// FIREBASE MULTIPLAYER
+// ═══════════════════════════════════════════════════════════════
+
+const PLAYER_COLORS = ['#e8405a','#4090e8','#40c870','#e8c040'];
+const ZONE_KEYS = ['tl','tr','bl','br'];
+
+let multiMode   = false;   // true when playing online
+let isHost      = false;
+let myPlayerId  = null;    // 0-3
+let roomCode    = null;
+let roomRef     = null;
+let listeners   = [];      // {ref, cb} to unsubscribe on cleanup
+
+function genRoomCode() {
+  return Math.floor(1000 + Math.random() * 9000).toString();
+}
+
+function waitForFirebase(cb) {
+  if (window._firebaseReady) { cb(); return; }
+  window.addEventListener('firebaseReady', cb, { once: true });
+}
+
+// ── Show lobby screen ──────────────────────────────────────────
+function showLobby() {
+  document.getElementById('menu').style.display          = 'none';
+  document.getElementById('game-wrap').style.display     = 'none';
+  document.getElementById('result-screen').style.display = 'none';
+  document.getElementById('lobby-screen').style.display  = 'flex';
+  // Reset lobby UI
+  document.getElementById('lobby-mode').style.display       = 'flex';
+  document.getElementById('lobby-join-area').style.display  = 'none';
+  document.getElementById('lobby-room-display').style.display = 'none';
+  document.getElementById('btn-lobby-start').style.display  = 'none';
+  document.getElementById('lobby-players').innerHTML        = '';
+  document.getElementById('lobby-status').textContent       = '';
+}
+
+// ── Host a game ────────────────────────────────────────────────
+async function hostGame() {
+  waitForFirebase(async () => {
+    const db = window._db;
+    roomCode = genRoomCode();
+    myPlayerId = 0;
+    isHost = true;
+    multiMode = true;
+
+    roomRef = window._ref(db, `sushi_rooms/${roomCode}`);
+
+    // Write initial room data
+    await window._set(roomRef, {
+      host: 0,
+      status: 'lobby',
+      numPlayers: 1,
+      players: {
+        0: { id: 0, name: 'P1', ready: false }
+      },
+      gameState: null,
+      created: window._serverTimestamp()
+    });
+
+    document.getElementById('lobby-mode').style.display = 'none';
+    document.getElementById('lobby-room-display').style.display = 'flex';
+    document.getElementById('room-code-display').textContent = roomCode;
+    document.getElementById('btn-lobby-start').style.display = 'block';
+    document.getElementById('lobby-status').textContent = 'Waiting for players...';
+
+    listenLobby();
+  });
+}
+
+// ── Join a game ────────────────────────────────────────────────
+async function joinGame(code) {
+  waitForFirebase(async () => {
+    const db = window._db;
+    code = code.toUpperCase().trim();
+    if (code.length !== 4) { alert('Enter a 4-digit room code'); return; }
+
+    roomRef = window._ref(db, `sushi_rooms/${code}`);
+    const snap = await window._get(roomRef);
+    if (!snap.exists()) { alert('Room not found!'); return; }
+
+    const data = snap.val();
+    if (data.status !== 'lobby') { alert('Game already started!'); return; }
+
+    const takenIds = Object.keys(data.players || {}).map(Number);
+    if (takenIds.length >= 4) { alert('Room is full!'); return; }
+
+    // Assign next available player id
+    myPlayerId = [0,1,2,3].find(i => !takenIds.includes(i));
+    roomCode = code;
+    isHost = false;
+    multiMode = true;
+
+    await window._update(window._ref(db, `sushi_rooms/${code}/players/${myPlayerId}`), {
+      id: myPlayerId, name: `P${myPlayerId+1}`, ready: false
+    });
+
+    document.getElementById('lobby-mode').style.display = 'none';
+    document.getElementById('lobby-room-display').style.display = 'flex';
+    document.getElementById('room-code-display').textContent = code;
+    document.getElementById('lobby-status').textContent = `Joined as P${myPlayerId+1}! Waiting for host...`;
+
+    listenLobby();
+  });
+}
+
+// ── Listen to lobby changes ────────────────────────────────────
+function listenLobby() {
+  const db = window._db;
+  const playersRef = window._ref(db, `sushi_rooms/${roomCode}/players`);
+
+  const cb = (snap) => {
+    const players = snap.val() || {};
+    const count = Object.keys(players).length;
+
+    // Update player slots UI
+    const container = document.getElementById('lobby-players');
+    container.innerHTML = '';
+    [0,1,2,3].forEach(i => {
+      const el = document.createElement('div');
+      el.style.cssText = `width:70px;height:70px;border-radius:10px;display:flex;flex-direction:column;
+        align-items:center;justify-content:center;gap:4px;font-size:1.5rem;
+        border:2px solid ${players[i] ? PLAYER_COLORS[i] : 'rgba(255,255,255,0.1)'};
+        background:${players[i] ? PLAYER_COLORS[i]+'22' : 'rgba(255,255,255,0.03)'}`;
+      el.innerHTML = players[i]
+        ? `<span>🧑</span><span style="font-size:0.6rem;color:${PLAYER_COLORS[i]};letter-spacing:0.1em">P${i+1}</span>`
+        : `<span style="opacity:0.2">+</span><span style="font-size:0.55rem;color:rgba(255,255,255,0.2)">EMPTY</span>`;
+      container.appendChild(el);
+    });
+
+    // Update numPlayers on Firebase (host only)
+    if (isHost) {
+      window._update(roomRef, { numPlayers: count });
+    }
+
+    // Check if game started (non-host)
+    if (!isHost && snap.ref) {
+      const statusRef = window._ref(db, `sushi_rooms/${roomCode}/status`);
+      window._get(statusRef).then(s => {
+        if (s.val() === 'playing') startMultiGame();
+      });
+    }
+  };
+
+  window._onValue(playersRef, cb);
+  listeners.push({ ref: playersRef, cb });
+
+  // Also listen for status change (for joiners waiting for host to start)
+  if (!isHost) {
+    const statusRef = window._ref(db, `sushi_rooms/${roomCode}/status`);
+    const statusCb = (snap) => {
+      if (snap.val() === 'playing') startMultiGame();
+    };
+    window._onValue(statusRef, statusCb);
+    listeners.push({ ref: statusRef, cb: statusCb });
+  }
+}
+
+// ── Host starts the game ───────────────────────────────────────
+async function hostStartGame() {
+  if (!isHost) return;
+  const db = window._db;
+  // Get current player count
+  const snap = await window._get(window._ref(db, `sushi_rooms/${roomCode}/players`));
+  const count = Object.keys(snap.val() || {}).length;
+  numPlayers = count;
+
+  await window._update(roomRef, { status: 'playing', numPlayers: count });
+  startMultiGame();
+}
+
+// ── Start multiplayer game ─────────────────────────────────────
+function startMultiGame() {
+  cleanupListeners();
+  document.getElementById('lobby-screen').style.display = 'none';
+
+  if (animFrame) { cancelAnimationFrame(animFrame); animFrame = null; }
+  stopBGM();
+  resizeCanvas();
+  timeLeft = GAME_DURATION;
+  gameOver = false;
+  winnerId = null;
+  lastTime = null;
+  lastTickSecond = -1;
+  gameRunning = true;
+  initPlayers();
+  showGame();
+  startBGM();
+
+  // Setup Firebase sync
+  setupMultiSync();
+
+  animFrame = requestAnimationFrame(gameLoop);
+}
+
+// ── Firebase sync during game ──────────────────────────────────
+let syncThrottle = 0;
+
+function setupMultiSync() {
+  const db = window._db;
+
+  // Listen to all OTHER players' chopstick positions
+  players.forEach(p => {
+    if (p.id === myPlayerId) return;
+    const chopRef = window._ref(db, `sushi_rooms/${roomCode}/chopsticks/${p.id}`);
+    const cb = (snap) => {
+      if (!snap.exists()) return;
+      const d = snap.val();
+      if (d && players[p.id]) {
+        players[p.id].chopstick.x  = d.x;
+        players[p.id].chopstick.y  = d.y;
+        players[p.id].chopstick.w  = d.w;
+        players[p.id].chopstick.h  = d.h;
+        players[p.id].chopstick.color = d.color || players[p.id].chopstick.color;
+      }
+    };
+    window._onValue(chopRef, cb);
+    listeners.push({ ref: chopRef, cb });
+
+    // Listen to other players' stacks
+    const stackRef = window._ref(db, `sushi_rooms/${roomCode}/stacks/${p.id}`);
+    const stackCb = (snap) => {
+      if (!snap.exists() || !players[p.id]) return;
+      const raw = snap.val();
+      players[p.id].stack = raw ? Object.values(raw) : [];
+      rebuildTowerFlags(players[p.id]);
+    };
+    window._onValue(stackRef, stackCb);
+    listeners.push({ ref: stackRef, cb: stackCb });
+
+    // Listen to drop events
+    const dropRef = window._ref(db, `sushi_rooms/${roomCode}/drops/${p.id}`);
+    const dropCb = (snap) => {
+      if (!snap.exists() || !players[p.id]) return;
+      const d = snap.val();
+      if (d && d.ts > (window._lastDropTs || 0)) {
+        window._lastDropTs = d.ts;
+        if (!players[p.id].chopstick.falling) {
+          players[p.id].chopstick.falling = true;
+          players[p.id].chopstick.vy = 0;
+        }
+      }
+    };
+    window._onValue(dropRef, dropCb);
+    listeners.push({ ref: dropRef, cb: dropCb });
+  });
+
+  // Host owns the timer — broadcast timeLeft
+  if (isHost) {
+    const timerInterval = setInterval(() => {
+      if (!gameRunning || gameOver) { clearInterval(timerInterval); return; }
+      window._set(window._ref(db, `sushi_rooms/${roomCode}/timeLeft`), timeLeft);
+    }, 500);
+  } else {
+    // Non-host listens to timer
+    const timerRef = window._ref(db, `sushi_rooms/${roomCode}/timeLeft`);
+    const timerCb = (snap) => {
+      if (snap.exists()) timeLeft = snap.val();
+    };
+    window._onValue(timerRef, timerCb);
+    listeners.push({ ref: timerRef, cb: timerCb });
+  }
+
+  // Listen for game over
+  const gameOverRef = window._ref(db, `sushi_rooms/${roomCode}/gameOver`);
+  const gameOverCb = (snap) => {
+    if (!snap.exists()) return;
+    const d = snap.val();
+    if (d && d.winnerId !== undefined && !gameOver) {
+      gameOver = true;
+      winnerId = d.winnerId;
+      stopBGM();
+      if (d.winnerId !== null) sfxWin(); else sfxTimeUp();
+      setTimeout(showResult, 600);
+    }
+  };
+  window._onValue(gameOverRef, gameOverCb);
+  listeners.push({ ref: gameOverRef, cb: gameOverCb });
+}
+
+// Push my chopstick state to Firebase (called every frame for my player)
+function pushMyChopstick() {
+  if (!multiMode || !window._firebaseReady) return;
+  const now = performance.now();
+  if (now - syncThrottle < 50) return; // max 20fps sync
+  syncThrottle = now;
+
+  const p = players[myPlayerId];
+  if (!p) return;
+  const cs = p.chopstick;
+  window._set(window._ref(window._db, `sushi_rooms/${roomCode}/chopsticks/${myPlayerId}`), {
+    x: Math.round(cs.x), y: Math.round(cs.y), w: cs.w, h: cs.h,
+    colorTop: cs.color.top, colorBody: cs.color.body
+  });
+}
+
+// Push my stack to Firebase
+function pushMyStack() {
+  if (!multiMode || !window._firebaseReady) return;
+  const p = players[myPlayerId];
+  if (!p) return;
+  const stackData = {};
+  p.stack.forEach((piece, i) => {
+    stackData[i] = { x: piece.x, y: piece.y, w: piece.w, h: piece.h,
+      inTower: piece.inTower,
+      colorTop: piece.color.top, colorBody: piece.color.body };
+  });
+  window._set(window._ref(window._db, `sushi_rooms/${roomCode}/stacks/${myPlayerId}`), stackData);
+}
+
+// Push a drop event
+function pushMyDrop() {
+  if (!multiMode || !window._firebaseReady) return;
+  window._set(window._ref(window._db, `sushi_rooms/${roomCode}/drops/${myPlayerId}`), {
+    ts: Date.now()
+  });
+}
+
+// Push game over (host only)
+function pushGameOver(wid) {
+  if (!multiMode || !isHost || !window._firebaseReady) return;
+  window._set(window._ref(window._db, `sushi_rooms/${roomCode}/gameOver`), {
+    winnerId: wid, ts: Date.now()
+  });
+}
+
+function cleanupListeners() {
+  listeners.forEach(({ ref: r, cb }) => {
+    try { window._off(r, 'value', cb); } catch(e) {}
+  });
+  listeners = [];
+}
+
+function cleanupRoom() {
+  cleanupListeners();
+  if (multiMode && isHost && roomCode && window._firebaseReady) {
+    window._remove(window._ref(window._db, `sushi_rooms/${roomCode}`)).catch(()=>{});
+  }
+  multiMode = false;
+  isHost = false;
+  myPlayerId = null;
+  roomCode = null;
+  roomRef = null;
+}
+
+// ── Override dropSushi to also push in multiplayer ─────────────
+const _origDropSushi = dropSushi;
+function dropSushi(player) {
+  if (multiMode && player.id !== myPlayerId) return; // can't control others
+  _origDropSushi(player);
+  if (multiMode && player.id === myPlayerId) pushMyDrop();
+}
+
+// ── Override triggerWin to broadcast in multiplayer ────────────
+const _origTriggerWin = triggerWin;
+function triggerWin(playerId) {
+  if (multiMode && isHost) pushGameOver(playerId);
+  else if (multiMode && !isHost) return; // wait for firebase broadcast
+  _origTriggerWin(playerId);
+}
+
+// ── Override endByTime to broadcast in multiplayer ─────────────
+const _origEndByTime = endByTime;
+function endByTime() {
+  if (multiMode && !isHost) return; // only host ends the game
+  if (multiMode && isHost) {
+    // calculate winner locally then push
+    let best = -1, bestId = -1;
+    players.forEach(p => {
+      const height = p.stack.length > 0
+        ? (p.surfaceY - Math.min(...p.stack.map(s => s.y))) : 0;
+      if (height > best) { best = height; bestId = p.id; }
+    });
+    pushGameOver(bestId);
+  }
+  _origEndByTime();
+}
+
+// ── Hook into update to push my state each frame ───────────────
+const _origUpdate = update;
+function update(dt) {
+  _origUpdate(dt);
+  if (multiMode && myPlayerId !== null && players[myPlayerId]) {
+    pushMyChopstick();
+  }
+}
+
+// ── Hook into placePiece to push stack ─────────────────────────
+const _origPlacePiece = placePiece;
+function placePiece(player, cs) {
+  _origPlacePiece(player, cs);
+  if (multiMode && player.id === myPlayerId) pushMyStack();
+}
+
+// ── Lobby UI bindings ──────────────────────────────────────────
+document.getElementById('btn-host').addEventListener('click', () => {
+  sfxClick();
+  showLobby();
+  hostGame();
+});
+document.getElementById('btn-join').addEventListener('click', () => {
+  sfxClick();
+  showLobby();
+  document.getElementById('lobby-join-area').style.display = 'flex';
+  document.getElementById('room-code-input').focus();
+});
+document.getElementById('btn-join-confirm').addEventListener('click', () => {
+  joinGame(document.getElementById('room-code-input').value);
+});
+document.getElementById('room-code-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') joinGame(e.target.value);
+});
+document.getElementById('btn-lobby-start').addEventListener('click', hostStartGame);
+document.getElementById('btn-lobby-back').addEventListener('click', () => {
+  cleanupRoom();
+  document.getElementById('lobby-screen').style.display = 'none';
+  showMenu();
+});
+
 // ── Menu bindings ──────────────────────────────────────────────
 document.getElementById('lang-en').addEventListener('click', () => {
   lang = 'en'; sfxClick(); applyLanguage();
@@ -1485,27 +1983,27 @@ let muted = false;
 document.getElementById('mute-btn').addEventListener('click', () => {
   muted = !muted;
   document.getElementById('mute-btn').textContent = muted ? '🔇' : '🔊';
-  if (audioCtx) audioCtx.destination.gain && (audioCtx.destination.gain.value = muted ? 0 : 1);
-  // Simpler: suspend/resume the context
   if (audioCtx) muted ? audioCtx.suspend() : audioCtx.resume();
 });
 
-document.getElementById('start-btn').addEventListener('click', startGame);
+// Local play
+document.getElementById('start-btn').addEventListener('click', () => {
+  sfxClick();
+  startGame();
+});
+
 document.getElementById('back-btn').addEventListener('click', () => {
   gameRunning = false;
   gameOver = true;
   if (animFrame) { cancelAnimationFrame(animFrame); animFrame = null; }
   stopBGM();
+  cleanupRoom();
   showMenu();
 });
 
 window.addEventListener('resize', () => {
-  if (gameRunning) {
-    resizeCanvas();
-    initPlayers(); // re-layout
-  }
+  if (gameRunning) { resizeCanvas(); initPlayers(); }
 });
-
 // Init
 numPlayers = 1;
 applyLanguage();
