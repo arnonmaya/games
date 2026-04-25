@@ -1142,6 +1142,11 @@ function update(dt) {
       p.life -= dt;
     });
   });
+
+  // Online sync: push my chopstick position each frame
+  if (typeof multiMode !== 'undefined' && multiMode && myPlayerId !== null && players[myPlayerId]) {
+    pushMyChopstick();
+  }
 }
 
 function endByTime() {
@@ -1949,13 +1954,7 @@ function endByTime() {
 }
 
 // ── Hook into update to push my state each frame ───────────────
-const _origUpdate = update;
-function update(dt) {
-  _origUpdate(dt);
-  if (multiMode && myPlayerId !== null && players[myPlayerId]) {
-    pushMyChopstick();
-  }
-}
+// (inlined directly in update function above)
 
 // ── Hook into placePiece to push stack ─────────────────────────
 // placePiece online sync handled inline in original function
