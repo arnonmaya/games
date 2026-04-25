@@ -3,30 +3,51 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Target Range</title>
+<title>Target Range – Multiplayer</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:#04070a;display:flex;justify-content:center;align-items:flex-start;min-height:100vh;padding:16px}
 #G{background:#080c10;width:100%;max-width:700px;min-height:600px;border-radius:12px;overflow:hidden;font-family:'Share Tech Mono',monospace;position:relative;user-select:none;border:1px solid #1e3a4a}
-.screen{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#080c10;z-index:30;gap:14px;padding:20px}
+.screen{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#080c10;z-index:30;gap:14px;padding:20px;overflow-y:auto}
 .screen.hidden{display:none}
 .game-title{font-family:'Orbitron',monospace;font-size:28px;font-weight:900;color:#00e5ff;letter-spacing:4px;margin-bottom:4px;text-align:center}
 .sub{color:#2a6a7a;font-size:12px;letter-spacing:1px;text-align:center;line-height:1.6}
 .gBtn{padding:11px 28px;background:transparent;border:1px solid #00e5ff;color:#00e5ff;font-family:'Orbitron',monospace;font-size:12px;letter-spacing:2px;cursor:pointer;border-radius:4px;transition:all .2s}
 .gBtn:hover{background:#00e5ff;color:#080c10}
+.gBtn:disabled{opacity:.4;cursor:not-allowed}
 .gBtn.gold{border-color:#ffd700;color:#ffd700}.gBtn.gold:hover{background:#ffd700;color:#080c10}
 .gBtn.sm{padding:8px 18px;font-size:11px}
+.gBtn.red{border-color:#ff3366;color:#ff3366}.gBtn.red:hover{background:#ff3366;color:#fff}
 .gBtn.home-ext{border-color:#3a7a8a;color:#3a7a8a;font-size:11px;letter-spacing:1px}.gBtn.home-ext:hover{background:#3a7a8a;color:#080c10}
 .lang-toggle{display:flex;gap:6px;align-items:center}
 .lang-btn{padding:5px 14px;background:transparent;border:1px solid #1e3a4a;color:#3a7a8a;font-family:'Share Tech Mono',monospace;font-size:11px;cursor:pointer;border-radius:4px;transition:all .2s}
 .lang-btn.active{border-color:#00e5ff;color:#00e5ff;background:rgba(0,229,255,0.08)}
 .lang-btn:hover{border-color:#00e5ff;color:#00e5ff}
+.mode-grid{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;max-width:440px}
+.m-opt{width:130px;min-height:90px;border:1px solid #1e3a4a;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;color:#3a7a8a;font-family:'Orbitron',monospace;font-size:22px;font-weight:700;transition:all .2s;background:transparent;padding:8px 4px}
+.m-opt:hover,.m-opt.sel{border-color:#00e5ff;color:#00e5ff;background:rgba(0,229,255,0.06)}
+.m-opt .m-label{font-size:10px;letter-spacing:1px;margin-top:4px;font-weight:400;font-family:'Share Tech Mono',monospace;text-align:center;line-height:1.4}
 .player-grid{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;max-width:400px}
 .p-opt{width:70px;height:70px;border:1px solid #1e3a4a;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;color:#3a7a8a;font-family:'Orbitron',monospace;font-size:20px;font-weight:700;transition:all .2s;background:transparent}
 .p-opt:hover,.p-opt.sel{border-color:#00e5ff;color:#00e5ff;background:rgba(0,229,255,0.06)}
 .p-opt span{font-size:10px;letter-spacing:1px;margin-top:2px;font-weight:400;font-family:'Share Tech Mono',monospace}
+.room-box{background:#0d1318;border:1px solid #1e3a4a;border-radius:10px;padding:16px 24px;min-width:280px;max-width:360px;text-align:center}
+.room-code{font-family:'Orbitron',monospace;font-size:36px;font-weight:900;color:#ffd700;letter-spacing:8px;margin:10px 0}
+.room-input{background:#060a0d;border:1px solid #1e3a4a;color:#00e5ff;font-family:'Orbitron',monospace;font-size:24px;letter-spacing:6px;padding:8px 14px;border-radius:4px;width:160px;text-align:center;outline:none;text-transform:uppercase}
+.room-input:focus{border-color:#00e5ff}
+.player-list{display:flex;flex-direction:column;gap:6px;min-width:220px;max-width:320px;width:100%}
+.player-item{display:flex;align-items:center;justify-content:space-between;background:#0d1318;border:1px solid #1e3a4a;border-radius:6px;padding:8px 14px;font-family:'Share Tech Mono',monospace;font-size:12px}
+.player-item .pi-name{color:#00e5ff}
+.player-item .pi-status{font-size:10px;color:#3a7a8a}
+.pi-ready{color:#00e5ff!important}
+.pi-host-badge{font-size:9px;color:#ffd700;letter-spacing:1px;background:rgba(255,215,0,0.1);border:1px solid rgba(255,215,0,0.3);border-radius:3px;padding:1px 5px;margin-left:6px}
+.name-input{background:#060a0d;border:1px solid #1e3a4a;color:#00e5ff;font-family:'Share Tech Mono',monospace;font-size:14px;padding:8px 12px;border-radius:4px;width:200px;outline:none}
+.name-input:focus{border-color:#00e5ff}
+.sep{width:80%;height:1px;background:#1e3a4a;margin:4px 0}
+.status-line{color:#3a7a8a;font-size:11px;letter-spacing:1px;text-align:center;min-height:16px}
+.error-line{color:#ff3366;font-size:11px;letter-spacing:1px;text-align:center;min-height:16px}
 #hud{display:flex;justify-content:space-between;align-items:center;padding:8px 14px;background:#0d1318;border-bottom:1px solid #1e3a4a;flex-wrap:wrap;gap:6px}
 .hud-block{display:flex;flex-direction:column;align-items:center;gap:1px}
 .hud-label{font-size:9px;color:#3a7a8a;letter-spacing:1px;text-transform:uppercase}
@@ -52,6 +73,8 @@ body{background:#04070a;display:flex;justify-content:center;align-items:flex-sta
 #timer-bar{height:3px;background:#00e5ff;transition:width .1s linear;width:100%}
 #combo-disp{position:absolute;top:10px;right:12px;font-family:'Orbitron',monospace;font-size:11px;letter-spacing:2px;color:#ffd700;opacity:0;transition:opacity .3s}
 #cur-player-badge{position:absolute;top:10px;left:50%;transform:translateX(-50%);font-family:'Orbitron',monospace;font-size:11px;letter-spacing:1px;background:rgba(0,229,255,0.12);color:#00e5ff;padding:4px 12px;border-radius:12px;border:1px solid rgba(0,229,255,0.2);white-space:nowrap}
+#live-board{position:absolute;top:50px;left:8px;display:flex;flex-direction:column;gap:3px;z-index:5;pointer-events:none}
+.lb-row{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:1px;padding:2px 7px;border-radius:3px;background:rgba(8,12,16,0.7);border-left:2px solid;white-space:nowrap}
 #touch-controls{display:none;justify-content:space-around;align-items:center;padding:10px 16px;background:#0d1318;border-top:1px solid #1e3a4a}
 .tc-btn{width:58px;height:58px;border-radius:50%;border:1px solid #1e3a4a;background:transparent;color:#3a7a8a;font-family:'Orbitron',monospace;font-size:18px;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center}
 .tc-btn:active,.tc-btn.pressed{background:rgba(0,229,255,0.15);border-color:#00e5ff;color:#00e5ff;transform:scale(0.94)}
@@ -70,34 +93,89 @@ body{background:#04070a;display:flex;justify-content:center;align-items:flex-sta
 .vol-wrap label{color:#3a7a8a;font-size:10px;letter-spacing:1px}
 .vol-wrap input[type=range]{width:90px;accent-color:#00e5ff}
 .kb-hint{color:#1e4a5a;font-size:10px;letter-spacing:1px;text-align:center;margin-top:2px}
+.waiting-dots::after{content:'...';animation:dots 1.5s steps(4,end) infinite}
+@keyframes dots{0%,25%{content:'.'}50%{content:'..'}75%,100%{content:'...'}}
+/* Music toggle button styles */
+#music-toggle-btn{background:transparent;border:1px solid #1e3a4a;color:#3a7a8a;font-size:16px;width:32px;height:32px;border-radius:4px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0}
+#music-toggle-btn.music-on{border-color:#00e5ff;color:#00e5ff}
+#music-toggle-btn.music-off{border-color:#ff3366;color:#ff3366}
 </style>
 </head>
 <body>
 <div id="G">
+  <!-- HOME SCREEN -->
   <div id="home-screen" class="screen">
     <div class="lang-toggle" style="position:absolute;top:14px;right:14px">
-      <button class="lang-btn active" id="btn-en" onclick="setLang('en')">EN</button>
-      <button class="lang-btn" id="btn-he" onclick="setLang('he')">עב</button>
+      <button class="lang-btn active" id="btn-en">EN</button>
+      <button class="lang-btn" id="btn-he">עב</button>
     </div>
     <div class="game-title" id="t-title">TARGET RANGE</div>
-    <div class="sub" id="t-choose"></div>
-    <div class="player-grid" id="player-grid"></div>
-    <div class="sub" id="t-hint" style="margin-top:4px"></div>
-    <button class="gBtn" id="home-start-btn"></button>
-    <div class="vol-wrap">
-      <label id="t-vol"></label>
-      <input type="range" id="vol-slider" min="0" max="1" step="0.05" value="0.4">
+    <div class="sub" id="t-choose">choose game mode</div>
+    <div class="mode-grid">
+      <div class="m-opt sel" data-mode="local">
+        <span>👥</span>
+        <span class="m-label" id="ml-local">LOCAL<br>MULTIPLAYER</span>
+      </div>
+      <div class="m-opt" data-mode="online">
+        <span>🌐</span>
+        <span class="m-label" id="ml-online">ONLINE<br>MULTIPLAYER</span>
+      </div>
     </div>
-    <button class="gBtn home-ext" onclick="window.location.href='https://arnonmaya.github.io/games/'" id="t-home-ext" style="margin-top:6px"></button>
-    <div class="kb-hint" id="kb-hint" style="display:none"></div>
+    <div id="local-opts">
+      <div class="sub" id="t-hint" style="margin-top:4px"></div>
+      <div class="player-grid" id="player-grid"></div>
+    </div>
+    <div id="online-opts" style="display:none;flex-direction:column;align-items:center;gap:10px">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+        <div class="sub">your name</div>
+        <input class="name-input" id="player-name-input" maxlength="12" placeholder="PLAYER NAME" autocomplete="off">
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
+        <button class="gBtn" id="create-room-btn">CREATE ROOM</button>
+        <button class="gBtn sm" id="join-room-btn">JOIN ROOM</button>
+      </div>
+      <div id="join-input-wrap" style="display:none;flex-direction:column;align-items:center;gap:6px">
+        <div class="sub">enter room code</div>
+        <input class="room-input" id="join-code-input" maxlength="4" placeholder="XXXX" autocomplete="off">
+        <button class="gBtn" id="confirm-join-btn">JOIN</button>
+        <div class="error-line" id="join-error"></div>
+      </div>
+    </div>
+    <button class="gBtn" id="home-start-btn">START GAME</button>
+    <div class="vol-wrap">
+      <label id="t-vol">VOLUME</label>
+      <input type="range" id="vol-slider" min="0" max="1" step="0.05" value="0.4">
+      <button id="music-toggle-btn" class="music-on" title="Toggle music">🎵</button>
+    </div>
+    <button class="gBtn home-ext" onclick="window.location.href='https://arnonmaya.github.io/games/'" id="t-home-ext" style="margin-top:6px">BACK TO HOME PAGE</button>
+    <div class="kb-hint" id="kb-hint" style="display:none">keyboard: arrow keys to aim · space / enter to fire</div>
   </div>
+
+  <!-- ROOM LOBBY SCREEN -->
+  <div id="lobby-screen" class="screen hidden">
+    <div class="game-title" style="font-size:20px;letter-spacing:3px">ROOM LOBBY</div>
+    <div class="room-box">
+      <div class="sub">ROOM CODE</div>
+      <div class="room-code" id="lobby-room-code">----</div>
+      <div class="sub" id="lobby-hint">Share this code with friends</div>
+    </div>
+    <div class="sub">PLAYERS</div>
+    <div class="player-list" id="lobby-player-list"></div>
+    <div class="status-line" id="lobby-status"></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
+      <button class="gBtn gold" id="lobby-start-btn" style="display:none">START GAME</button>
+      <button class="gBtn red sm" id="lobby-leave-btn">LEAVE</button>
+    </div>
+  </div>
+
+  <!-- GAME SCREEN -->
   <div id="game-screen" class="screen hidden" style="padding:0;justify-content:flex-start;align-items:stretch">
     <div id="hud">
       <button class="back-arrow" id="back-btn">&#8592;</button>
-      <div class="hud-block"><span class="hud-label" id="h-score"></span><span class="hud-val" id="score-disp">0</span></div>
-      <div class="hud-block"><span class="hud-label" id="h-acc"></span><span class="hud-val" id="shots-disp">-</span></div>
-      <div class="hud-block"><span class="hud-label" id="h-level"></span><span class="hud-val" id="level-disp">1</span></div>
-      <div class="hud-block"><span class="hud-label" id="h-hits"></span><span class="hud-val" id="hits-disp">-</span></div>
+      <div class="hud-block"><span class="hud-label" id="h-score">Score</span><span class="hud-val" id="score-disp">0</span></div>
+      <div class="hud-block"><span class="hud-label" id="h-acc">Accuracy</span><span class="hud-val" id="shots-disp">-</span></div>
+      <div class="hud-block"><span class="hud-label" id="h-level">Level</span><span class="hud-val" id="level-disp">1</span></div>
+      <div class="hud-block"><span class="hud-label" id="h-hits">Hits</span><span class="hud-val" id="hits-disp">-</span></div>
     </div>
     <div id="arena">
       <div class="grid-h" style="top:25%"></div><div class="grid-h" style="top:50%"></div><div class="grid-h" style="top:75%"></div>
@@ -105,6 +183,7 @@ body{background:#04070a;display:flex;justify-content:center;align-items:flex-sta
       <div id="xhair"><div class="xh-c"></div></div>
       <div id="combo-disp"></div>
       <div id="cur-player-badge">Player 1</div>
+      <div id="live-board"></div>
       <div id="timer-bar-wrap"><div id="timer-bar"></div></div>
     </div>
     <div id="touch-controls">
@@ -112,57 +191,83 @@ body{background:#04070a;display:flex;justify-content:center;align-items:flex-sta
         <button class="tc-btn" id="tc-left">&#9664;</button>
         <button class="tc-btn" id="tc-right">&#9654;</button>
       </div>
-      <button class="tc-btn" id="tc-fire"></button>
+      <button class="tc-btn" id="tc-fire">FIRE</button>
       <div style="display:flex;gap:8px">
         <button class="tc-btn" id="tc-up">&#9650;</button>
         <button class="tc-btn" id="tc-down">&#9660;</button>
       </div>
     </div>
   </div>
+
+  <!-- TRANSITION SCREEN -->
   <div id="transition-screen" class="screen hidden">
     <div class="sub" id="trans-label"></div>
     <div class="countdown-ring" id="countdown-num">3</div>
     <div id="trans-sub" class="sub"></div>
   </div>
+
+  <!-- RESULTS SCREEN -->
   <div id="results-screen" class="screen hidden">
-    <div class="game-title" style="font-size:20px;letter-spacing:3px" id="t-clear"></div>
+    <div class="game-title" style="font-size:20px;letter-spacing:3px" id="t-clear">RANGE CLEAR</div>
     <div class="results-card">
-      <h3 id="t-scoreboard"></h3>
+      <h3 id="t-scoreboard">SCOREBOARD</h3>
       <div id="scoreboard"></div>
     </div>
     <div id="winner-wrap" style="text-align:center">
-      <div class="sub" id="t-winner-label"></div>
+      <div class="sub" id="t-winner-label">winner</div>
       <div class="winner-badge" id="winner-name">-</div>
     </div>
     <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center">
-      <button class="gBtn gold" id="play-again-btn"></button>
-      <button class="gBtn sm" id="change-players-btn"></button>
+      <button class="gBtn gold" id="play-again-btn">PLAY AGAIN</button>
+      <button class="gBtn sm" id="change-players-btn">CHANGE PLAYERS</button>
     </div>
     <div id="play-again-timer" style="font-family:'Orbitron',monospace;font-size:11px;color:#3a7a8a;letter-spacing:2px;min-height:18px"></div>
   </div>
 </div>
-<script>
+
+<!-- Firebase SDK -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, set, get, push, onValue, off, update, remove, serverTimestamp, onDisconnect }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDbprzF4Kf01ejNHagZLrWoDEZUmMlcaJs",
+  authDomain: "games-on-d-mend.firebaseapp.com",
+  databaseURL: "https://games-on-d-mend-default-rtdb.firebaseio.com",
+  projectId: "games-on-d-mend",
+  storageBucket: "games-on-d-mend.firebasestorage.app",
+  messagingSenderId: "828376886522",
+  appId: "1:828376886522:web:6b2ca497c7b0ef0ccb2d43"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
 const $=id=>document.getElementById(id);
+
 const T={
   en:{
-    title:'TARGET RANGE',choose:'choose number of players',player:'player',players:'players',
+    title:'TARGET RANGE',choose:'choose game mode',player:'player',players:'players',
     hint:'30 sec per player · click targets to score',start:'START GAME',vol:'VOLUME',
     homeExt:'BACK TO HOME PAGE',kb:'keyboard: arrow keys to aim · space / enter to fire',
     hScore:'Score',hAcc:'Accuracy',hLevel:'Level',hHits:'Hits',fire:'FIRE',
     clear:'RANGE CLEAR',scoreboard:'SCOREBOARD',winnerLabel:'winner',
     playAgain:'PLAY AGAIN',changePlayers:'CHANGE PLAYERS',acc:'acc',
     getReady:'GET READY',nextUp:'Next up!',readySub:'Get ready!',go:'GO!',combo:'x COMBO',
-    playerLabel:n=>'Player '+n,playerName:n=>'PLAYER '+n
+    playerLabel:n=>'Player '+n,playerName:n=>'PLAYER '+n,
+    mlLocal:'LOCAL\nMULTIPLAYER',mlOnline:'ONLINE\nMULTIPLAYER'
   },
   he:{
-    title:'טווח ירי',choose:'בחר מספר שחקנים',player:'שחקן',players:'שחקנים',
+    title:'טווח ירי',choose:'בחר מצב משחק',player:'שחקן',players:'שחקנים',
     hint:'30 שניות לשחקן · לחץ על המטרות לניקוד',start:'התחל משחק',vol:'עוצמה',
     homeExt:'חזרה לדף הבית',kb:'מקלדת: חצים לכוון · רווח/אנטר לירות',
     hScore:'ניקוד',hAcc:'דיוק',hLevel:'רמה',hHits:'פגיעות',fire:'ירה',
     clear:'סיבוב הושלם',scoreboard:'לוח תוצאות',winnerLabel:'מנצח',
     playAgain:'שחק שוב',changePlayers:'שנה שחקנים',acc:'דיוק',
     getReady:'להתכונן',nextUp:'הבא בתור!',readySub:'התכונן!',go:'צא!',combo:'x קומבו',
-    playerLabel:n=>'שחקן '+n,playerName:n=>'שחקן '+n
+    playerLabel:n=>'שחקן '+n,playerName:n=>'שחקן '+n,
+    mlLocal:'מקומי',mlOnline:'אונליין'
   }
 };
 let lang='en';
@@ -172,13 +277,15 @@ function setLang(l){
   $('btn-he').classList.toggle('active',l==='he');
   applyLang();
 }
+$('btn-en').addEventListener('click',()=>setLang('en'));
+$('btn-he').addEventListener('click',()=>setLang('he'));
+
 function applyLang(){
   const t=T[lang],isHe=lang==='he';
   document.documentElement.lang=lang;
   $('t-title').textContent=t.title;
   $('t-title').style.fontFamily=isHe?"'Share Tech Mono',monospace":"'Orbitron',monospace";
   $('t-title').style.letterSpacing=isHe?'2px':'4px';
-  $('t-title').style.fontSize=isHe?'26px':'28px';
   $('t-choose').textContent=t.choose;
   $('t-hint').textContent=t.hint;
   $('home-start-btn').textContent=t.start;
@@ -199,6 +306,21 @@ function applyLang(){
   $('results-screen').style.direction=isHe?'rtl':'ltr';
   buildPlayerGrid();
 }
+
+const SCREENS={home:$('home-screen'),lobby:$('lobby-screen'),game:$('game-screen'),trans:$('transition-screen'),results:$('results-screen')};
+function showScreen(name){Object.values(SCREENS).forEach(s=>s.classList.add('hidden'));SCREENS[name].classList.remove('hidden');}
+
+let gameMode='local';
+function selectMode(m){
+  gameMode=m;
+  document.querySelectorAll('.m-opt').forEach(o=>o.classList.toggle('sel',o.dataset.mode===m));
+  $('local-opts').style.display=m==='local'?'':'none';
+  $('online-opts').style.display=m==='online'?'flex':'none';
+  $('home-start-btn').style.display=m==='local'?'':'none';
+}
+document.querySelectorAll('.m-opt').forEach(o=>o.addEventListener('click',()=>selectMode(o.dataset.mode)));
+
+let numPlayers=1,playerScores=[],playerHits=[],playerShots=[],curPlayerIdx=0;
 function buildPlayerGrid(){
   const t=T[lang],grid=$('player-grid'),cur=numPlayers;
   grid.innerHTML='';
@@ -207,80 +329,598 @@ function buildPlayerGrid(){
     d.className='p-opt'+(n===cur?' sel':'');
     d.dataset.n=n;
     d.innerHTML=n+'<span>'+(n===1?t.player:t.players)+'</span>';
+    d.onclick=()=>{document.querySelectorAll('.p-opt').forEach(o=>o.classList.remove('sel'));d.classList.add('sel');numPlayers=n;};
     grid.appendChild(d);
   }
 }
-const homeScr=$('home-screen'),gameScr=$('game-screen'),transScr=$('transition-screen'),resultsScr=$('results-screen');
-const arenaEl=$('arena'),xhair=$('xhair'),timerBar=$('timer-bar'),comboDisp=$('combo-disp'),curBadge=$('cur-player-badge');
-const touchCtrl=$('touch-controls');
-let numPlayers=1,playerScores=[],playerHits=[],playerShots=[],curPlayerIdx=0;
-let score=0,hits=0,shots=0,level=1,gameActive=false;
-let targets=[],timers=[],combo=0,comboTimer=null,timeLeft=30,gameTimer=null;
-let playAgainInterval=null,masterVol=0.4,isTouchDevice=false,xhX=200,xhY=200;
-const GAME_DURATION=30;
-const SIZES=[{r:36,pts:100,spd:3200,col:'#ff3366'},{r:24,pts:200,spd:2200,col:'#ffd700'},{r:17,pts:350,spd:1500,col:'#00e5ff'}];
-const COLORS=['#00e5ff','#ff3366','#ffd700','#7fff7f'];
-let AC;
-function getAC(){if(!AC)AC=new(window.AudioContext||window.webkitAudioContext)();return AC;}
+
+// ── audio ────────────────────────────────────────────────────────────────────
+let AC, masterVol=0.4, musicGain=null;
+// musicEnabled = whether user wants music on (toggle state)
+// bgMusicActive = whether music is currently scheduled/running
+let musicEnabled=true, bgMusicActive=false;
+let scheduledNodes=[], musicScheduleId=null, musicStartTime=0, musicBar=0;
+
+function getAC(){
+  if(!AC){
+    AC=new(window.AudioContext||window.webkitAudioContext)();
+    musicGain=AC.createGain();
+    musicGain.gain.value=0.18*masterVol;
+    musicGain.connect(AC.destination);
+  }
+  return AC;
+}
+
 function beep(freq,dur,type,vol){
   type=type||'square';vol=vol||0.15;
-  try{const ac=getAC(),o=ac.createOscillator(),g=ac.createGain();o.connect(g);g.connect(ac.destination);o.type=type;o.frequency.value=freq;g.gain.setValueAtTime(vol*masterVol,ac.currentTime);g.gain.exponentialRampToValueAtTime(0.001,ac.currentTime+dur);o.start();o.stop(ac.currentTime+dur);}catch(e){}
+  try{
+    const ac=getAC(),o=ac.createOscillator(),g=ac.createGain();
+    o.connect(g);g.connect(ac.destination);
+    o.type=type;o.frequency.value=freq;
+    g.gain.setValueAtTime(vol*masterVol,ac.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001,ac.currentTime+dur);
+    o.start();o.stop(ac.currentTime+dur);
+  }catch(e){}
 }
-function playShot(){beep(220,.08,'sawtooth',.2);setTimeout(function(){beep(160,.06,'sawtooth',.1);},60);}
-function playHit(pts){var f=pts===350?880:pts===200?660:440;beep(f,.04,'square',.25);setTimeout(function(){beep(f*1.5,.08,'square',.2);},50);}
-function playMiss(){beep(120,.15,'sawtooth',.18);setTimeout(function(){beep(90,.12,'sawtooth',.12);},80);}
-function playCombo(n){beep(440+n*80,.06,'square',.2);setTimeout(function(){beep(600+n*80,.1,'square',.18);},70);}
+
+function playShot(){beep(220,.08,'sawtooth',.2);setTimeout(()=>beep(160,.06,'sawtooth',.1),60);}
+function playHit(pts){var f=pts===350?880:pts===200?660:440;beep(f,.04,'square',.25);setTimeout(()=>beep(f*1.5,.08,'square',.2),50);}
+function playMiss(){beep(120,.15,'sawtooth',.18);setTimeout(()=>beep(90,.12,'sawtooth',.12),80);}
+function playCombo(n){beep(440+n*80,.06,'square',.2);setTimeout(()=>beep(600+n*80,.1,'square',.18),70);}
 function playCountdown(){beep(440,.12,'square',.25);}
-function playGo(){beep(880,.08,'square',.3);setTimeout(function(){beep(1100,.12,'square',.3);},90);}
-function playEnd(){[440,330,220].forEach(function(f,i){setTimeout(function(){beep(f,.18,'square',.25);},i*130);});}
-function playWin(){[523,659,784,1047].forEach(function(f,i){setTimeout(function(){beep(f,.15,'square',.25);},i*110);});}
-var bgMusicActive=false;
-function bgMusic(){
-  if(!bgMusicActive)return;
-  var p=[330,370,440,370,330,294,330,370];
-  p.forEach(function(f,i){setTimeout(function(){if(bgMusicActive)beep(f,.18,'triangle',.05);},i*175);});
-  if(bgMusicActive)setTimeout(bgMusic,p.length*175);
+function playGo(){beep(880,.08,'square',.3);setTimeout(()=>beep(1100,.12,'square',.3),90);}
+function playEnd(){[440,330,220].forEach((f,i)=>setTimeout(()=>beep(f,.18,'square',.25),i*130));}
+function playWin(){[523,659,784,1047].forEach((f,i)=>setTimeout(()=>beep(f,.15,'square',.25),i*110));}
+
+// ── Full chiptune soundtrack ──────────────────────────────────────────────────
+const BPM=145, STEPS=16;
+const STEP_DUR=60/(BPM*4);
+
+const NOTE={
+  C2:65.41,D2:73.42,E2:82.41,F2:87.31,G2:98,A2:110,B2:123.47,
+  C3:130.81,D3:146.83,E3:164.81,F3:174.61,G3:196,A3:220,Bb3:233.08,B3:246.94,
+  C4:261.63,D4:293.66,Eb4:311.13,E4:329.63,F4:349.23,G4:392,A4:440,Bb4:466.16,B4:493.88,
+  C5:523.25,D5:587.33,E5:659.25,F5:698.46,G5:784,A5:880,
+  _:0
+};
+
+const BASS_LOOP=[
+  'C2','_','C2','_', 'G2','_','G2','_', 'A2','_','A2','_', 'F2','_','G2','_',
+  'C2','_','C2','_', 'G2','_','G2','_', 'Bb3','_','A2','_','F2','G2','_','_',
+  'C2','_','E2','_', 'G2','_','F2','_', 'A2','_','G2','_', 'F2','_','E2','_',
+  'C2','_','C2','C2','G2','_','G2','_', 'A2','_','F2','_', 'G2','_','_','_',
+];
+
+const LEAD_LOOP=[
+  '_','_','E4','_', 'G4','_','_','_', 'A4','_','G4','_', 'E4','_','_','_',
+  '_','_','D4','_', 'F4','_','E4','_', 'C4','_','_','_', 'D4','_','_','_',
+  'E4','_','G4','_', 'A4','_','G4','E4','_','_','C5','_', 'B4','_','A4','_',
+  'G4','_','F4','_', 'E4','_','D4','_', 'C4','_','E4','G4','A4','_','_','_',
+];
+
+const ARP_LOOP=[
+  'C4','E4','G4','_', 'C4','E4','G4','_', 'A3','C4','E4','_', 'A3','C4','E4','_',
+  'G3','B3','D4','_', 'G3','B3','D4','_', 'F3','A3','C4','_', 'G3','B3','D4','_',
+  'C4','E4','G4','_', 'C4','G4','C5','_', 'A3','E4','A4','_', 'F3','A3','C4','_',
+  'G3','D4','G4','_', 'G3','D4','B4','_', 'C4','E4','G4','C5','_','_','_','_',
+];
+
+const KICK_PAT=[1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0];
+const SNARE_PAT=[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0];
+const HAT_PAT=[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,1];
+
+const LOOP_BARS=4;
+
+function schedNote(freq,dur,type,vol,startTime){
+  if(!freq)return;
+  try{
+    const ac=getAC();
+    const o=ac.createOscillator(),g=ac.createGain();
+    o.connect(g);g.connect(musicGain);
+    o.type=type;o.frequency.value=freq;
+    g.gain.setValueAtTime(0,startTime);
+    g.gain.linearRampToValueAtTime(vol,startTime+0.005);
+    g.gain.exponentialRampToValueAtTime(0.001,startTime+dur);
+    o.start(startTime);o.stop(startTime+dur+0.01);
+    scheduledNodes.push(o);
+  }catch(e){}
 }
-$('vol-slider').addEventListener('input',function(e){masterVol=+e.target.value;});
+
+function schedKick(t){
+  try{
+    const ac=getAC();
+    const o=ac.createOscillator(),g=ac.createGain();
+    o.connect(g);g.connect(musicGain);
+    o.type='sine';
+    o.frequency.setValueAtTime(150,t);
+    o.frequency.exponentialRampToValueAtTime(40,t+0.08);
+    g.gain.setValueAtTime(0.7,t);
+    g.gain.exponentialRampToValueAtTime(0.001,t+0.12);
+    o.start(t);o.stop(t+0.13);
+    scheduledNodes.push(o);
+  }catch(e){}
+}
+
+function schedSnare(t){
+  try{
+    const ac=getAC();
+    const buf=ac.createBuffer(1,ac.sampleRate*0.15,ac.sampleRate);
+    const d=buf.getChannelData(0);
+    for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1);
+    const src=ac.createBufferSource(),g=ac.createGain(),f=ac.createBiquadFilter();
+    f.type='bandpass';f.frequency.value=2200;f.Q.value=0.8;
+    src.buffer=buf;src.connect(f);f.connect(g);g.connect(musicGain);
+    g.gain.setValueAtTime(0.35,t);
+    g.gain.exponentialRampToValueAtTime(0.001,t+0.13);
+    src.start(t);src.stop(t+0.15);
+    scheduledNodes.push(src);
+  }catch(e){}
+}
+
+function schedHat(t,vol){
+  try{
+    const ac=getAC();
+    const buf=ac.createBuffer(1,ac.sampleRate*0.05,ac.sampleRate);
+    const d=buf.getChannelData(0);
+    for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1);
+    const src=ac.createBufferSource(),g=ac.createGain(),f=ac.createBiquadFilter();
+    f.type='highpass';f.frequency.value=8000;
+    src.buffer=buf;src.connect(f);f.connect(g);g.connect(musicGain);
+    g.gain.setValueAtTime(vol||0.12,t);
+    g.gain.exponentialRampToValueAtTime(0.001,t+0.04);
+    src.start(t);src.stop(t+0.06);
+    scheduledNodes.push(src);
+  }catch(e){}
+}
+
+function scheduleBar(barIndex, startTime){
+  const barInLoop = barIndex % LOOP_BARS;
+  const stepOffset = barInLoop * STEPS;
+  for(let s=0;s<STEPS;s++){
+    const t = startTime + s*STEP_DUR;
+    const li = stepOffset + s;
+    const bn=NOTE[BASS_LOOP[li]];
+    if(bn) schedNote(bn, STEP_DUR*1.6, 'sawtooth', 0.55, t);
+    const ln=NOTE[LEAD_LOOP[li]];
+    if(ln) schedNote(ln, STEP_DUR*1.8, 'square', 0.22, t);
+    const an=NOTE[ARP_LOOP[li]];
+    if(an) schedNote(an, STEP_DUR*0.9, 'triangle', 0.14, t);
+    if(KICK_PAT[s]) schedKick(t);
+    if(SNARE_PAT[s]) schedSnare(t);
+    if(HAT_PAT[s]) schedHat(t, s%2===1?0.07:0.12);
+  }
+}
+
+const LOOKAHEAD=2;
+function bgMusicScheduler(){
+  if(!bgMusicActive)return;
+  const ac=getAC();
+  const BAR_DUR=STEPS*STEP_DUR;
+  const now=ac.currentTime;
+  while(musicStartTime + (musicBar+1)*BAR_DUR < now + LOOKAHEAD*BAR_DUR){
+    scheduleBar(musicBar, musicStartTime + musicBar*BAR_DUR);
+    musicBar++;
+  }
+  musicScheduleId=setTimeout(bgMusicScheduler, 250);
+}
+
+// startBgMusic: starts music if enabled and not already running
+function startBgMusic(){
+  if(!musicEnabled)return;
+  if(bgMusicActive)return; // already playing
+  const ac=getAC();
+  musicGain.gain.value=0.18*masterVol;
+  musicStartTime=ac.currentTime+0.05;
+  musicBar=0;
+  scheduledNodes=[];
+  bgMusicActive=true;
+  bgMusicScheduler();
+}
+
+// stopBgMusic: stops music scheduling and kills all nodes
+function stopBgMusic(){
+  bgMusicActive=false;
+  clearTimeout(musicScheduleId);
+  scheduledNodes.forEach(n=>{try{n.stop();}catch(e){}});
+  scheduledNodes=[];
+}
+
+// pauseBgMusic: stops audio but remembers it should be playing
+// Used when transitioning between game phases — music should resume
+function pauseBgMusic(){
+  // We don't actually need this — we just stop/start seamlessly
+  stopBgMusic();
+}
+
+$('vol-slider').addEventListener('input',e=>{
+  masterVol=+e.target.value;
+  if(musicGain) musicGain.gain.value=0.18*masterVol;
+});
+
+// ── Music toggle button ──────────────────────────────────────────────────────
+// musicEnabled controls whether the user wants music.
+// The music plays on the home/lobby/results/transition screens too.
+const musicToggleBtn=$('music-toggle-btn');
+
+function updateMusicBtn(){
+  if(musicEnabled){
+    musicToggleBtn.textContent='🎵';
+    musicToggleBtn.classList.remove('music-off');
+    musicToggleBtn.classList.add('music-on');
+  } else {
+    musicToggleBtn.textContent='🔇';
+    musicToggleBtn.classList.remove('music-on');
+    musicToggleBtn.classList.add('music-off');
+  }
+}
+
+musicToggleBtn.addEventListener('click',()=>{
+  musicEnabled=!musicEnabled;
+  updateMusicBtn();
+  if(musicEnabled){
+    // Resume music from wherever we are
+    startBgMusic();
+  } else {
+    stopBgMusic();
+  }
+});
+
+// Start ambient music as soon as user interacts with the page
+function ensureMusicStarted(){
+  if(musicEnabled && !bgMusicActive){
+    try{
+      const ac=getAC();
+      if(ac.state==='suspended') ac.resume().then(startBgMusic);
+      else startBgMusic();
+    }catch(e){}
+  }
+}
+
+// Start music on first meaningful interaction (browser requires user gesture)
+let _musicStarted=false;
+function _onFirstInteraction(){
+  if(_musicStarted)return;
+  _musicStarted=true;
+  ensureMusicStarted();
+  ['click','keydown','touchstart','pointerdown'].forEach(ev=>
+    document.removeEventListener(ev,_onFirstInteraction,true));
+}
+['click','keydown','touchstart','pointerdown'].forEach(ev=>
+  document.addEventListener(ev,_onFirstInteraction,{capture:true,passive:true}));
+
+// ── arena vars ───────────────────────────────────────────────────────────────
+const arenaEl=$('arena'),xhair=$('xhair'),timerBar=$('timer-bar'),comboDisp=$('combo-disp'),curBadge=$('cur-player-badge');
+const touchCtrl=$('touch-controls');
+let score=0,hits=0,shots=0,level=1,gameActive=false;
+let targets=[],timers=[],combo=0,comboTimer=null,timeLeft=30,gameTimer=null;
+let playAgainInterval=null,isTouchDevice=false,xhX=200,xhY=200;
+const GAME_DURATION=30;
+const SIZES=[{r:36,pts:100,spd:3200,col:'#ff3366'},{r:24,pts:200,spd:2200,col:'#ffd700'},{r:17,pts:350,spd:1500,col:'#00e5ff'}];
+const COLORS=['#00e5ff','#ff3366','#ffd700','#7fff7f','#ff9f00','#c77dff'];
+
 function detectTouch(){
   isTouchDevice=('ontouchstart' in window)||navigator.maxTouchPoints>0;
   touchCtrl.style.display=isTouchDevice?'flex':'none';
   arenaEl.style.cursor=isTouchDevice?'default':'crosshair';
   $('kb-hint').style.display=isTouchDevice?'none':'block';
 }
-$('player-grid').addEventListener('click',function(e){
-  var opt=e.target.closest('.p-opt');if(!opt)return;
-  document.querySelectorAll('.p-opt').forEach(function(o){o.classList.remove('sel');});
-  opt.classList.add('sel');numPlayers=+opt.dataset.n;
+
+// ── ONLINE ROOM ──────────────────────────────────────────────────────────────
+let myPlayerId=null, myPlayerName='', roomCode=null, roomRef=null, isHost=false;
+let onlineGameOrder=[], onlinePlayers={};
+let roomListener=null;
+
+function genCode(){return Math.random().toString(36).substring(2,6).toUpperCase();}
+function genPlayerId(){return Math.random().toString(36).substring(2,10);}
+
+$('create-room-btn').addEventListener('click',async()=>{
+  const name=($('player-name-input').value||'').trim().toUpperCase()||'PLAYER';
+  myPlayerName=name.substring(0,12);
+  myPlayerId=genPlayerId();
+  let code,snap;
+  do{code=genCode();snap=await get(ref(db,'rooms/'+code));}while(snap.exists());
+  roomCode=code;
+  isHost=true;
+  roomRef=ref(db,'rooms/'+roomCode);
+  const playerRef=ref(db,'rooms/'+roomCode+'/players/'+myPlayerId);
+  await set(roomRef,{
+    host:myPlayerId,
+    state:'lobby',
+    created:serverTimestamp(),
+    currentPlayerIdx:0,
+    scores:{},
+    players:{}
+  });
+  await set(playerRef,{name:myPlayerName,ready:false,score:0,hits:0,shots:0,joinedAt:serverTimestamp()});
+  onDisconnect(playerRef).remove();
+  onDisconnect(ref(db,'rooms/'+roomCode)).remove();
+  openLobby();
 });
-$('home-start-btn').addEventListener('click',function(){
+
+$('join-room-btn').addEventListener('click',()=>{
+  $('join-input-wrap').style.display='flex';
+  $('join-code-input').focus();
+});
+
+$('confirm-join-btn').addEventListener('click',()=>joinRoom($('join-code-input').value));
+$('join-code-input').addEventListener('keydown',e=>{if(e.key==='Enter')joinRoom($('join-code-input').value);});
+
+async function joinRoom(code){
+  code=(code||'').trim().toUpperCase();
+  if(code.length!==4){$('join-error').textContent='Enter 4-letter code';return;}
+  const snap=await get(ref(db,'rooms/'+code));
+  if(!snap.exists()){$('join-error').textContent='Room not found';return;}
+  const data=snap.val();
+  if(data.state==='playing'){$('join-error').textContent='Game already started';return;}
+  const playerCount=Object.keys(data.players||{}).length;
+  if(playerCount>=6){$('join-error').textContent='Room full (max 6)';return;}
+  const name=($('player-name-input').value||'').trim().toUpperCase()||'PLAYER';
+  myPlayerName=name.substring(0,12);
+  myPlayerId=genPlayerId();
+  roomCode=code;
+  isHost=false;
+  roomRef=ref(db,'rooms/'+roomCode);
+  const playerRef=ref(db,'rooms/'+roomCode+'/players/'+myPlayerId);
+  await set(playerRef,{name:myPlayerName,ready:false,score:0,hits:0,shots:0,joinedAt:serverTimestamp()});
+  onDisconnect(playerRef).remove();
+  $('join-error').textContent='';
+  openLobby();
+}
+
+function openLobby(){
+  showScreen('lobby');
+  $('lobby-room-code').textContent=roomCode;
+  $('lobby-start-btn').style.display=isHost?'':'none';
+  listenRoom();
+  // Music continues playing in lobby
+  ensureMusicStarted();
+}
+
+function listenRoom(){
+  if(roomListener){off(roomRef);roomListener=null;}
+  roomListener=onValue(roomRef,(snap)=>{
+    if(!snap.exists()){leaveRoom(false);return;}
+    const data=snap.val();
+    onlinePlayers=data.players||{};
+    renderLobbyPlayers(onlinePlayers,data.host);
+    if(data.state==='playing'&&gameActive===false){
+      startOnlineGame(data);
+    }
+    if(data.state==='results'){
+      showOnlineResults(data);
+    }
+  });
+}
+
+function renderLobbyPlayers(players,hostId){
+  const list=$('lobby-player-list');
+  list.innerHTML='';
+  const sorted=Object.entries(players).sort((a,b)=>(a[1].joinedAt||0)-(b[1].joinedAt||0));
+  sorted.forEach(([id,p])=>{
+    const div=document.createElement('div');
+    div.className='player-item';
+    const isMe=id===myPlayerId;
+    div.innerHTML=`<span class="pi-name" style="color:${COLORS[sorted.findIndex(e=>e[0]===id)%COLORS.length]}">${p.name}${isMe?' (you)':''}${id===hostId?'<span class="pi-host-badge">HOST</span>':''}</span><span class="pi-status">${isMe?'<span class="pi-ready">●</span>':''}</span>`;
+    list.appendChild(div);
+  });
+  const count=sorted.length;
+  $('lobby-status').textContent=count===1?'Waiting for players...':`${count} player${count>1?'s':''} in room`;
+  if(isHost&&count>=2){
+    $('lobby-start-btn').disabled=false;
+    $('lobby-start-btn').textContent=`START (${count} players)`;
+  }else if(isHost){
+    $('lobby-start-btn').disabled=true;
+    $('lobby-start-btn').textContent='Need 2+ players';
+  }
+}
+
+$('lobby-start-btn').addEventListener('click',async()=>{
+  if(!isHost)return;
+  const snap=await get(roomRef);
+  if(!snap.exists())return;
+  const data=snap.val();
+  const order=Object.keys(data.players||{}).sort((a,b)=>(data.players[a].joinedAt||0)-(data.players[b].joinedAt||0));
+  await update(roomRef,{state:'playing',currentPlayerIdx:0,gameOrder:order,turnStartTime:serverTimestamp()});
+});
+
+$('lobby-leave-btn').addEventListener('click',()=>leaveRoom(true));
+
+async function leaveRoom(navigate=true){
+  if(roomRef&&myPlayerId){
+    await remove(ref(db,'rooms/'+roomCode+'/players/'+myPlayerId));
+    const snap=await get(ref(db,'rooms/'+roomCode+'/players'));
+    if(!snap.exists()||Object.keys(snap.val()||{}).length===0){
+      await remove(ref(db,'rooms/'+roomCode));
+    } else if(isHost){
+      const remaining=Object.keys(snap.val());
+      await update(roomRef,{host:remaining[0]});
+    }
+  }
+  if(roomListener){off(roomRef);roomListener=null;}
+  roomCode=null;roomRef=null;isHost=false;myPlayerId=null;
+  if(navigate)showScreen('home');
+}
+
+// ── Online game flow ──────────────────────────────────────────────────────────
+let onlineCurrentIdx=0;
+let onlineGameOrder2=[];
+let myTurnActive=false;
+
+async function startOnlineGame(data){
+  onlineGameOrder2=data.gameOrder||Object.keys(onlinePlayers);
+  onlineCurrentIdx=data.currentPlayerIdx||0;
+  checkMyTurn(data);
+}
+
+function checkMyTurn(data){
+  onlineCurrentIdx=data.currentPlayerIdx||0;
+  const currentPlayerId=onlineGameOrder2[onlineCurrentIdx];
+  const currentPlayer=onlinePlayers[currentPlayerId]||{name:'?'};
+
+  if(currentPlayerId===myPlayerId && !myTurnActive){
+    myTurnActive=true;
+    score=0;hits=0;shots=0;level=1;combo=0;timeLeft=GAME_DURATION;
+    const pIdx=onlineCurrentIdx;
+    const pName=currentPlayer.name||'YOU';
+    curBadge.textContent=pName;
+    curBadge.style.color=COLORS[pIdx%COLORS.length];
+    curBadge.style.borderColor=COLORS[pIdx%COLORS.length]+'44';
+    showTransition(pName,'YOUR TURN!',()=>{
+      showScreen('game');detectTouch();updateHUD();
+      timerBar.style.width='100%';timerBar.style.background='#00e5ff';
+      xhX=arenaEl.offsetWidth/2;xhY=arenaEl.offsetHeight/2;
+      xhair.style.left=xhX+'px';xhair.style.top=xhY+'px';
+      gameActive=true;
+      // Music should keep playing during game — just ensure it's going
+      ensureMusicStarted();
+      spawnTarget();
+      gameTimer=setInterval(()=>{
+        timeLeft--;
+        const pct=(timeLeft/GAME_DURATION)*100;
+        timerBar.style.width=pct+'%';
+        if(pct<30)timerBar.style.background='#ff3366';else if(pct<60)timerBar.style.background='#ffd700';
+        level=Math.floor((GAME_DURATION-timeLeft)/8)+1;updateHUD();
+        if(timeLeft<=0)endOnlineTurn();
+      },1000);
+    });
+  } else if(currentPlayerId!==myPlayerId){
+    myTurnActive=false;
+    showScreen('game');detectTouch();
+    const pName=currentPlayer.name||'?';
+    curBadge.textContent=pName+' playing...';
+    curBadge.style.color=COLORS[onlineCurrentIdx%COLORS.length];
+    gameActive=false;
+    // Keep music going while watching
+    ensureMusicStarted();
+    updateLiveBoard(data.players||{},onlineGameOrder2);
+  }
+}
+
+function updateLiveBoard(players,order){
+  const board=$('live-board');
+  board.innerHTML='';
+  order.forEach((id,i)=>{
+    const p=players[id];if(!p)return;
+    const row=document.createElement('div');
+    row.className='lb-row';
+    row.style.borderColor=COLORS[i%COLORS.length];
+    row.style.color=COLORS[i%COLORS.length];
+    row.textContent=`${p.name}: ${p.score||0}`;
+    board.appendChild(row);
+  });
+}
+
+async function endOnlineTurn(){
+  gameActive=false;
+  clearInterval(gameTimer);
+  timers.forEach(clearTimeout);timers=[];
+  targets.forEach(t=>{if(t.el.parentNode)t.el.parentNode.removeChild(t.el);});targets=[];
+  myTurnActive=false;
+  playEnd();
+  // Music keeps playing after turn ends — we do NOT stop it
+  await update(ref(db,'rooms/'+roomCode+'/players/'+myPlayerId),{score,hits,shots});
+  const nextIdx=onlineCurrentIdx+1;
+  if(nextIdx>=onlineGameOrder2.length){
+    await update(roomRef,{state:'results',currentPlayerIdx:nextIdx});
+  } else {
+    await update(roomRef,{currentPlayerIdx:nextIdx,turnStartTime:serverTimestamp()});
+    showWaitingForNext();
+  }
+}
+
+function showWaitingForNext(){
+  showScreen('trans');
+  $('trans-label').textContent='YOUR TURN OVER';
+  $('countdown-num').textContent='⏳';
+  $('countdown-num').style.fontSize='48px';
+  $('trans-sub').textContent='Waiting for next player...';
+  // Music continues
+}
+
+async function showOnlineResults(data){
+  if(gameActive){
+    gameActive=false;
+    clearInterval(gameTimer);
+    timers.forEach(clearTimeout);timers=[];
+    targets.forEach(t=>{if(t.el.parentNode)t.el.parentNode.removeChild(t.el);});targets=[];
+  }
+  playWin();
+  showScreen('results');
+  // Music continues on results screen
+  ensureMusicStarted();
+  const players=data.players||{};
+  const order=data.gameOrder||Object.keys(players);
+  const board=$('scoreboard');board.innerHTML='';
+  const t=T[lang];
+  const sorted=[...order].sort((a,b)=>(players[b]?.score||0)-(players[a]?.score||0));
+  let winnerName='-',winnerColor='#ffd700';
+  sorted.forEach((id,rank)=>{
+    const p=players[id];if(!p)return;
+    const acc=p.shots>0?Math.round(p.hits/p.shots*100):0;
+    const row=document.createElement('div');row.className='p-row';
+    const col=COLORS[order.indexOf(id)%COLORS.length];
+    const medal=rank===0?' ★':'';
+    const isMe=id===myPlayerId?' (you)':'';
+    row.innerHTML=`<span class="p-name" style="color:${col}">${p.name}${isMe}${medal}</span><span class="p-acc">${acc}% acc</span><span class="p-score">${p.score||0}</span>`;
+    board.appendChild(row);
+    if(rank===0){winnerName=p.name;winnerColor=col;}
+  });
+  $('winner-wrap').style.display=sorted.length>1?'block':'none';
+  $('winner-name').textContent=winnerName;
+  $('winner-name').style.color=winnerColor;
+  let cd=8;
+  $('play-again-btn').textContent='PLAY AGAIN ('+cd+'s)';
+  playAgainInterval=setInterval(()=>{
+    cd--;
+    if(cd>0){$('play-again-btn').textContent='PLAY AGAIN ('+cd+'s)';}
+    else{clearInterval(playAgainInterval);$('play-again-btn').textContent='PLAY AGAIN';leaveRoom(true);}
+  },1000);
+}
+
+// ── local game ────────────────────────────────────────────────────────────────
+$('home-start-btn').addEventListener('click',()=>{
   getAC().resume();
+  ensureMusicStarted();
   playerScores=new Array(numPlayers).fill(0);playerHits=new Array(numPlayers).fill(0);playerShots=new Array(numPlayers).fill(0);
   curPlayerIdx=0;startPlayerRound();
 });
-$('back-btn').addEventListener('click',function(){stopGame();showScreen(homeScr);});
-$('play-again-btn').addEventListener('click',function(){
+
+$('back-btn').addEventListener('click',()=>{
+  stopGameTargets();
+  if(roomCode)leaveRoom(true);else showScreen('home');
+  // Music keeps playing on home screen
+  ensureMusicStarted();
+});
+
+$('play-again-btn').addEventListener('click',()=>{
   clearInterval(playAgainInterval);$('play-again-timer').textContent='';$('play-again-btn').textContent=T[lang].playAgain;
+  if(gameMode==='online'){leaveRoom(true);return;}
   playerScores=new Array(numPlayers).fill(0);playerHits=new Array(numPlayers).fill(0);playerShots=new Array(numPlayers).fill(0);
   curPlayerIdx=0;startPlayerRound();
 });
-$('change-players-btn').addEventListener('click',function(){
-  clearInterval(playAgainInterval);$('play-again-timer').textContent='';$('play-again-btn').textContent=T[lang].playAgain;showScreen(homeScr);
+$('change-players-btn').addEventListener('click',()=>{
+  clearInterval(playAgainInterval);$('play-again-timer').textContent='';$('play-again-btn').textContent=T[lang].playAgain;
+  if(gameMode==='online'){leaveRoom(true);return;}
+  showScreen('home');
+  ensureMusicStarted();
 });
-function showScreen(scr){[homeScr,gameScr,transScr,resultsScr].forEach(function(s){s.classList.add('hidden');});scr.classList.remove('hidden');}
+
 function startPlayerRound(){
   score=0;hits=0;shots=0;level=1;combo=0;timeLeft=GAME_DURATION;
-  var t=T[lang],pName=t.playerLabel(curPlayerIdx+1);
-  showTransition(pName,curPlayerIdx===0?t.readySub:t.nextUp,function(){
-    showScreen(gameScr);detectTouch();updateHUD();
+  const t=T[lang],pName=t.playerLabel(curPlayerIdx+1);
+  showTransition(pName,curPlayerIdx===0?t.readySub:t.nextUp,()=>{
+    showScreen('game');detectTouch();updateHUD();
     curBadge.textContent=pName;curBadge.style.color=COLORS[curPlayerIdx];curBadge.style.borderColor=COLORS[curPlayerIdx]+'44';
     timerBar.style.width='100%';timerBar.style.background='#00e5ff';
     xhX=arenaEl.offsetWidth/2;xhY=arenaEl.offsetHeight/2;
     xhair.style.left=xhX+'px';xhair.style.top=xhY+'px';
-    gameActive=true;bgMusicActive=true;bgMusic();spawnTarget();
-    gameTimer=setInterval(function(){
+    gameActive=true;
+    // Music keeps playing — just ensure it's running
+    ensureMusicStarted();
+    spawnTarget();
+    gameTimer=setInterval(()=>{
       timeLeft--;
-      var pct=(timeLeft/GAME_DURATION)*100;
+      const pct=(timeLeft/GAME_DURATION)*100;
       timerBar.style.width=pct+'%';
       if(pct<30)timerBar.style.background='#ff3366';else if(pct<60)timerBar.style.background='#ffd700';
       level=Math.floor((GAME_DURATION-timeLeft)/8)+1;updateHUD();
@@ -288,131 +928,158 @@ function startPlayerRound(){
     },1000);
   });
 }
+
 function showTransition(label,sub,cb){
-  showScreen(transScr);$('trans-label').textContent=label;$('trans-sub').textContent=sub;
-  var c=3;$('countdown-num').textContent=c;playCountdown();
-  var iv=setInterval(function(){
+  showScreen('trans');
+  $('trans-label').textContent=label;$('trans-sub').textContent=sub;
+  $('countdown-num').style.fontSize='48px';
+  // Music keeps playing during countdown
+  ensureMusicStarted();
+  let c=3;$('countdown-num').textContent=c;playCountdown();
+  const iv=setInterval(()=>{
     c--;
     if(c>0){$('countdown-num').textContent=c;playCountdown();}
     else{$('countdown-num').textContent=T[lang].go;playGo();clearInterval(iv);setTimeout(cb,500);}
   },1000);
 }
+
 function endPlayerRound(){
-  gameActive=false;bgMusicActive=false;clearInterval(gameTimer);
+  gameActive=false;clearInterval(gameTimer);
   timers.forEach(clearTimeout);timers=[];
-  targets.forEach(function(t){if(t.el.parentNode)t.el.parentNode.removeChild(t.el);});targets=[];
+  targets.forEach(t=>{if(t.el.parentNode)t.el.parentNode.removeChild(t.el);});targets=[];
   playerScores[curPlayerIdx]=score;playerHits[curPlayerIdx]=hits;playerShots[curPlayerIdx]=shots;
-  playEnd();curPlayerIdx++;
-  if(curPlayerIdx<numPlayers)setTimeout(function(){startPlayerRound();},700);else setTimeout(showResults,700);
+  playEnd();
+  // Music keeps going — do NOT stop it
+  curPlayerIdx++;
+  if(curPlayerIdx<numPlayers)setTimeout(startPlayerRound,700);else setTimeout(showLocalResults,700);
 }
-function stopGame(){
-  gameActive=false;bgMusicActive=false;clearInterval(gameTimer);
+
+// Stops targets/timers but NOT music
+function stopGameTargets(){
+  gameActive=false;clearInterval(gameTimer);
   timers.forEach(clearTimeout);timers=[];
-  targets.forEach(function(t){if(t.el.parentNode)t.el.parentNode.removeChild(t.el);});targets=[];
+  targets.forEach(t=>{if(t.el.parentNode)t.el.parentNode.removeChild(t.el);});targets=[];
 }
-function showResults(){
-  playWin();applyLang();showScreen(resultsScr);
-  var t=T[lang],board=$('scoreboard');board.innerHTML='';
-  var sorted=Array.from(playerScores.keys()).sort(function(a,b){return playerScores[b]-playerScores[a];});
-  var maxScore=Math.max.apply(null,playerScores),winnerIdx=playerScores.indexOf(maxScore);
-  sorted.forEach(function(i){
-    var acc=playerShots[i]>0?Math.round(playerHits[i]/playerShots[i]*100):0;
-    var row=document.createElement('div');row.className='p-row';
-    var medal=i===winnerIdx&&numPlayers>1?' \u2605':'';
-    row.innerHTML='<span class="p-name" style="color:'+COLORS[i]+'">'+t.playerName(i+1)+medal+'</span><span class="p-acc">'+acc+'% '+t.acc+'</span><span class="p-score">'+playerScores[i]+'</span>';
+
+function showLocalResults(){
+  playWin();applyLang();showScreen('results');
+  // Music continues on results screen
+  ensureMusicStarted();
+  const t=T[lang],board=$('scoreboard');board.innerHTML='';
+  const sorted=Array.from(playerScores.keys()).sort((a,b)=>playerScores[b]-playerScores[a]);
+  const maxScore=Math.max(...playerScores),winnerIdx=playerScores.indexOf(maxScore);
+  sorted.forEach(i=>{
+    const acc=playerShots[i]>0?Math.round(playerHits[i]/playerShots[i]*100):0;
+    const row=document.createElement('div');row.className='p-row';
+    const medal=i===winnerIdx&&numPlayers>1?' ★':'';
+    row.innerHTML=`<span class="p-name" style="color:${COLORS[i]}">${t.playerName(i+1)}${medal}</span><span class="p-acc">${acc}% ${t.acc}</span><span class="p-score">${playerScores[i]}</span>`;
     board.appendChild(row);
   });
   if(numPlayers>1){$('winner-wrap').style.display='block';$('winner-name').textContent=t.playerName(winnerIdx+1);$('winner-name').style.color=COLORS[winnerIdx];}
   else{$('winner-wrap').style.display='none';}
-  var countdown=5;
+  let countdown=5;
   $('play-again-btn').textContent=t.playAgain+' ('+countdown+'s)';
-  playAgainInterval=setInterval(function(){
+  playAgainInterval=setInterval(()=>{
     countdown--;
     if(countdown>0){$('play-again-btn').textContent=t.playAgain+' ('+countdown+'s)';}
-    else{clearInterval(playAgainInterval);$('play-again-btn').textContent=t.playAgain;$('play-again-timer').textContent='';showScreen(homeScr);}
+    else{clearInterval(playAgainInterval);$('play-again-btn').textContent=t.playAgain;$('play-again-timer').textContent='';showScreen('home');ensureMusicStarted();}
   },1000);
 }
+
+// ── target spawning ───────────────────────────────────────────────────────────
 function updateHUD(){
   $('score-disp').textContent=score;$('level-disp').textContent=level;
-  var acc=shots>0?Math.round(hits/shots*100):null;
+  const acc=shots>0?Math.round(hits/shots*100):null;
   $('shots-disp').textContent=acc!==null?acc+'%':'-';$('hits-disp').textContent=hits+'/'+shots;
 }
+
 function spawnTarget(){
   if(!gameActive)return;
-  var tier=SIZES[Math.floor(Math.random()*3)],margin=tier.r+10;
-  var aw=arenaEl.offsetWidth,ah=arenaEl.offsetHeight;
-  var x=margin+Math.random()*(aw-margin*2),y=margin+Math.random()*(ah-80-margin*2)+10;
-  var el=document.createElement('div');el.className='target';var sz=tier.r*2;
-  el.style.cssText='width:'+sz+'px;height:'+sz+'px;left:'+x+'px;top:'+y+'px;opacity:0;transition:opacity .12s';
-  for(var i=3;i>=1;i--){var ring=document.createElement('div');ring.className='ring';var rs=sz*(i/3);ring.style.cssText='width:'+rs+'px;height:'+rs+'px;border-color:'+tier.col+';opacity:'+(0.3+i*0.22);el.appendChild(ring);}
-  var dot=document.createElement('div');dot.style.cssText='position:absolute;width:5px;height:5px;border-radius:50%;background:'+tier.col+';left:50%;top:50%;transform:translate(-50%,-50%)';el.appendChild(dot);
-  var life=tier.spd-level*90;if(life<650)life=650;
-  arenaEl.appendChild(el);requestAnimationFrame(function(){el.style.opacity='1';});
-  var tobj={el:el,x:x,y:y,tier:tier,alive:true};targets.push(tobj);
-  el.addEventListener('click',function(e){e.stopPropagation();hitTarget(tobj);});
-  var autoRm=setTimeout(function(){if(tobj.alive){tobj.alive=false;removeTarget(tobj,false);}},life);timers.push(autoRm);
-  var delay=Math.max(350,1300-level*80-Math.random()*180);timers.push(setTimeout(spawnTarget,delay));
+  const tier=SIZES[Math.floor(Math.random()*3)],margin=tier.r+10;
+  const aw=arenaEl.offsetWidth,ah=arenaEl.offsetHeight;
+  const x=margin+Math.random()*(aw-margin*2),y=margin+Math.random()*(ah-80-margin*2)+10;
+  const el=document.createElement('div');el.className='target';const sz=tier.r*2;
+  el.style.cssText=`width:${sz}px;height:${sz}px;left:${x}px;top:${y}px;opacity:0;transition:opacity .12s`;
+  for(let i=3;i>=1;i--){const ring=document.createElement('div');ring.className='ring';const rs=sz*(i/3);ring.style.cssText=`width:${rs}px;height:${rs}px;border-color:${tier.col};opacity:${0.3+i*0.22}`;el.appendChild(ring);}
+  const dot=document.createElement('div');dot.style.cssText=`position:absolute;width:5px;height:5px;border-radius:50%;background:${tier.col};left:50%;top:50%;transform:translate(-50%,-50%)`;el.appendChild(dot);
+  let life=tier.spd-level*90;if(life<650)life=650;
+  arenaEl.appendChild(el);requestAnimationFrame(()=>{el.style.opacity='1';});
+  const tobj={el,x,y,tier,alive:true};targets.push(tobj);
+  el.addEventListener('click',e=>{e.stopPropagation();hitTarget(tobj);});
+  const autoRm=setTimeout(()=>{if(tobj.alive){tobj.alive=false;removeTarget(tobj,false);}},life);timers.push(autoRm);
+  const delay=Math.max(350,1300-level*80-Math.random()*180);timers.push(setTimeout(spawnTarget,delay));
 }
+
 function hitTarget(tobj){
   if(!tobj.alive||!gameActive)return;
   tobj.alive=false;hits++;shots++;playShot();playHit(tobj.tier.pts);
   combo++;clearTimeout(comboTimer);
-  comboTimer=setTimeout(function(){combo=0;comboDisp.style.opacity='0';},1100);
-  var pts=tobj.tier.pts;
+  comboTimer=setTimeout(()=>{combo=0;comboDisp.style.opacity='0';},1100);
+  let pts=tobj.tier.pts;
   if(combo>1){pts=Math.floor(pts*(1+combo*0.1));showCombo(combo,tobj.x,tobj.y-tobj.tier.r-12);playCombo(combo);}
   score+=pts;updateHUD();showPop('+'+pts,tobj.x,tobj.y,tobj.tier.col);showFlash(tobj.x,tobj.y,tobj.tier.col);removeTarget(tobj,true);
 }
+
 function removeTarget(tobj,hit){
   tobj.el.style.transition='opacity .12s,transform .12s';
   if(hit){tobj.el.style.transform='translate(-50%,-50%) scale(1.25)';tobj.el.style.opacity='0';}else{tobj.el.style.opacity='0';}
-  setTimeout(function(){if(tobj.el.parentNode)tobj.el.parentNode.removeChild(tobj.el);},150);
-  targets=targets.filter(function(t){return t!==tobj;});
+  setTimeout(()=>{if(tobj.el.parentNode)tobj.el.parentNode.removeChild(tobj.el);},150);
+  targets=targets.filter(t=>t!==tobj);
 }
-function showFlash(x,y,col){var f=document.createElement('div');f.className='hit-flash';f.style.cssText='left:'+x+'px;top:'+y+'px;background:'+col;arenaEl.appendChild(f);setTimeout(function(){if(f.parentNode)f.parentNode.removeChild(f);},380);}
-function showPop(txt,x,y,col){var p=document.createElement('div');p.className='score-pop';p.style.cssText='left:'+x+'px;top:'+(y-18)+'px;color:'+col;p.textContent=txt;arenaEl.appendChild(p);setTimeout(function(){if(p.parentNode)p.parentNode.removeChild(p);},700);}
-function showMiss(x,y){var m=document.createElement('div');m.className='miss-x';m.style.cssText='left:'+x+'px;top:'+y+'px';m.textContent='X';arenaEl.appendChild(m);setTimeout(function(){if(m.parentNode)m.parentNode.removeChild(m);},480);}
+
+function showFlash(x,y,col){const f=document.createElement('div');f.className='hit-flash';f.style.cssText=`left:${x}px;top:${y}px;background:${col}`;arenaEl.appendChild(f);setTimeout(()=>{if(f.parentNode)f.parentNode.removeChild(f);},380);}
+function showPop(txt,x,y,col){const p=document.createElement('div');p.className='score-pop';p.style.cssText=`left:${x}px;top:${y-18}px;color:${col}`;p.textContent=txt;arenaEl.appendChild(p);setTimeout(()=>{if(p.parentNode)p.parentNode.removeChild(p);},700);}
+function showMiss(x,y){const m=document.createElement('div');m.className='miss-x';m.style.cssText=`left:${x}px;top:${y}px`;m.textContent='X';arenaEl.appendChild(m);setTimeout(()=>{if(m.parentNode)m.parentNode.removeChild(m);},480);}
 function showCombo(n){comboDisp.style.opacity='1';comboDisp.textContent=n+T[lang].combo;}
-arenaEl.addEventListener('click',function(e){
+
+arenaEl.addEventListener('click',e=>{
   if(!gameActive||e.target.closest('.target'))return;
   shots++;combo=0;comboDisp.style.opacity='0';playShot();playMiss();showMiss(e.offsetX,e.offsetY);updateHUD();
 });
-arenaEl.addEventListener('mousemove',function(e){if(isTouchDevice)return;xhX=e.offsetX;xhY=e.offsetY;xhair.style.left=xhX+'px';xhair.style.top=xhY+'px';});
-document.addEventListener('keydown',function(e){
+arenaEl.addEventListener('mousemove',e=>{if(isTouchDevice)return;xhX=e.offsetX;xhY=e.offsetY;xhair.style.left=xhX+'px';xhair.style.top=xhY+'px';});
+
+document.addEventListener('keydown',e=>{
   if(!gameActive)return;
-  var step=16,moved=false;
+  const step=16;let moved=false;
   if(e.key==='ArrowLeft'){xhX=Math.max(0,xhX-step);moved=true;}
   else if(e.key==='ArrowRight'){xhX=Math.min(arenaEl.offsetWidth,xhX+step);moved=true;}
   else if(e.key==='ArrowUp'){xhY=Math.max(0,xhY-step);moved=true;}
   else if(e.key==='ArrowDown'){xhY=Math.min(arenaEl.offsetHeight,xhY+step);moved=true;}
   else if(e.key===' '||e.key==='Enter'){
     e.preventDefault();
-    var hit=targets.find(function(t){return t.alive&&Math.hypot(t.x-xhX,t.y-xhY)<t.tier.r+10;});
+    const hit=targets.find(t=>t.alive&&Math.hypot(t.x-xhX,t.y-xhY)<t.tier.r+10);
     if(hit)hitTarget(hit);else{shots++;combo=0;comboDisp.style.opacity='0';playShot();playMiss();showMiss(xhX,xhY);updateHUD();}
   }
   if(moved){e.preventDefault();xhair.style.left=xhX+'px';xhair.style.top=xhY+'px';}
 });
+
 function setupTouchBtn(id,action){
-  var el=$(id),iv=null;
-  var start=function(){el.classList.add('pressed');action();iv=setInterval(action,75);};
-  var stop=function(){el.classList.remove('pressed');clearInterval(iv);iv=null;};
-  el.addEventListener('touchstart',function(e){e.preventDefault();start();},{passive:false});
-  el.addEventListener('touchend',function(e){e.preventDefault();stop();},{passive:false});
+  const el=$(id);let iv=null;
+  const start=()=>{el.classList.add('pressed');action();iv=setInterval(action,75);};
+  const stop=()=>{el.classList.remove('pressed');clearInterval(iv);iv=null;};
+  el.addEventListener('touchstart',e=>{e.preventDefault();start();},{passive:false});
+  el.addEventListener('touchend',e=>{e.preventDefault();stop();},{passive:false});
   el.addEventListener('mousedown',start);
-  ['mouseup','mouseleave'].forEach(function(ev){el.addEventListener(ev,stop);});
+  ['mouseup','mouseleave'].forEach(ev=>el.addEventListener(ev,stop));
 }
-setupTouchBtn('tc-left',function(){xhX=Math.max(0,xhX-14);xhair.style.left=xhX+'px';});
-setupTouchBtn('tc-right',function(){xhX=Math.min(arenaEl.offsetWidth,xhX+14);xhair.style.left=xhX+'px';});
-setupTouchBtn('tc-up',function(){xhY=Math.max(0,xhY-14);xhair.style.top=xhY+'px';});
-setupTouchBtn('tc-down',function(){xhY=Math.min(arenaEl.offsetHeight,xhY+14);xhair.style.top=xhY+'px';});
+setupTouchBtn('tc-left',()=>{xhX=Math.max(0,xhX-14);xhair.style.left=xhX+'px';});
+setupTouchBtn('tc-right',()=>{xhX=Math.min(arenaEl.offsetWidth,xhX+14);xhair.style.left=xhX+'px';});
+setupTouchBtn('tc-up',()=>{xhY=Math.max(0,xhY-14);xhair.style.top=xhY+'px';});
+setupTouchBtn('tc-down',()=>{xhY=Math.min(arenaEl.offsetHeight,xhY+14);xhair.style.top=xhY+'px';});
 function fireTouchShot(){
   if(!gameActive)return;
-  var hit=targets.find(function(t){return t.alive&&Math.hypot(t.x-xhX,t.y-xhY)<t.tier.r+12;});
+  const hit=targets.find(t=>t.alive&&Math.hypot(t.x-xhX,t.y-xhY)<t.tier.r+12);
   if(hit)hitTarget(hit);else{shots++;combo=0;comboDisp.style.opacity='0';playShot();playMiss();showMiss(xhX,xhY);updateHUD();}
 }
-$('tc-fire').addEventListener('touchstart',function(e){e.preventDefault();fireTouchShot();},{passive:false});
+$('tc-fire').addEventListener('touchstart',e=>{e.preventDefault();fireTouchShot();},{passive:false});
 $('tc-fire').addEventListener('click',fireTouchShot);
+
+onValue(roomRef||ref(db,'_dummy_'),()=>{}); // no-op to keep linter happy
+
 applyLang();
 detectTouch();
+selectMode('local');
+updateMusicBtn();
 </script>
 </body>
 </html>
