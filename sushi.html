@@ -3,25 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sushi Stack — Online Multiplayer</title>
+<title>Sushi Stack</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Zen+Dots&family=Noto+Sans+JP:wght@400;700&family=Noto+Sans+Hebrew:wght@400;700&display=swap');
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
-  :root {
-    --red: #e8405a;
-    --blue: #4090e8;
-    --green: #40c870;
-    --gold: #e8c040;
-    --accent: #c87840;
-    --bg: #0a0a0f;
-    --text: #f5e6c8;
-    --border: rgba(200,120,60,0.3);
-  }
-
   body {
-    background: var(--bg);
+    background: #0a0a0f;
     font-family: 'Noto Sans Hebrew', 'Noto Sans JP', sans-serif;
     overflow: hidden;
     width: 100vw;
@@ -32,6 +21,7 @@
     justify-content: center;
   }
 
+  /* Animated Japanese paper texture background */
   body::before {
     content: '';
     position: fixed;
@@ -45,117 +35,33 @@
     z-index: 0;
   }
 
-  .screen {
+  #menu, #game-wrap, #result-screen, #lobby-screen {
     position: relative;
     z-index: 1;
     width: 100%;
     height: 100%;
-    display: none;
     flex-direction: column;
     align-items: center;
     justify-content: center;
   }
-  .screen.active { display: flex; }
 
-  /* ── MENU ── */
   #menu h1 {
     font-family: 'Zen Dots', cursive;
     font-size: clamp(2rem, 6vw, 4.5rem);
-    color: var(--text);
+    color: #f5e6c8;
     letter-spacing: 0.05em;
     text-shadow: 0 0 40px rgba(220,80,40,0.6), 0 2px 0 rgba(0,0,0,0.5);
     margin-bottom: 0.2em;
   }
 
   .subtitle {
-    color: var(--accent);
+    color: #c87840;
     font-size: clamp(0.75rem, 2vw, 1rem);
     letter-spacing: 0.3em;
     text-transform: uppercase;
-    margin-bottom: 2em;
+    margin-bottom: 3em;
   }
 
-  .mode-cards {
-    display: flex;
-    gap: 1.2rem;
-    margin-bottom: 2em;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-
-  .mode-card {
-    width: 160px;
-    background: rgba(255,255,255,0.03);
-    border: 2px solid var(--border);
-    border-radius: 14px;
-    padding: 1.2em 1em;
-    color: var(--text);
-    cursor: pointer;
-    transition: all 0.2s;
-    text-align: center;
-  }
-  .mode-card:hover {
-    background: rgba(220,80,40,0.12);
-    border-color: #dc5028;
-    transform: translateY(-3px);
-    box-shadow: 0 10px 30px rgba(220,80,40,0.25);
-  }
-  .mode-card .icon { font-size: 2.2rem; margin-bottom: 0.4em; display: block; }
-  .mode-card .name {
-    font-family: 'Zen Dots', cursive;
-    font-size: 0.85rem;
-    color: var(--text);
-    letter-spacing: 0.05em;
-    margin-bottom: 0.3em;
-  }
-  .mode-card .desc { font-size: 0.7rem; color: rgba(245,230,200,0.5); line-height: 1.4; }
-
-  .lang-toggle {
-    display: flex;
-    gap: 0.5rem;
-    margin-bottom: 1.5em;
-  }
-  .lang-btn {
-    padding: 0.3em 1em;
-    background: rgba(255,255,255,0.04);
-    border: 1.5px solid var(--border);
-    border-radius: 6px;
-    color: var(--accent);
-    font-family: 'Zen Dots', cursive;
-    font-size: 0.85rem;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  .lang-btn.active { background: rgba(220,80,40,0.25); border-color: #dc5028; color: var(--text); }
-  .lang-btn:hover { border-color: var(--accent); }
-
-  .mute-btn {
-    margin-top: 1rem;
-    background: none;
-    border: 1px solid var(--border);
-    border-radius: 50%;
-    width: 40px; height: 40px;
-    font-size: 1.1rem;
-    cursor: pointer;
-    color: var(--accent);
-    transition: all 0.2s;
-  }
-  .mute-btn:hover { border-color: var(--accent); transform: scale(1.1); }
-
-  .home-btn {
-    margin-top: 0.8rem;
-    color: var(--accent);
-    font-size: 0.85rem;
-    letter-spacing: 0.1em;
-    text-decoration: none;
-    padding: 0.5em 1.5em;
-    border: 2px solid var(--border);
-    border-radius: 8px;
-    transition: all 0.2s;
-  }
-  .home-btn:hover { border-color: var(--accent); background: rgba(200,120,60,0.1); }
-
-  /* ── LOCAL MODE SELECT ── */
   .player-select {
     display: flex;
     gap: 1rem;
@@ -167,9 +73,9 @@
   .player-btn {
     width: 80px; height: 80px;
     background: rgba(255,255,255,0.04);
-    border: 2px solid var(--border);
+    border: 2px solid rgba(200,120,60,0.3);
     border-radius: 12px;
-    color: var(--text);
+    color: #f5e6c8;
     font-size: 1.8rem;
     cursor: pointer;
     transition: all 0.2s;
@@ -177,7 +83,7 @@
     align-items: center; justify-content: center;
     gap: 4px;
   }
-  .player-btn span { font-size: 0.6rem; letter-spacing: 0.1em; color: var(--accent); text-transform: uppercase; }
+  .player-btn span { font-size: 0.6rem; letter-spacing: 0.1em; color: #c87840; text-transform: uppercase; }
   .player-btn:hover, .player-btn.active {
     background: rgba(220,80,40,0.2);
     border-color: #dc5028;
@@ -188,19 +94,19 @@
   .controls-info {
     color: rgba(245,230,200,0.5);
     font-size: 0.75rem;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.15em;
     text-align: center;
     line-height: 2;
     margin-bottom: 2em;
   }
-  .controls-info strong { color: var(--accent); }
+  .controls-info strong { color: #c87840; }
 
   .start-btn {
     padding: 0.8em 3em;
     background: linear-gradient(135deg, #dc5028, #c03018);
     border: none;
     border-radius: 8px;
-    color: var(--text);
+    color: #f5e6c8;
     font-family: 'Zen Dots', cursive;
     font-size: 1.1rem;
     letter-spacing: 0.1em;
@@ -208,253 +114,112 @@
     transition: all 0.2s;
     box-shadow: 0 4px 20px rgba(220,80,40,0.4);
   }
-  .start-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(220,80,40,0.6); }
+  .start-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(220,80,40,0.6);
+  }
 
-  .back-text-btn {
-    margin-top: 1em;
+  .mute-btn {
+    margin-top: 1rem;
     background: none;
-    border: 1.5px solid var(--border);
-    border-radius: 8px;
-    color: var(--accent);
-    font-size: 0.85rem;
-    padding: 0.5em 1.5em;
-    cursor: pointer;
-    letter-spacing: 0.1em;
-    transition: all 0.2s;
-  }
-  .back-text-btn:hover { border-color: var(--accent); background: rgba(200,120,60,0.08); }
-
-  /* ── ONLINE LOBBY ── */
-  #online-lobby h2 {
-    font-family: 'Zen Dots', cursive;
-    font-size: clamp(1.4rem, 4vw, 2.5rem);
-    color: var(--text);
-    text-shadow: 0 0 30px rgba(220,80,40,0.5);
-    margin-bottom: 0.3em;
-  }
-  .lobby-sub {
-    color: var(--accent);
-    font-size: 0.8rem;
-    letter-spacing: 0.2em;
-    margin-bottom: 2em;
-  }
-
-  .lobby-box {
-    background: rgba(255,255,255,0.03);
-    border: 1.5px solid var(--border);
-    border-radius: 16px;
-    padding: 1.8em 2em;
-    width: min(480px, 92vw);
-    display: flex;
-    flex-direction: column;
-    gap: 1em;
-  }
-
-  .lobby-section-title {
-    font-family: 'Zen Dots', cursive;
-    font-size: 0.75rem;
-    color: var(--accent);
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    margin-bottom: 0.3em;
-  }
-
-  .name-input {
-    width: 100%;
-    padding: 0.65em 1em;
-    background: rgba(255,255,255,0.05);
-    border: 1.5px solid var(--border);
-    border-radius: 8px;
-    color: var(--text);
-    font-family: 'Noto Sans JP', sans-serif;
-    font-size: 1rem;
-    outline: none;
-    transition: border-color 0.2s;
-  }
-  .name-input:focus { border-color: var(--accent); }
-  .name-input::placeholder { color: rgba(245,230,200,0.25); }
-
-  .room-row {
-    display: flex;
-    gap: 0.6em;
-  }
-  .room-input {
-    flex: 1;
-    padding: 0.65em 1em;
-    background: rgba(255,255,255,0.05);
-    border: 1.5px solid var(--border);
-    border-radius: 8px;
-    color: var(--text);
-    font-family: 'Zen Dots', cursive;
+    border: 1px solid rgba(200,120,60,0.3);
+    border-radius: 50%;
+    width: 40px; height: 40px;
     font-size: 1.1rem;
-    letter-spacing: 0.25em;
-    outline: none;
-    text-transform: uppercase;
-    text-align: center;
-    transition: border-color 0.2s;
-  }
-  .room-input:focus { border-color: var(--accent); }
-  .room-input::placeholder { color: rgba(245,230,200,0.2); letter-spacing: 0.1em; font-size: 0.8rem; }
-
-  .join-btn {
-    padding: 0.65em 1.4em;
-    background: rgba(64,144,232,0.2);
-    border: 1.5px solid rgba(64,144,232,0.5);
-    border-radius: 8px;
-    color: #7bc4f8;
-    font-family: 'Zen Dots', cursive;
-    font-size: 0.8rem;
-    letter-spacing: 0.05em;
     cursor: pointer;
+    color: #c87840;
     transition: all 0.2s;
-    white-space: nowrap;
   }
-  .join-btn:hover { background: rgba(64,144,232,0.35); border-color: #4090e8; color: #b8deff; }
+  .mute-btn:hover { border-color: #c87840; transform: scale(1.1); }
 
-  .divider {
-    display: flex;
-    align-items: center;
-    gap: 0.8em;
-    color: rgba(245,230,200,0.2);
-    font-size: 0.75rem;
-    letter-spacing: 0.15em;
-  }
-  .divider::before, .divider::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: var(--border);
-  }
-
-  .create-btn {
-    width: 100%;
-    padding: 0.75em;
-    background: linear-gradient(135deg, #dc5028, #c03018);
-    border: none;
-    border-radius: 8px;
-    color: var(--text);
-    font-family: 'Zen Dots', cursive;
+  .home-btn {
+    margin-top: 0.8rem;
+    color: #c87840;
     font-size: 0.95rem;
-    letter-spacing: 0.08em;
-    cursor: pointer;
-    transition: all 0.2s;
-    box-shadow: 0 4px 16px rgba(220,80,40,0.3);
-  }
-  .create-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(220,80,40,0.5); }
-
-  .lobby-status {
-    font-size: 0.75rem;
-    text-align: center;
-    color: rgba(245,230,200,0.4);
-    letter-spacing: 0.1em;
-    min-height: 1.2em;
-  }
-  .lobby-status.error { color: #e8405a; }
-  .lobby-status.ok    { color: #40c870; }
-
-  /* ── WAITING ROOM ── */
-  #waiting-room h2 {
-    font-family: 'Zen Dots', cursive;
-    font-size: clamp(1.3rem, 4vw, 2.2rem);
-    color: var(--text);
-    text-shadow: 0 0 30px rgba(220,80,40,0.5);
-    margin-bottom: 0.2em;
-  }
-
-  .room-code-display {
-    font-family: 'Zen Dots', cursive;
-    font-size: clamp(2rem, 8vw, 4rem);
-    color: #dc5028;
-    letter-spacing: 0.4em;
-    text-shadow: 0 0 30px rgba(220,80,40,0.7);
-    margin-bottom: 0.1em;
-  }
-
-  .room-hint {
-    color: rgba(245,230,200,0.4);
-    font-size: 0.75rem;
-    letter-spacing: 0.15em;
-    margin-bottom: 2em;
-  }
-
-  .waiting-players {
-    display: flex;
-    flex-direction: column;
-    gap: 0.6em;
-    width: min(360px, 90vw);
-    margin-bottom: 2em;
-  }
-
-  .waiting-player-row {
-    display: flex;
-    align-items: center;
-    gap: 0.8em;
-    padding: 0.7em 1em;
-    background: rgba(255,255,255,0.03);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    transition: all 0.3s;
-  }
-  .waiting-player-row.filled { border-color: rgba(64,200,112,0.4); }
-  .waiting-player-row .slot-icon { font-size: 1.3rem; }
-  .waiting-player-row .slot-name {
-    flex: 1;
-    font-size: 0.9rem;
-    color: var(--text);
-    letter-spacing: 0.05em;
-  }
-  .waiting-player-row .slot-badge {
-    font-size: 0.65rem;
-    padding: 0.2em 0.6em;
-    border-radius: 20px;
-    letter-spacing: 0.1em;
-    font-weight: 700;
-  }
-  .badge-host { background: rgba(232,192,64,0.2); color: #e8c040; border: 1px solid rgba(232,192,64,0.4); }
-  .badge-you  { background: rgba(64,200,112,0.15); color: #40c870; border: 1px solid rgba(64,200,112,0.35); }
-  .badge-wait { background: rgba(200,120,60,0.1); color: var(--accent); border: 1px solid var(--border); }
-
-  .ready-section {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.7em;
-  }
-
-  .ready-btn {
-    padding: 0.75em 2.5em;
-    background: rgba(64,200,112,0.15);
-    border: 2px solid rgba(64,200,112,0.4);
-    border-radius: 10px;
-    color: #40c870;
-    font-family: 'Zen Dots', cursive;
-    font-size: 1rem;
-    letter-spacing: 0.08em;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  .ready-btn:hover { background: rgba(64,200,112,0.25); border-color: #40c870; transform: translateY(-2px); }
-  .ready-btn.is-ready { background: rgba(64,200,112,0.3); border-color: #40c870; color: #80f8a0; }
-
-  .start-online-btn {
-    padding: 0.8em 3em;
-    background: linear-gradient(135deg, #dc5028, #c03018);
-    border: none;
+    letter-spacing: 0.12em;
+    text-decoration: none;
+    padding: 0.6em 2em;
+    border: 2px solid rgba(200,120,60,0.4);
     border-radius: 8px;
-    color: var(--text);
-    font-family: 'Zen Dots', cursive;
-    font-size: 1.05rem;
-    letter-spacing: 0.08em;
+    transition: all 0.2s;
+  }
+  .home-btn:hover {
+    border-color: #c87840;
+    background: rgba(200,120,60,0.1);
+    transform: translateY(-2px);
+  }
+
+  .lang-toggle {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 1.5em;
+  }
+  .lang-btn {
+    padding: 0.3em 1em;
+    background: rgba(255,255,255,0.04);
+    border: 2px solid rgba(200,120,60,0.25);
+    border-radius: 6px;
+    color: #c87840;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
     cursor: pointer;
     transition: all 0.2s;
-    box-shadow: 0 4px 20px rgba(220,80,40,0.4);
-    display: none;
   }
-  .start-online-btn.visible { display: block; }
-  .start-online-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(220,80,40,0.6); }
+  .lang-btn.active {
+    background: rgba(220,80,40,0.25);
+    border-color: #dc5028;
+    color: #f5e6c8;
+  }
+  .lang-btn:hover { border-color: #c87840; }
 
-  /* ── GAME ── */
-  #game-wrap { position: relative; }
+  .lang-toggle {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5em;
+  }
+  .lang-btn {
+    padding: 0.3em 1em;
+    background: rgba(255,255,255,0.04);
+    border: 1.5px solid rgba(200,120,60,0.3);
+    border-radius: 6px;
+    color: #c87840;
+    font-family: 'Zen Dots', cursive;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .lang-btn.active {
+    background: rgba(220,80,40,0.25);
+    border-color: #dc5028;
+    color: #f5e6c8;
+  }
+  .lang-btn:hover { border-color: #c87840; }
+
+  /* GAME */
+  #game-wrap { display: none; position: relative; }
+
+  #back-btn {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    z-index: 20;
+    background: rgba(20,20,30,0.75);
+    border: 2px solid rgba(200,120,60,0.4);
+    border-radius: 50%;
+    width: 44px; height: 44px;
+    font-size: 1.4rem;
+    color: #c87840;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+  }
+  #back-btn:hover {
+    border-color: #c87840;
+    background: rgba(200,120,60,0.15);
+    transform: scale(1.1);
+  }
 
   #timer-bar {
     position: absolute;
@@ -471,7 +236,7 @@
   #timer-display {
     font-family: 'Zen Dots', cursive;
     font-size: 3rem;
-    color: var(--text);
+    color: #f5e6c8;
     text-shadow: 0 0 30px rgba(220,80,40,0.9);
     min-width: 3ch;
     text-align: center;
@@ -485,58 +250,24 @@
   }
   @keyframes pulse { from { opacity: 1; } to { opacity: 0.5; } }
 
-  #online-badge {
-    position: absolute;
-    top: 10px;
-    right: 14px;
-    z-index: 20;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 0.7rem;
-    color: rgba(245,230,200,0.45);
-    letter-spacing: 0.12em;
-    pointer-events: none;
+  #game-canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
   }
-  #online-badge .dot {
-    width: 7px; height: 7px;
-    border-radius: 50%;
-    background: #40c870;
-    box-shadow: 0 0 8px #40c870;
-    animation: blink 1.5s infinite;
-  }
-  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
 
-  #back-btn {
-    position: absolute;
-    top: 12px;
-    left: 12px;
-    z-index: 20;
-    background: rgba(20,20,30,0.75);
-    border: 2px solid var(--border);
-    border-radius: 50%;
-    width: 44px; height: 44px;
-    font-size: 1.4rem;
-    color: var(--accent);
-    cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    transition: all 0.2s;
-  }
-  #back-btn:hover { border-color: var(--accent); background: rgba(200,120,60,0.15); transform: scale(1.1); }
-
-  #game-canvas { display: block; width: 100%; height: 100%; }
-
-  /* ── RESULT ── */
+  /* Result */
+  #result-screen { display: none; }
   #result-screen h2 {
     font-family: 'Zen Dots', cursive;
     font-size: clamp(1.5rem, 5vw, 3.5rem);
-    color: var(--text);
+    color: #f5e6c8;
     text-shadow: 0 0 40px rgba(220,80,40,0.8);
     margin-bottom: 0.3em;
     text-align: center;
   }
   .result-details {
-    color: var(--accent);
+    color: #c87840;
     font-size: clamp(0.8rem, 2vw, 1.1rem);
     letter-spacing: 0.1em;
     margin-bottom: 2em;
@@ -544,7 +275,7 @@
     line-height: 2;
   }
 
-  /* ── KAMON ── */
+  /* Falling pieces animation */
   .kamon {
     position: fixed;
     font-size: 1.5rem;
@@ -557,20 +288,11 @@
     from { transform: translateY(100vh) rotate(0deg); }
     to { transform: translateY(-20vh) rotate(360deg); }
   }
-
-  /* ── SPINNER ── */
-  .spinner {
-    width: 28px; height: 28px;
-    border: 3px solid var(--border);
-    border-top-color: var(--accent);
-    border-radius: 50%;
-    animation: spin 0.7s linear infinite;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
 </style>
 </head>
 <body>
 
+<!-- Decorative background elements -->
 <script>
   const kamons = ['🌸','⛩','🎌','🍣','🥢','🌊','🔴'];
   for(let i=0;i<12;i++){
@@ -584,36 +306,49 @@
   }
 </script>
 
+<!-- LOBBY -->
+<div id="lobby-screen" style="display:none">
+  <h1 id="lobby-title" style="font-family:'Zen Dots',cursive; font-size:clamp(1.5rem,4vw,3rem); color:#f5e6c8; text-shadow:0 0 30px rgba(220,80,40,0.6); margin-bottom:0.5em;">🍣 SUSHI STACK</h1>
+  <div id="lobby-status" style="color:#c87840; font-size:1rem; letter-spacing:0.15em; margin-bottom:1.5em; text-align:center; min-height:2em;"></div>
+
+  <!-- Mode select (hidden - buttons moved to main menu) -->
+  <div id="lobby-mode" style="display:none;">
+  </div>
+
+  <!-- Join input -->
+  <div id="lobby-join-area" style="display:none; flex-direction:column; align-items:center; gap:0.8em; margin-bottom:1.5em;">
+    <input id="room-code-input" type="text" maxlength="4"
+      placeholder="ROOM CODE"
+      style="font-family:'Zen Dots',cursive; font-size:2rem; text-align:center; width:7rem; padding:0.4em 0.6em;
+             background:rgba(255,255,255,0.06); border:2px solid rgba(200,120,60,0.5); border-radius:8px;
+             color:#f5e6c8; letter-spacing:0.3em; text-transform:uppercase; outline:none;">
+    <button class="start-btn" id="btn-join-confirm">JOIN →</button>
+  </div>
+
+  <!-- Room code display for host -->
+  <div id="lobby-room-display" style="display:none; flex-direction:column; align-items:center; gap:0.5em; margin-bottom:1.5em;">
+    <div style="color:rgba(245,230,200,0.5); font-size:0.8rem; letter-spacing:0.2em;">ROOM CODE</div>
+    <div id="room-code-display" style="font-family:'Zen Dots',cursive; font-size:3.5rem; color:#f5e6c8; letter-spacing:0.4em; text-shadow:0 0 20px rgba(220,80,40,0.8);"></div>
+    <div style="color:rgba(245,230,200,0.4); font-size:0.75rem;">Share this code with other players</div>
+  </div>
+
+  <!-- Player slots -->
+  <div id="lobby-players" style="display:flex; gap:0.8rem; margin-bottom:2em; flex-wrap:wrap; justify-content:center;"></div>
+
+  <!-- Start button (host only) -->
+  <button class="start-btn" id="btn-lobby-start" style="display:none;">▶ START GAME</button>
+
+  <button class="start-btn" id="btn-lobby-back" style="margin-top:0.8rem; background:rgba(255,255,255,0.06); border:1px solid rgba(200,120,60,0.3); font-size:0.85rem;">← Back</button>
+</div>
+
 <!-- MENU -->
-<div id="menu" class="screen active">
+<div id="menu">
   <div class="lang-toggle">
     <button class="lang-btn active" id="lang-en">EN</button>
     <button class="lang-btn" id="lang-he">עב</button>
   </div>
   <h1>🍣 SUSHI STACK</h1>
   <div class="subtitle" id="subtitle">積み寿司 — Tower Challenge</div>
-
-  <div class="mode-cards">
-    <div class="mode-card" id="mode-local">
-      <span class="icon">🖥️</span>
-      <div class="name" id="mode-local-name">LOCAL</div>
-      <div class="desc" id="mode-local-desc">Same device, 1-4 players</div>
-    </div>
-    <div class="mode-card" id="mode-online">
-      <span class="icon">🌐</span>
-      <div class="name" id="mode-online-name">ONLINE</div>
-      <div class="desc" id="mode-online-desc">Play with friends across devices</div>
-    </div>
-  </div>
-
-  <button class="mute-btn" id="mute-btn" title="Toggle sound">🔊</button>
-  <a href="https://arnonmaya.github.io/games/" class="home-btn" id="home-btn">Return to Home Page</a>
-</div>
-
-<!-- LOCAL SETUP -->
-<div id="local-setup" class="screen">
-  <h1 style="font-family:'Zen Dots',cursive;font-size:clamp(1.5rem,4vw,2.5rem);color:var(--text);margin-bottom:0.3em;text-shadow:0 0 30px rgba(220,80,40,0.5)">🍣 LOCAL PLAY</h1>
-  <div class="subtitle" id="local-subtitle">Choose number of players</div>
 
   <div class="player-select" id="player-select">
     <button class="player-btn active" data-players="1">🧑<span>1P</span></button>
@@ -623,87 +358,40 @@
   </div>
 
   <div class="controls-info" id="controls-info">Loading controls...</div>
-  <button class="start-btn" id="start-local-btn">START GAME</button>
-  <button class="back-text-btn" id="back-from-local" style="margin-top:1em">← Back</button>
-</div>
 
-<!-- ONLINE LOBBY -->
-<div id="online-lobby" class="screen">
-  <h2>🌐 ONLINE PLAY</h2>
-  <div class="lobby-sub" id="online-lobby-sub">CONNECT WITH FRIENDS</div>
-
-  <div class="lobby-box">
-    <div>
-      <div class="lobby-section-title" id="lb-name-label">YOUR NAME</div>
-      <input class="name-input" id="player-name-input" maxlength="16" placeholder="Enter your name…" />
-    </div>
-
-    <div class="divider" id="lb-or">OR</div>
-
-    <div>
-      <div class="lobby-section-title" id="lb-join-label">JOIN ROOM</div>
-      <div class="room-row">
-        <input class="room-input" id="room-code-input" maxlength="4" placeholder="ROOM CODE" />
-        <button class="join-btn" id="join-room-btn">JOIN →</button>
-      </div>
-    </div>
-
-    <div class="divider" id="lb-or2">OR</div>
-
-    <button class="create-btn" id="create-room-btn">CREATE NEW ROOM</button>
-
-    <div class="lobby-status" id="lobby-status"></div>
+  <!-- Online buttons -->
+  <div style="display:flex; gap:0.8rem; margin-bottom:0.8em; flex-wrap:wrap; justify-content:center;">
+    <button class="start-btn" id="btn-host">🏠 Host Game</button>
+    <button class="start-btn" id="btn-join" style="background:linear-gradient(135deg,#4090e8,#2060b0);">🔗 Join Game</button>
   </div>
 
-  <button class="back-text-btn" id="back-from-online" style="margin-top:1.5em">← Back</button>
-</div>
-
-<!-- WAITING ROOM -->
-<div id="waiting-room" class="screen">
-  <h2 id="wr-title">WAITING ROOM</h2>
-  <div class="room-code-display" id="wr-room-code">----</div>
-  <div class="room-hint" id="wr-hint">Share this code with friends</div>
-
-  <div class="waiting-players" id="waiting-players"></div>
-
-  <div class="ready-section">
-    <button class="ready-btn" id="ready-btn">I'M READY ✓</button>
-    <button class="start-online-btn" id="start-online-btn">START GAME →</button>
-    <div class="lobby-status" id="wr-status" style="margin-top:0.5em"></div>
-  </div>
-
-  <button class="back-text-btn" id="back-from-waiting" style="margin-top:1.2em">← Leave Room</button>
+  <button class="start-btn" id="start-btn">🖥 Local Play</button>
+  <button class="mute-btn" id="mute-btn" title="Toggle sound">🔊</button>
+  <a href="https://arnonmaya.github.io/games/" class="home-btn" id="home-btn">Return to Home Page</a>
 </div>
 
 <!-- GAME -->
-<div id="game-wrap" class="screen" style="position:relative">
+<div id="game-wrap">
   <div id="timer-bar">
     <div id="timer-display">60</div>
-  </div>
-  <div id="online-badge" style="display:none">
-    <div class="dot"></div>
-    <span id="online-badge-text">ONLINE</span>
   </div>
   <button id="back-btn" title="Back to menu">&#8592;</button>
   <canvas id="game-canvas"></canvas>
 </div>
 
 <!-- RESULT -->
-<div id="result-screen" class="screen">
+<div id="result-screen">
   <h2 id="result-title">🏆 WINNER!</h2>
   <div class="result-details" id="result-details"></div>
   <button class="start-btn" id="replay-btn">PLAY AGAIN</button>
 </div>
 
-<!-- Firebase SDK -->
+<!-- Firebase -->
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { getDatabase, ref, set, get, update as dbUpdate, onValue, off, remove, serverTimestamp, push }
+import { getDatabase, ref, set, get, update, onValue, off, push, serverTimestamp, remove }
   from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
 
-// ═══════════════════════════════════════════════════════════
-// FIREBASE CONFIG
-// ═══════════════════════════════════════════════════════════
 const firebaseConfig = {
   apiKey: "AIzaSyDbprzF4Kf01ejNHagZLrWoDEZUmMlcaJs",
   authDomain: "games-on-d-mend.firebaseapp.com",
@@ -718,861 +406,1633 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db  = getDatabase(app);
 
-// ═══════════════════════════════════════════════════════════
-// LANGUAGE
-// ═══════════════════════════════════════════════════════════
+// Expose to global scope so the rest of the game can use it
+window._db  = db;
+window._ref = ref;
+window._set = set;
+window._get = get;
+window._update = update;
+window._onValue = onValue;
+window._off = off;
+window._push = push;
+window._serverTimestamp = serverTimestamp;
+window._remove = remove;
+window._firebaseReady = true;
+window.dispatchEvent(new Event('firebaseReady'));
+</script>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+// SUSHI STACK — Full Game Engine
+// ═══════════════════════════════════════════════════════════════
+
+window.addEventListener('error', e => {
+  if (e.error && e.error.stack) {
+    const lines = e.error.stack.split('\n').slice(0, 20).join('\n');
+    document.body.insertAdjacentHTML('beforeend',
+      '<pre style="position:fixed;top:0;left:0;background:#000;color:#f00;z-index:9999;font-size:11px;padding:8px;max-width:100vw;overflow:auto">' +
+      lines.replace(/</g,'&lt;') + '</pre>');
+  }
+});
+
+const canvas = document.getElementById('game-canvas');
+const ctx = canvas.getContext('2d');
+
+// ── Player config ──────────────────────────────────────────────
+const PLAYER_CONFIGS = {
+  1: [
+    { id:0, label:'P1', color:'#e8405a', key:'Space',   touch:true,  zone:'tl' }
+  ],
+  2: [
+    { id:0, label:'P1', color:'#e8405a', key:'Space',   touch:true,  zone:'bl' },
+    { id:1, label:'P2', color:'#4090e8', key:'Enter',   touch:false, zone:'tl' }
+  ],
+  3: [
+    { id:0, label:'P1', color:'#e8405a', key:'Space',   touch:true,  zone:'tl' },
+    { id:1, label:'P2', color:'#4090e8', key:'Enter',   touch:false, zone:'tr' },
+    { id:2, label:'P3', color:'#40c870', key:'ShiftRight', touch:false, zone:'bl' }
+  ],
+  4: [
+    { id:0, label:'P1', color:'#e8405a', key:'Space',   touch:true,  zone:'tl' },
+    { id:1, label:'P2', color:'#4090e8', key:'Enter',   touch:false, zone:'tr' },
+    { id:2, label:'P3', color:'#40c870', key:'ShiftRight', touch:false, zone:'bl' },
+    { id:3, label:'P4', color:'#e8c040', key:'Backspace', touch:false, zone:'br' }
+  ]
+};
+
+// ── Language system ────────────────────────────────────────────
 let lang = 'en';
 
 const TRANSLATIONS = {
   en: {
-    title:'🍣 SUSHI STACK', subtitle:'積み寿司 — Tower Challenge',
-    modeLocal:'LOCAL', modeLocalDesc:'Same device, 1-4 players',
-    modeOnline:'ONLINE', modeOnlineDesc:'Play with friends across devices',
-    localSubtitle:'Choose number of players',
-    startBtn:'START GAME', replayBtn:'PLAY AGAIN',
-    homBtn:'Return to Home Page',
-    winLine:'WIN',
-    winner:(l)=>`🏆 ${l} WINS!`,
-    timeUp:'🎌 TIME UP!',
-    resultLine:(l,p,h,s)=>`${l}: ${p} pieces · ${h}px tall${s}`,
-    controls:{
-      1:'<strong>SPACE / TAP</strong> — Drop sushi',
-      2:'<strong>P1: SPACE/TAP</strong> — Drop &nbsp;|&nbsp; <strong>P2: ENTER</strong> — Drop',
-      3:'<strong>P1: SPACE</strong> &nbsp; <strong>P2: ENTER</strong> &nbsp; <strong>P3: SHIFT-R</strong>',
-      4:'<strong>P1: SPACE</strong> &nbsp; <strong>P2: ENTER</strong> &nbsp; <strong>P3: SHIFT-R</strong> &nbsp; <strong>P4: BACKSPACE</strong>',
+    title:       '🍣 SUSHI STACK',
+    subtitle:    '積み寿司 — Tower Challenge',
+    startBtn:    'START GAME',
+    homBtn:      'Return to Home Page',
+    replayBtn:   'PLAY AGAIN',
+    winLine:     'WIN',
+    winner:      (label) => `🏆 ${label} WINS!`,
+    timeUp:      '🎌 TIME UP!',
+    resultLine:  (label, pieces, height, star) => `${label}: ${pieces} pieces · ${height}px tall${star}`,
+    controls: {
+      1: '<strong>SPACE / TAP</strong> — Drop sushi',
+      2: '<strong>P1: SPACE/TAP</strong> — Drop &nbsp;|&nbsp; <strong>P2: ENTER</strong> — Drop',
+      3: '<strong>P1: SPACE</strong> &nbsp; <strong>P2: ENTER</strong> &nbsp; <strong>P3: SHIFT-R</strong>',
+      4: '<strong>P1: SPACE</strong> &nbsp; <strong>P2: ENTER</strong> &nbsp; <strong>P3: SHIFT-R</strong> &nbsp; <strong>P4: BACKSPACE</strong>',
     },
-    dropLabel:'DROP', dir:'ltr',
-    lbNameLabel:'YOUR NAME', lbJoinLabel:'JOIN ROOM', lbOr:'OR',
-    joinBtn:'JOIN →', createBtn:'CREATE NEW ROOM',
-    namePlaceholder:'Enter your name…', roomPlaceholder:'ROOM CODE',
-    wrTitle:'WAITING ROOM', wrHint:'Share this code with friends',
-    readyBtn:'I\'M READY ✓', startOnlineBtn:'START GAME →',
-    badgeHost:'HOST', badgeYou:'YOU', badgeWait:'WAITING', badgeReady:'READY',
-    onlineBadge:'ONLINE', statusConnecting:'Connecting…',
-    statusJoining:'Joining room…', statusCreating:'Creating room…',
-    errorNoName:'Please enter your name first', errorNoCode:'Please enter a room code',
-    errorRoomFull:'Room is full (max 4 players)', errorNotFound:'Room not found',
-    errorGeneric:'Something went wrong', backToMenu:'← Back',
-    leaveRoom:'← Leave Room',
+    dropLabel:   'DROP',
+    dir:         'ltr',
   },
   he: {
-    title:'🍣 מגדל סושי', subtitle:'מגדל סושי — אתגר הגובה',
-    modeLocal:'מקומי', modeLocalDesc:'אותה מכשיר, 1-4 שחקנים',
-    modeOnline:'אונליין', modeOnlineDesc:'שחק עם חברים ממכשירים שונים',
-    localSubtitle:'בחר מספר שחקנים',
-    startBtn:'התחל משחק', replayBtn:'שחק שוב',
-    homBtn:'חזרה לדף הבית',
-    winLine:'נצח',
-    winner:(l)=>`🏆 ${l} ניצח!`,
-    timeUp:'🎌 נגמר הזמן!',
-    resultLine:(l,p,h,s)=>`${l}: ${p} חתיכות · גובה ${h}px${s}`,
-    controls:{
-      1:'<strong>רווח / לחיצה</strong> — הפל סושי',
-      2:'<strong>ש1: רווח/לחיצה</strong> — הפל &nbsp;|&nbsp; <strong>ש2: אנטר</strong> — הפל',
-      3:'<strong>ש1: רווח</strong> &nbsp; <strong>ש2: אנטר</strong> &nbsp; <strong>ש3: SHIFT-R</strong>',
-      4:'<strong>ש1: רווח</strong> &nbsp; <strong>ש2: אנטר</strong> &nbsp; <strong>ש3: SHIFT-R</strong> &nbsp; <strong>ש4: BACKSPACE</strong>',
+    title:       '🍣 מגדל סושי',
+    subtitle:    'מגדל סושי — אתגר הגובה',
+    startBtn:    'התחל משחק',
+    homBtn:      'חזרה לדף הבית',
+    replayBtn:   'שחק שוב',
+    winLine:     'נצח',
+    winner:      (label) => `🏆 ${label} ניצח!`,
+    timeUp:      '🎌 נגמר הזמן!',
+    resultLine:  (label, pieces, height, star) => `${label}: ${pieces} חתיכות · גובה ${height}px${star}`,
+    controls: {
+      1: '<strong>רווח / לחיצה</strong> — הפל סושי',
+      2: '<strong>ש1: רווח/לחיצה</strong> — הפל &nbsp;|&nbsp; <strong>ש2: אנטר</strong> — הפל',
+      3: '<strong>ש1: רווח</strong> &nbsp; <strong>ש2: אנטר</strong> &nbsp; <strong>ש3: SHIFT-R</strong>',
+      4: '<strong>ש1: רווח</strong> &nbsp; <strong>ש2: אנטר</strong> &nbsp; <strong>ש3: SHIFT-R</strong> &nbsp; <strong>ש4: BACKSPACE</strong>',
     },
-    dropLabel:'הפל', dir:'rtl',
-    lbNameLabel:'השם שלך', lbJoinLabel:'הצטרף לחדר', lbOr:'או',
-    joinBtn:'הצטרף →', createBtn:'צור חדר חדש',
-    namePlaceholder:'הזן את שמך…', roomPlaceholder:'קוד חדר',
-    wrTitle:'חדר המתנה', wrHint:'שתף את הקוד עם חברים',
-    readyBtn:'אני מוכן ✓', startOnlineBtn:'התחל משחק →',
-    badgeHost:'מארח', badgeYou:'אתה', badgeWait:'ממתין', badgeReady:'מוכן',
-    onlineBadge:'אונליין', statusConnecting:'מתחבר…',
-    statusJoining:'מצטרף לחדר…', statusCreating:'יוצר חדר…',
-    errorNoName:'אנא הזן שם תחילה', errorNoCode:'אנא הזן קוד חדר',
-    errorRoomFull:'החדר מלא (עד 4 שחקנים)', errorNotFound:'החדר לא נמצא',
-    errorGeneric:'משהו השתבש', backToMenu:'← חזור',
-    leaveRoom:'← עזוב חדר',
+    dropLabel:   'הפל',
+    dir:          'rtl',
   }
 };
 
-function T(key, ...args) {
-  const v = TRANSLATIONS[lang][key];
-  return typeof v === 'function' ? v(...args) : (v ?? key);
+function t(key, ...args) {
+  const val = TRANSLATIONS[lang][key];
+  return typeof val === 'function' ? val(...args) : val;
 }
 
-// ═══════════════════════════════════════════════════════════
-// PLAYER CONFIGS
-// ═══════════════════════════════════════════════════════════
-const PLAYER_CONFIGS = {
-  1:[ {id:0,label:'P1',color:'#e8405a',key:'Space',  touch:true, zone:'tl'} ],
-  2:[ {id:0,label:'P1',color:'#e8405a',key:'Space',  touch:true, zone:'bl'},
-      {id:1,label:'P2',color:'#4090e8',key:'Enter',  touch:false,zone:'tl'} ],
-  3:[ {id:0,label:'P1',color:'#e8405a',key:'Space',  touch:true, zone:'tl'},
-      {id:1,label:'P2',color:'#4090e8',key:'Enter',  touch:false,zone:'tr'},
-      {id:2,label:'P3',color:'#40c870', key:'ShiftRight',touch:false,zone:'bl'} ],
-  4:[ {id:0,label:'P1',color:'#e8405a',key:'Space',  touch:true, zone:'tl'},
-      {id:1,label:'P2',color:'#4090e8',key:'Enter',  touch:false,zone:'tr'},
-      {id:2,label:'P3',color:'#40c870', key:'ShiftRight',touch:false,zone:'bl'},
-      {id:3,label:'P4',color:'#e8c040', key:'Backspace',touch:false,zone:'br'} ],
+function applyLanguage() {
+  const T = TRANSLATIONS[lang];
+  document.body.dir = T.dir;
+  document.querySelector('#menu h1').textContent  = T.title;
+  document.getElementById('subtitle').textContent   = T.subtitle;
+  document.getElementById('start-btn').textContent  = T.startBtn;
+  document.getElementById('home-btn').textContent   = T.homBtn;
+  document.getElementById('replay-btn').textContent = T.replayBtn;
+  document.getElementById('controls-info').innerHTML = T.controls[numPlayers];
+  document.getElementById('lang-en').classList.toggle('active', lang === 'en');
+  document.getElementById('lang-he').classList.toggle('active', lang === 'he');
+}
+
+const CONTROLS_TEXT = {
+  1: '', 2: '', 3: '', 4: ''  // now driven by applyLanguage()
 };
 
-const PLAYER_COLORS = ['#e8405a','#4090e8','#40c870','#e8c040'];
+// ── Constants ──────────────────────────────────────────────────
+const SUSHI_SPEED   = 120;   // px/sec
+const SUSHI_HEIGHT  = 15;
+const SUSHI_WIDTHS  = [15, 25, 35];
+const SURFACE_W     = 60;
+const SURFACE_H     = 10;
+const GAME_DURATION = 60;
+const WIN_HEIGHT_ABOVE_SURFACE = 200; // px above surface = win
+const GRAVITY       = 400;  // px/sec²
+const OVERLAP_RATIO = 0.5;
 
-// ═══════════════════════════════════════════════════════════
-// CONSTANTS
-// ═══════════════════════════════════════════════════════════
-const SUSHI_SPEED=120, SUSHI_HEIGHT=15, SUSHI_WIDTHS=[15,25,35];
-const SURFACE_W=60, SURFACE_H=10, GAME_DURATION=60;
-const WIN_HEIGHT_ABOVE_SURFACE=200, GRAVITY=400, OVERLAP_RATIO=0.5;
-
-const SUSHI_COLORS=[
-  {top:'#f8cfc0',body:'#f4a882',label:'🍣'},
-  {top:'#f8e8a0',body:'#e8c840',label:'🍱'},
-  {top:'#c8f0d0',body:'#60c880',label:'🥒'},
-  {top:'#f0c8e8',body:'#d870b8',label:'🌸'},
-  {top:'#c8e8f8',body:'#60a8d8',label:'🐟'},
-  {top:'#f8d8b0',body:'#e8a040',label:'🦐'},
+// ── Palette (sushi types) ──────────────────────────────────────
+const SUSHI_COLORS = [
+  { top:'#f8cfc0', body:'#f4a882', label:'🍣' },
+  { top:'#f8e8a0', body:'#e8c840', label:'🍱' },
+  { top:'#c8f0d0', body:'#60c880', label:'🥒' },
+  { top:'#f0c8e8', body:'#d870b8', label:'🌸' },
+  { top:'#c8e8f8', body:'#60a8d8', label:'🐟' },
+  { top:'#f8d8b0', body:'#e8a040', label:'🦐' },
 ];
 
-// ═══════════════════════════════════════════════════════════
-// GAME STATE
-// ═══════════════════════════════════════════════════════════
-const canvas = document.getElementById('game-canvas');
-const ctx = canvas.getContext('2d');
+// ── State ──────────────────────────────────────────────────────
+let numPlayers = 1;
+let players = [];
+let gameRunning = false;
+let gameOver = false;
+let timeLeft = GAME_DURATION;
+let lastTime = null;
+let animFrame = null;
+let winnerId = null;
 
-let numPlayers=1, players=[], gameRunning=false, gameOver=false;
-let timeLeft=GAME_DURATION, lastTime=null, animFrame=null, winnerId=null;
-let lastTickSecond=-1;
-
-// ── ONLINE STATE ──────────────────────────────────────────
-let onlineMode    = false;
-let myPlayerId    = null;   // uid string
-let myPlayerIndex = -1;    // 0-3 slot
-let currentRoomId = null;
-let isRoomHost    = false;
-let roomRef       = null;
-let roomListener  = null;
-let pendingDropTs = 0;      // timestamp of our last drop sent to firebase
-let remoteDrops   = {};     // { playerIndex: lastDropTs }
-
-// ═══════════════════════════════════════════════════════════
-// UTILITY
-// ═══════════════════════════════════════════════════════════
-function genId(len=8) {
-  return Math.random().toString(36).slice(2,2+len).toUpperCase();
-}
-function genRoomCode() {
-  const chars='ABCDEFHJKLMNPQRSTUVWXYZ23456789';
-  return Array.from({length:4},()=>chars[Math.floor(Math.random()*chars.length)]).join('');
-}
-function showScreen(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-}
-function setStatus(elId, msg, type='') {
-  const el = document.getElementById(elId);
-  el.textContent = msg;
-  el.className = 'lobby-status' + (type ? ' '+type : '');
-}
-
-// ═══════════════════════════════════════════════════════════
-// LANGUAGE SYSTEM
-// ═══════════════════════════════════════════════════════════
-function applyLanguage() {
-  const dir = T('dir');
-  document.body.dir = dir;
-  qs('#menu h1').textContent = T('title');
-  qs('#subtitle').textContent = T('subtitle');
-  qs('#mode-local-name').textContent = T('modeLocal');
-  qs('#mode-local-desc').textContent = T('modeLocalDesc');
-  qs('#mode-online-name').textContent = T('modeOnline');
-  qs('#mode-online-desc').textContent = T('modeOnlineDesc');
-  qs('#local-subtitle').textContent = T('localSubtitle');
-  qs('#start-local-btn').textContent = T('startBtn');
-  qs('#replay-btn').textContent = T('replayBtn');
-  qs('#home-btn').textContent = T('homBtn');
-  qs('#back-from-local').textContent = T('backToMenu');
-  qs('#back-from-online').textContent = T('backToMenu');
-  qs('#back-from-waiting').textContent = T('leaveRoom');
-  qs('#lb-name-label').textContent = T('lbNameLabel');
-  qs('#lb-join-label').textContent = T('lbJoinLabel');
-  qs('#lb-or').textContent = T('lbOr');
-  qs('#lb-or2').textContent = T('lbOr');
-  qs('#join-room-btn').textContent = T('joinBtn');
-  qs('#create-room-btn').textContent = T('createBtn');
-  qs('#player-name-input').placeholder = T('namePlaceholder');
-  qs('#room-code-input').placeholder = T('roomPlaceholder');
-  qs('#wr-title').textContent = T('wrTitle');
-  qs('#wr-hint').textContent = T('wrHint');
-  qs('#ready-btn').textContent = T('readyBtn');
-  qs('#start-online-btn').textContent = T('startOnlineBtn');
-  qs('#online-badge-text').textContent = T('onlineBadge');
-  qs('#controls-info').innerHTML = T('controls')[numPlayers];
-  qs('#lang-en').classList.toggle('active', lang==='en');
-  qs('#lang-he').classList.toggle('active', lang==='he');
-}
-function qs(s){ return document.querySelector(s); }
-
-// ═══════════════════════════════════════════════════════════
-// ONLINE ROOM MANAGEMENT
-// ═══════════════════════════════════════════════════════════
-async function createRoom() {
-  const name = qs('#player-name-input').value.trim();
-  if (!name) { setStatus('lobby-status', T('errorNoName'), 'error'); return; }
-  setStatus('lobby-status', T('statusCreating'));
-
-  myPlayerId = genId();
-  const code = genRoomCode();
-  currentRoomId = code;
-  isRoomHost = true;
-  myPlayerIndex = 0;
-
-  const roomData = {
-    code,
-    host: myPlayerId,
-    status: 'waiting',  // waiting | playing | done
-    created: Date.now(),
-    players: {
-      [myPlayerId]: { name, index: 0, ready: false, color: PLAYER_COLORS[0] }
-    },
-    dropEvents: {},
-    game: null,
-  };
-
-  await set(ref(db, `rooms/${code}`), roomData);
-  setStatus('lobby-status', '');
-  enterWaitingRoom(code);
-}
-
-async function joinRoom() {
-  const name = qs('#player-name-input').value.trim();
-  if (!name) { setStatus('lobby-status', T('errorNoName'), 'error'); return; }
-  const code = qs('#room-code-input').value.trim().toUpperCase();
-  if (!code || code.length !== 4) { setStatus('lobby-status', T('errorNoCode'), 'error'); return; }
-
-  setStatus('lobby-status', T('statusJoining'));
-
-  const snap = await get(ref(db, `rooms/${code}`));
-  if (!snap.exists()) { setStatus('lobby-status', T('errorNotFound'), 'error'); return; }
-
-  const room = snap.val();
-  if (room.status !== 'waiting') { setStatus('lobby-status', T('errorRoomFull'), 'error'); return; }
-
-  const existingPlayers = room.players ? Object.keys(room.players) : [];
-  if (existingPlayers.length >= 4) { setStatus('lobby-status', T('errorRoomFull'), 'error'); return; }
-
-  myPlayerId = genId();
-  currentRoomId = code;
-  isRoomHost = false;
-  // Find next free index
-  const usedIdxs = Object.values(room.players||{}).map(p=>p.index);
-  let idx = 0;
-  while (usedIdxs.includes(idx)) idx++;
-  myPlayerIndex = idx;
-
-  await dbUpdate(ref(db, `rooms/${code}/players/${myPlayerId}`), {
-    name, index: idx, ready: false, color: PLAYER_COLORS[idx]
-  });
-
-  setStatus('lobby-status', '');
-  enterWaitingRoom(code);
-}
-
-function enterWaitingRoom(code) {
-  qs('#wr-room-code').textContent = code;
-  showScreen('waiting-room');
-  subscribeToRoom(code);
-}
-
-function subscribeToRoom(code) {
-  if (roomRef && roomListener) off(roomRef, 'value', roomListener);
-  roomRef = ref(db, `rooms/${code}`);
-  roomListener = onValue(roomRef, snap => {
-    if (!snap.exists()) { leaveRoom(true); return; }
-    const room = snap.val();
-    handleRoomUpdate(room);
-  });
-}
-
-function handleRoomUpdate(room) {
-  if (room.status === 'playing' && !gameRunning && !gameOver) {
-    // Game started — everyone launches
-    const playerList = Object.values(room.players||{}).sort((a,b)=>a.index-b.index);
-    numPlayers = playerList.length;
-    launchOnlineGame(room, playerList);
-    return;
-  }
-
-  if (room.status === 'done') {
-    // result handled locally
-    return;
-  }
-
-  // Update waiting room UI
-  const playerList = Object.values(room.players||{}).sort((a,b)=>a.index-b.index);
-  renderWaitingPlayers(playerList, room);
-
-  const allReady = playerList.every(p => p.ready);
-  const myEntry  = room.players?.[myPlayerId];
-  const amReady  = myEntry?.ready ?? false;
-
-  qs('#ready-btn').classList.toggle('is-ready', amReady);
-  qs('#ready-btn').textContent = amReady ? '✓ '+T('readyBtn') : T('readyBtn');
-
-  // Only host sees Start button when all ready (≥2 players)
-  const showStart = isRoomHost && allReady && playerList.length >= 2;
-  qs('#start-online-btn').classList.toggle('visible', showStart);
-
-  setStatus('wr-status', allReady && playerList.length >= 2
-    ? (isRoomHost ? '← All ready! You can start.' : 'All ready! Waiting for host…')
-    : `${playerList.filter(p=>p.ready).length}/${playerList.length} ready`);
-
-  // Process any drop events that arrived
-  if (room.dropEvents) {
-    processDropEvents(room.dropEvents);
+// ── Zone calculation ───────────────────────────────────────────
+function getZoneRect(zone, W, H) {
+  const hw = W/2, hh = H/2;
+  switch(zone) {
+    case 'tl': return { x:0,   y:0,   w:hw,  h:hh };
+    case 'tr': return { x:hw,  y:0,   w:hw,  h:hh };
+    case 'bl': return { x:0,   y:hh,  w:hw,  h:hh };
+    case 'br': return { x:hw,  y:hh,  w:hw,  h:hh };
+    case 'lt': return { x:0,   y:0,   w:hw,  h:hh };
+    case 'lb': return { x:0,   y:hh,  w:hw,  h:hh };
+    default:   return { x:0,   y:0,   w:W,   h:H  };
   }
 }
 
-function renderWaitingPlayers(playerList, room) {
-  const cont = qs('#waiting-players');
-  cont.innerHTML = '';
-  for (let i=0;i<Math.max(playerList.length,2);i++) {
-    const p = playerList[i];
-    const row = document.createElement('div');
-    row.className = 'waiting-player-row' + (p ? ' filled' : '');
-    if (p) {
-      const isMe   = Object.keys(room.players||{}).find(uid=>room.players[uid]===p || (room.players[uid].index===p.index)) === myPlayerId;
-      const isHost = room.host === Object.keys(room.players||{}).find(uid=>room.players[uid].index===p.index);
-      row.innerHTML = `
-        <span class="slot-icon">🍣</span>
-        <span class="slot-name" style="color:${p.color||'#f5e6c8'}">${p.name}</span>
-        ${isHost ? `<span class="slot-badge badge-host">${T('badgeHost')}</span>` : ''}
-        ${isMe   ? `<span class="slot-badge badge-you">${T('badgeYou')}</span>` : ''}
-        ${p.ready ? `<span class="slot-badge badge-you" style="background:rgba(64,200,112,0.2);color:#40c870;border-color:rgba(64,200,112,0.4)">${T('badgeReady')}</span>` : `<span class="slot-badge badge-wait">${T('badgeWait')}</span>`}
-      `;
-    } else {
-      row.innerHTML = `<span class="slot-icon" style="opacity:0.3">〇</span><span class="slot-name" style="color:rgba(245,230,200,0.2);font-style:italic">waiting for player…</span>`;
-    }
-    cont.appendChild(row);
-  }
+// For 1 player, use top-left quarter
+function getZoneForPlayer(zone, W, H, numP) {
+  if (numP === 1) return { x:0, y:0, w:W/2, h:H/2 };
+  return getZoneRect(zone, W, H);
 }
 
-async function toggleReady() {
-  if (!currentRoomId || !myPlayerId) return;
-  const snap = await get(ref(db, `rooms/${currentRoomId}/players/${myPlayerId}/ready`));
-  const cur = snap.val() ?? false;
-  await dbUpdate(ref(db, `rooms/${currentRoomId}/players/${myPlayerId}`), { ready: !cur });
+// ── Entry direction: sushi enters from which edge? ─────────────
+// Returns 'left' or 'right' (horizontal chopstick movement)
+function getEntryDir(zone) {
+  // tl, bl → enter from left; tr, br → enter from right
+  if (zone === 'tr' || zone === 'br') return 'right';
+  return 'left';
 }
 
-async function hostStartGame() {
-  if (!isRoomHost || !currentRoomId) return;
-  await dbUpdate(ref(db, `rooms/${currentRoomId}`), { status: 'playing', startedAt: Date.now() });
-}
+// ── Player init ────────────────────────────────────────────────
+function initPlayers() {
+  const W = canvas.width, H = canvas.height;
+  const configs = PLAYER_CONFIGS[numPlayers];
+  players = configs.map(cfg => {
+    const zone = getZoneForPlayer(cfg.zone, W, H, numPlayers);
+    const surfaceX = zone.x + zone.w/2 - SURFACE_W/2;
+    const surfaceY = zone.y + zone.h - 60; // near bottom of zone
+    const entryDir = getEntryDir(cfg.zone);
+    const winLine  = surfaceY - WIN_HEIGHT_ABOVE_SURFACE;
 
-async function leaveRoom(silent=false) {
-  if (roomRef && roomListener) { off(roomRef, 'value', roomListener); roomListener=null; }
-  if (currentRoomId && myPlayerId) {
-    // Remove ourselves
-    await remove(ref(db, `rooms/${currentRoomId}/players/${myPlayerId}`)).catch(()=>{});
-    // If host and no one left, delete room
-    if (isRoomHost) {
-      const snap = await get(ref(db, `rooms/${currentRoomId}/players`)).catch(()=>null);
-      if (!snap || !snap.exists() || Object.keys(snap.val()).length === 0) {
-        await remove(ref(db, `rooms/${currentRoomId}`)).catch(()=>{});
-      }
-    }
-  }
-  currentRoomId=null; myPlayerId=null; myPlayerIndex=-1; isRoomHost=false; onlineMode=false;
-  if (!silent) showScreen('menu');
-}
-
-// ═══════════════════════════════════════════════════════════
-// ONLINE DROP SYNC
-// ═══════════════════════════════════════════════════════════
-async function broadcastDrop() {
-  if (!onlineMode || !currentRoomId) return;
-  const ts = Date.now();
-  await dbUpdate(ref(db, `rooms/${currentRoomId}/dropEvents`), {
-    [myPlayerId]: { playerIndex: myPlayerIndex, ts }
-  });
-}
-
-function processDropEvents(dropEvents) {
-  if (!gameRunning || gameOver) return;
-  Object.entries(dropEvents).forEach(([uid, evt]) => {
-    if (uid === myPlayerId) return; // we handle our own locally
-    const { playerIndex, ts } = evt;
-    const last = remoteDrops[playerIndex] ?? 0;
-    if (ts > last) {
-      remoteDrops[playerIndex] = ts;
-      const p = players.find(pl => pl.id === playerIndex);
-      if (p) dropSushi(p);
-    }
-  });
-}
-
-// ═══════════════════════════════════════════════════════════
-// LAUNCH ONLINE GAME
-// ═══════════════════════════════════════════════════════════
-function launchOnlineGame(room, playerList) {
-  onlineMode = true;
-  numPlayers = playerList.length;
-
-  // Rebuild PLAYER_CONFIGS dynamically from room player list
-  const onlineConfigs = playerList.map((p, i) => {
-    const base = PLAYER_CONFIGS[numPlayers]?.[i] || PLAYER_CONFIGS[4][i] || {};
     return {
-      id:    p.index,
-      label: p.name,
-      color: p.color || PLAYER_COLORS[i],
-      key:   i===myPlayerIndex ? (base.key||'Space') : '__REMOTE__',
-      touch: i===myPlayerIndex,
-      zone:  base.zone || ['tl','tr','bl','br'][i],
+      id:        cfg.id,
+      label:     cfg.label,
+      color:     cfg.color,
+      key:       cfg.key,
+      zone,
+      surfaceX,
+      surfaceY,
+      entryDir,
+      winLine:   Math.max(zone.y + 10, winLine),
+      stack:     [],           // { x, y, w, h } placed pieces
+      chopstick: newChopstick(zone, surfaceX, entryDir),
+      score:     0,
+      eliminated: false,
+      winner:    false,
+      particles: [],
+      fallingPieces: [],
     };
   });
-  PLAYER_CONFIGS[numPlayers] = onlineConfigs;
-
-  qs('#online-badge').style.display = 'flex';
-  startGame();
 }
 
-// ═══════════════════════════════════════════════════════════
-// GAME ENGINE
-// ═══════════════════════════════════════════════════════════
-function getZoneRect(zone,W,H){const hw=W/2,hh=H/2;switch(zone){case'tl':return{x:0,y:0,w:hw,h:hh};case'tr':return{x:hw,y:0,w:hw,h:hh};case'bl':return{x:0,y:hh,w:hw,h:hh};case'br':return{x:hw,y:hh,w:hw,h:hh};default:return{x:0,y:0,w:W,h:H};}}
-function getZoneForPlayer(zone,W,H,numP){if(numP===1)return{x:0,y:0,w:W/2,h:H/2};return getZoneRect(zone,W,H);}
-function getEntryDir(zone){return(zone==='tr'||zone==='br')?'right':'left';}
+function newChopstick(zone, surfaceX, entryDir) {
+  const sushiW = SUSHI_WIDTHS[Math.floor(Math.random()*SUSHI_WIDTHS.length)];
+  const sushiColor = SUSHI_COLORS[Math.floor(Math.random()*SUSHI_COLORS.length)];
+  // Start at entry edge of zone
+  const startX = entryDir === 'left'
+    ? zone.x - sushiW
+    : zone.x + zone.w;
+  const centerX = zone.x + zone.w/2 - sushiW/2; // target center of zone
 
-function initPlayers(){
-  const W=canvas.width,H=canvas.height;
-  const configs=PLAYER_CONFIGS[numPlayers];
-  players=configs.map(cfg=>{
-    const zone=getZoneForPlayer(cfg.zone,W,H,numPlayers);
-    const surfaceX=zone.x+zone.w/2-SURFACE_W/2;
-    const surfaceY=zone.y+zone.h-60;
-    const entryDir=getEntryDir(cfg.zone);
-    const winLine=Math.max(zone.y+10,surfaceY-WIN_HEIGHT_ABOVE_SURFACE);
-    return{id:cfg.id,label:cfg.label,color:cfg.color,key:cfg.key,zone,surfaceX,surfaceY,entryDir,winLine,stack:[],chopstick:newChopstick(zone,surfaceX,entryDir),score:0,eliminated:false,winner:false,particles:[],fallingPieces:[]};
+  return {
+    x: startX,
+    y: -999,       // set when drawn (hovers above current stack top)
+    w: sushiW,
+    h: SUSHI_HEIGHT,
+    color: sushiColor,
+    speed: entryDir === 'left' ? SUSHI_SPEED : -SUSHI_SPEED,
+    dir: entryDir,
+    phase: 'in',   // 'in' | 'center' | 'out' | 'falling'
+    centerX,
+    vy: 0,
+    falling: false,
+    startX,
+    endX: entryDir === 'left' ? zone.x + zone.w : zone.x - sushiW,
+  };
+}
+
+// ── Stack helpers ──────────────────────────────────────────────
+function getPieceMid(p) { return p.x + p.w / 2; }
+
+function towerTopY(player) {
+  const tp = player.stack.filter(p => p.inTower);
+  if (tp.length === 0) return player.surfaceY;
+  let minY = tp[0].y;
+  for (let i = 1; i < tp.length; i++) if (tp[i].y < minY) minY = tp[i].y;
+  return minY;
+}
+
+function chopstickHoverY(player) {
+  return player.winLine - SUSHI_HEIGHT;
+}
+
+// ── Drop ───────────────────────────────────────────────────────
+function dropSushi(player) {
+  if (player.eliminated || player.winner || player.chopstick.falling) return;
+  sfxDrop();
+  player.chopstick.falling = true;
+  player.chopstick.vy = 0;
+}
+
+// ── Place piece ────────────────────────────────────────────────
+function placePiece(player, cs) {
+  // Snap to tower top
+  const landY = towerTopY(player) - SUSHI_HEIGHT;
+  const piece = {
+    x: cs.x, y: landY,
+    w: cs.w, h: cs.h,
+    color: cs.color,
+    inTower: true,
+  };
+  player.stack.push(piece);
+  spawnParticles(player, piece.x + piece.w / 2, piece.y);
+  sfxLand();
+
+  // Check midpoint support — if bad, eject it and nudge below
+  const support = getSupportBelow(player, piece);
+  if (!isMidpointOver(piece, support)) {
+    const dir = getSlideDir(piece, support);
+    player.stack.pop(); // remove the piece we just added
+    ejectPiece(player, piece, dir);
+    // Nudge piece below
+    if (support && support.type === 'piece') {
+      support.piece.x += dir * 2;
+      // Check if nudged piece is now unsupported — cascade
+      cascadeCheck(player, support.piece, dir);
+    }
+  }
+
+  rebuildTowerFlags(player);
+
+  if (towerTopY(player) <= player.winLine) triggerWin(player.id);
+
+  // Online sync
+  if (typeof multiMode !== 'undefined' && multiMode && player.id === myPlayerId) {
+    pushMyStack();
+  }
+
+  player.chopstick = newChopstick(player.zone, player.surfaceX, player.entryDir);
+}
+
+// ── Support helpers ────────────────────────────────────────────
+function getSupportBelow(player, p) {
+  const belowY = p.y + SUSHI_HEIGHT;
+  if (belowY >= player.surfaceY - 1) {
+    return { type: 'surface', x: player.surfaceX, w: SURFACE_W };
+  }
+  const below = player.stack.find(o => o !== p && Math.abs(o.y - belowY) < 2);
+  return below ? { type: 'piece', piece: below } : null;
+}
+
+function isMidpointOver(p, support) {
+  if (!support) return false;
+  const mid = getPieceMid(p);
+  const sx = support.type === 'surface' ? support.x : support.piece.x;
+  const sw = support.type === 'surface' ? support.w  : support.piece.w;
+  return mid >= sx && mid <= sx + sw;
+}
+
+function getSlideDir(p, support) {
+  const mid = getPieceMid(p);
+  if (!support) return mid > 0 ? 1 : -1;
+  const sx = support.type === 'surface' ? support.x : support.piece.x;
+  const sw = support.type === 'surface' ? support.w  : support.piece.w;
+  return mid > sx + sw / 2 ? 1 : -1;
+}
+
+// ── Cascade: nudged piece may also fall — iterative, no recursion ──
+function cascadeCheck(player, startPiece, startDir) {
+  let p   = startPiece;
+  let dir = startDir;
+  const MAX_STEPS = 20;
+  let steps = 0;
+
+  while (p && steps < MAX_STEPS) {
+    steps++;
+    const support = getSupportBelow(player, p);
+    if (isMidpointOver(p, support)) break; // stable — stop
+
+    // Remove this piece and eject it
+    const idx = player.stack.indexOf(p);
+    if (idx === -1) break;
+    player.stack.splice(idx, 1);
+    ejectPiece(player, p, dir);
+
+    // Move to piece below and nudge it
+    if (!support || support.type !== 'piece') break;
+    const next = support.piece;
+    next.x += dir * 2;
+    p = next;
+  }
+}
+
+// ── Eject: piece becomes a real falling object ─────────────────
+function ejectPiece(player, p, dir) {
+  sfxFall();
+  player.fallingPieces.push({
+    x: p.x, y: p.y,
+    w: p.w, h: p.h,
+    color: p.color,
+    vx: (dir || 1) * 25,
+    vy: 10,
   });
 }
 
-function newChopstick(zone,surfaceX,entryDir){
-  const sushiW=SUSHI_WIDTHS[Math.floor(Math.random()*SUSHI_WIDTHS.length)];
-  const sushiColor=SUSHI_COLORS[Math.floor(Math.random()*SUSHI_COLORS.length)];
-  const startX=entryDir==='left'?zone.x-sushiW:zone.x+zone.w;
-  return{x:startX,y:-999,w:sushiW,h:SUSHI_HEIGHT,color:sushiColor,speed:entryDir==='left'?SUSHI_SPEED:-SUSHI_SPEED,dir:entryDir,phase:'in',centerX:zone.x+zone.w/2-sushiW/2,vy:0,falling:false,startX,endX:entryDir==='left'?zone.x+zone.w:zone.x-sushiW};
-}
-
-function getPieceMid(p){return p.x+p.w/2;}
-function towerTopY(player){const tp=player.stack.filter(p=>p.inTower);return tp.length===0?player.surfaceY:Math.min(...tp.map(p=>p.y));}
-function chopstickHoverY(player){return player.winLine-SUSHI_HEIGHT;}
-
-function dropSushi(player){
-  if(player.eliminated||player.winner||player.chopstick.falling)return;
-  sfxDrop();
-  player.chopstick.falling=true;
-  player.chopstick.vy=0;
-}
-
-function placePiece(player,cs){
-  const landY=towerTopY(player)-SUSHI_HEIGHT;
-  const piece={x:cs.x,y:landY,w:cs.w,h:cs.h,color:cs.color,inTower:true};
-  player.stack.push(piece);
-  spawnParticles(player,piece.x+piece.w/2,piece.y);
-  sfxLand();
-  const support=getSupportBelow(player,piece);
-  if(!isMidpointOver(piece,support)){
-    const dir=getSlideDir(piece,support);
-    player.stack.pop();
-    ejectPiece(player,piece,dir);
-    if(support&&support.type==='piece'){support.piece.x+=dir*2;cascadeCheck(player,support.piece,dir);}
+// ── Rebuild tower flags ────────────────────────────────────────
+function rebuildTowerFlags(player) {
+  player.stack.forEach(p => p.inTower = false);
+  // Seed: pieces sitting on the surface platform with midpoint over it
+  const seeds = player.stack.filter(p => {
+    const mid = getPieceMid(p);
+    return Math.abs(p.y + SUSHI_HEIGHT - player.surfaceY) < 2 &&
+           mid >= player.surfaceX && mid <= player.surfaceX + SURFACE_W;
+  });
+  const queue = [...seeds];
+  queue.forEach(p => p.inTower = true);
+  while (queue.length) {
+    const cur = queue.shift();
+    // Find pieces resting directly on top of cur, with midpoint over cur
+    const above = player.stack.filter(p =>
+      !p.inTower &&
+      Math.abs(p.y + SUSHI_HEIGHT - cur.y) < 2 &&
+      getPieceMid(p) >= cur.x && getPieceMid(p) <= cur.x + cur.w
+    );
+    above.forEach(p => { p.inTower = true; queue.push(p); });
   }
-  rebuildTowerFlags(player);
-  if(towerTopY(player)<=player.winLine)triggerWin(player.id);
-  player.chopstick=newChopstick(player.zone,player.surfaceX,player.entryDir);
 }
 
-function getSupportBelow(player,p){
-  const belowY=p.y+SUSHI_HEIGHT;
-  if(belowY>=player.surfaceY-1)return{type:'surface',x:player.surfaceX,w:SURFACE_W};
-  const below=player.stack.find(o=>o!==p&&Math.abs(o.y-belowY)<2);
-  return below?{type:'piece',piece:below}:null;
-}
-function isMidpointOver(p,support){if(!support)return false;const mid=getPieceMid(p);const sx=support.type==='surface'?support.x:support.piece.x;const sw=support.type==='surface'?support.w:support.piece.w;return mid>=sx&&mid<=sx+sw;}
-function getSlideDir(p,support){const mid=getPieceMid(p);if(!support)return mid>0?1:-1;const sx=support.type==='surface'?support.x:support.piece.x;const sw=support.type==='surface'?support.w:support.piece.w;return mid>sx+sw/2?1:-1;}
-
-function cascadeCheck(player,p,dir){
-  const support=getSupportBelow(player,p);
-  if(!isMidpointOver(p,support)){const idx=player.stack.indexOf(p);if(idx!==-1)player.stack.splice(idx,1);ejectPiece(player,p,dir);if(support&&support.type==='piece'){support.piece.x+=dir*2;cascadeCheck(player,support.piece,dir);}}
+// ── Overlap check (kept for zone checks) ──────────────────────
+function checkOverlap(pieceX, pieceW, targetX, targetW) {
+  const left  = Math.max(pieceX, targetX);
+  const right = Math.min(pieceX + pieceW, targetX + targetW);
+  return Math.max(0, right - left) / pieceW >= OVERLAP_RATIO;
 }
 
-function ejectPiece(player,p,dir){
-  sfxFall();
-  player.fallingPieces.push({x:p.x,y:p.y,w:p.w,h:p.h,color:p.color,vx:(dir||1)*25,vy:10});
+function triggerWin(playerId) {
+  if (gameOver) return;
+  gameOver = true;
+  winnerId = playerId;
+  const p = players.find(p => p.id === playerId);
+  if (p) p.winner = true;
+  stopBGM();
+  sfxWin();
+  setTimeout(showResult, 600);
 }
 
-function rebuildTowerFlags(player){
-  player.stack.forEach(p=>p.inTower=false);
-  const seeds=player.stack.filter(p=>{const mid=getPieceMid(p);return Math.abs(p.y+SUSHI_HEIGHT-player.surfaceY)<2&&mid>=player.surfaceX&&mid<=player.surfaceX+SURFACE_W;});
-  const queue=[...seeds];queue.forEach(p=>p.inTower=true);
-  while(queue.length){const cur=queue.shift();const above=player.stack.filter(p=>!p.inTower&&Math.abs(p.y+SUSHI_HEIGHT-cur.y)<2&&getPieceMid(p)>=cur.x&&getPieceMid(p)<=cur.x+cur.w);above.forEach(p=>{p.inTower=true;queue.push(p);});}
+// ═══════════════════════════════════════════════════════════════
+// AUDIO ENGINE — Web Audio API, fully synthesized
+// ═══════════════════════════════════════════════════════════════
+let audioCtx = null;
+let musicNodes = [];
+let musicPlaying = false;
+
+function getAudioCtx() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  return audioCtx;
 }
 
-function triggerWin(playerId){
-  if(gameOver)return;
-  gameOver=true;winnerId=playerId;
-  const p=players.find(p=>p.id===playerId);if(p)p.winner=true;
-  stopBGM();sfxWin();
-  if(onlineMode&&currentRoomId){dbUpdate(ref(db,`rooms/${currentRoomId}`),{status:'done',winnerId:playerId}).catch(()=>{});}
-  setTimeout(showResult,600);
+// ── Master volume ──────────────────────────────────────────────
+function makeMaster(ctx, vol = 0.5) {
+  const g = ctx.createGain();
+  g.gain.value = vol;
+  g.connect(ctx.destination);
+  return g;
 }
 
-// ── UPDATE ─────────────────────────────────────────────────
-function update(dt){
-  if(!gameRunning||gameOver)return;
-  timeLeft-=dt;
-  if(timeLeft<=0){timeLeft=0;endByTime();return;}
-  const timerEl=document.getElementById('timer-display');
-  const secs=Math.ceil(timeLeft);
-  timerEl.textContent=secs;
-  timerEl.className=secs<=10?'urgent':'';
-  if(secs<=10&&secs!==lastTickSecond){lastTickSecond=secs;sfxTick();}
+// ── Generic tone helper ────────────────────────────────────────
+function playTone(freq, type, duration, gainVal, startTime, dest, ctx) {
+  const osc = ctx.createOscillator();
+  const g   = ctx.createGain();
+  osc.type = type;
+  osc.frequency.setValueAtTime(freq, startTime);
+  g.gain.setValueAtTime(gainVal, startTime);
+  g.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
+  osc.connect(g); g.connect(dest);
+  osc.start(startTime);
+  osc.stop(startTime + duration + 0.01);
+}
 
-  // Pull remote drops from firebase listener (handled via processDropEvents in subscription)
-  // Also poll if we have a room
-  if(onlineMode&&currentRoomId&&roomRef){
-    get(ref(db,`rooms/${currentRoomId}/dropEvents`)).then(snap=>{
-      if(snap.exists())processDropEvents(snap.val());
-    }).catch(()=>{});
+// ── SFX: sushi lands (soft plop) ──────────────────────────────
+function sfxLand() {
+  const ctx = getAudioCtx();
+  const master = makeMaster(ctx, 0.4);
+  const t = ctx.currentTime;
+  playTone(220, 'sine',     0.08, 0.5, t,       master, ctx);
+  playTone(110, 'triangle', 0.12, 0.3, t+0.02,  master, ctx);
+}
+
+// ── SFX: sushi falls off tower ────────────────────────────────
+function sfxFall() {
+  const ctx = getAudioCtx();
+  const master = makeMaster(ctx, 0.35);
+  const t = ctx.currentTime;
+  const osc = ctx.createOscillator();
+  const g   = ctx.createGain();
+  osc.type = 'sawtooth';
+  osc.frequency.setValueAtTime(300, t);
+  osc.frequency.exponentialRampToValueAtTime(80, t + 0.25);
+  g.gain.setValueAtTime(0.4, t);
+  g.gain.exponentialRampToValueAtTime(0.001, t + 0.25);
+  osc.connect(g); g.connect(master);
+  osc.start(t); osc.stop(t + 0.3);
+}
+
+// ── SFX: drop press (click) ───────────────────────────────────
+function sfxDrop() {
+  const ctx = getAudioCtx();
+  const master = makeMaster(ctx, 0.3);
+  const t = ctx.currentTime;
+  playTone(600, 'square', 0.04, 0.25, t, master, ctx);
+  playTone(400, 'square', 0.04, 0.15, t+0.03, master, ctx);
+}
+
+// ── SFX: win fanfare ──────────────────────────────────────────
+function sfxWin() {
+  const ctx = getAudioCtx();
+  const master = makeMaster(ctx, 0.5);
+  const t = ctx.currentTime;
+  const melody = [523, 659, 784, 1047];
+  melody.forEach((freq, i) => {
+    playTone(freq, 'triangle', 0.18, 0.5, t + i * 0.13, master, ctx);
+    playTone(freq * 0.5, 'sine', 0.18, 0.2, t + i * 0.13, master, ctx);
+  });
+  playTone(1047, 'triangle', 0.5, 0.6, t + 0.6, master, ctx);
+}
+
+// ── SFX: time up ─────────────────────────────────────────────
+function sfxTimeUp() {
+  const ctx = getAudioCtx();
+  const master = makeMaster(ctx, 0.4);
+  const t = ctx.currentTime;
+  [440, 392, 349, 330].forEach((f, i) => {
+    playTone(f, 'triangle', 0.15, 0.4, t + i * 0.12, master, ctx);
+  });
+}
+
+// ── SFX: urgent tick (last 10 sec) ───────────────────────────
+function sfxTick() {
+  const ctx = getAudioCtx();
+  const master = makeMaster(ctx, 0.2);
+  const t = ctx.currentTime;
+  playTone(880, 'square', 0.05, 0.2, t, master, ctx);
+}
+
+// ── SFX: menu button click ────────────────────────────────────
+function sfxClick() {
+  const ctx = getAudioCtx();
+  const master = makeMaster(ctx, 0.25);
+  const t = ctx.currentTime;
+  playTone(440, 'sine', 0.06, 0.3, t, master, ctx);
+  playTone(660, 'sine', 0.06, 0.2, t + 0.04, master, ctx);
+}
+
+// ── BGM: looping Japanese-ish pentatonic melody ───────────────
+// Built from a simple repeating pattern of notes
+const BGM_BPM   = 128;
+const BGM_BEAT  = 60 / BGM_BPM;
+// Pentatonic scale notes (Hz): C D E G A (two octaves)
+const PENTA = [261.6, 293.7, 329.6, 392.0, 440.0, 523.3, 587.3, 659.3, 784.0, 880.0];
+// Melody pattern: indices into PENTA, duration in beats
+const MELODY = [
+  [4,0.5],[5,0.5],[6,1],[4,0.5],[3,0.5],[2,1],
+  [5,0.5],[6,0.5],[7,1],[5,0.5],[4,0.5],[3,1],
+  [6,0.5],[7,0.5],[8,0.5],[7,0.5],[6,1],[4,1],
+  [3,0.5],[4,0.5],[5,0.5],[3,0.5],[2,1],[1,1],
+];
+const BASS = [
+  [0,2],[2,2],[1,2],[0,2],
+];
+
+function startBGM() {
+  if (musicPlaying) return;
+  musicPlaying = true;
+  const ctx = getAudioCtx();
+  scheduleBGM(ctx);
+}
+
+function stopBGM() {
+  musicPlaying = false;
+  musicNodes.forEach(n => { try { n.stop(); } catch(e){} });
+  musicNodes = [];
+}
+
+function scheduleBGM(ctx) {
+  if (!musicPlaying) return;
+  const master = makeMaster(ctx, 0.18);
+  const t = ctx.currentTime + 0.05;
+
+  // Melody
+  let mt = t;
+  MELODY.forEach(([idx, beats]) => {
+    const freq = PENTA[idx];
+    const dur  = beats * BGM_BEAT * 0.85;
+    const osc  = ctx.createOscillator();
+    const g    = ctx.createGain();
+    osc.type = 'triangle';
+    osc.frequency.value = freq;
+    g.gain.setValueAtTime(0.0, mt);
+    g.gain.linearRampToValueAtTime(0.5, mt + 0.02);
+    g.gain.exponentialRampToValueAtTime(0.001, mt + dur);
+    osc.connect(g); g.connect(master);
+    osc.start(mt); osc.stop(mt + dur + 0.02);
+    musicNodes.push(osc);
+    mt += beats * BGM_BEAT;
+  });
+
+  // Bass
+  let bt = t;
+  BASS.forEach(([idx, beats]) => {
+    const freq = PENTA[idx] * 0.5; // one octave down
+    const dur  = beats * BGM_BEAT * 0.6;
+    const osc  = ctx.createOscillator();
+    const g    = ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.value = freq;
+    g.gain.setValueAtTime(0.4, bt);
+    g.gain.exponentialRampToValueAtTime(0.001, bt + dur);
+    osc.connect(g); g.connect(master);
+    osc.start(bt); osc.stop(bt + dur + 0.02);
+    musicNodes.push(osc);
+    bt += beats * BGM_BEAT;
+  });
+
+  // Hi-hat rhythm
+  for (let i = 0; i < 16; i++) {
+    const ht = t + i * BGM_BEAT * 0.5;
+    const buf = ctx.createBuffer(1, ctx.sampleRate * 0.05, ctx.sampleRate);
+    const data = buf.getChannelData(0);
+    for (let j = 0; j < data.length; j++) data[j] = (Math.random() * 2 - 1) * 0.3;
+    const src = ctx.createBufferSource();
+    const g   = ctx.createGain();
+    const filt = ctx.createBiquadFilter();
+    filt.type = 'highpass';
+    filt.frequency.value = 6000;
+    src.buffer = buf;
+    g.gain.setValueAtTime(i % 4 === 0 ? 0.6 : 0.2, ht);
+    g.gain.exponentialRampToValueAtTime(0.001, ht + 0.04);
+    src.connect(filt); filt.connect(g); g.connect(master);
+    src.start(ht); src.stop(ht + 0.06);
+    musicNodes.push(src);
   }
 
-  players.forEach(player=>{
-    if(player.eliminated)return;
-    const cs=player.chopstick;
-    const hoverY=chopstickHoverY(player);
-    if(!cs.falling){
-      cs.x+=cs.speed*dt;cs.y=hoverY;
-      const zLeft=player.zone.x,zRight=player.zone.x+player.zone.w;
-      if(cs.dir==='left'){if(cs.x+cs.w>=zRight){cs.speed=-SUSHI_SPEED;cs.dir='right';}else if(cs.x<=zLeft){cs.speed=SUSHI_SPEED;cs.dir='left';}}
-      else{if(cs.x<=zLeft){cs.speed=SUSHI_SPEED;cs.dir='left';}else if(cs.x+cs.w>=zRight){cs.speed=-SUSHI_SPEED;cs.dir='right';}}
-    }else{
-      cs.vy+=GRAVITY*dt;cs.y+=cs.vy*dt;
-      const landY=towerTopY(player)-SUSHI_HEIGHT;
-      if(cs.y>=landY)placePiece(player,cs);
+  // Loop: schedule next loop just before this one ends
+  const loopDuration = MELODY.reduce((s, [,b]) => s + b, 0) * BGM_BEAT;
+  const loopTimer = setTimeout(() => scheduleBGM(ctx), (loopDuration - 0.1) * 1000);
+  musicNodes.push({ stop: () => clearTimeout(loopTimer) });
+}
+
+// ── Tick tracker for urgent countdown ────────────────────────
+let lastTickSecond = -1;
+
+// ── Particles ─────────────────────────────────────────────────
+function spawnParticles(player, cx, cy) {
+  for (let i=0;i<8;i++) {
+    const angle = Math.random()*Math.PI*2;
+    const speed = 40 + Math.random()*80;
+    player.particles.push({
+      type: 'dot',
+      x: cx, y: cy,
+      vx: Math.cos(angle)*speed,
+      vy: Math.sin(angle)*speed - 60,
+      r: 2+Math.random()*3,
+      color: player.color,
+      life: 0.6 + Math.random()*0.4
+    });
+  }
+}
+
+// ── Update ─────────────────────────────────────────────────────
+function update(dt) {
+  if (!gameRunning || gameOver) return;
+
+  timeLeft -= dt;
+  if (timeLeft <= 0) {
+    timeLeft = 0;
+    endByTime();
+    return;
+  }
+
+  const timerEl = document.getElementById('timer-display');
+  const secs = Math.ceil(timeLeft);
+  timerEl.textContent = secs;
+  timerEl.className = secs <= 10 ? 'urgent' : '';
+  // Tick sound for last 10 seconds
+  if (secs <= 10 && secs !== lastTickSecond) {
+    lastTickSecond = secs;
+    sfxTick();
+  }
+
+  players.forEach(player => {
+    if (player.eliminated) return;
+
+    const cs = player.chopstick;
+    const hoverY = chopstickHoverY(player);
+
+    if (!cs.falling) {
+      // Move horizontally
+      cs.x += cs.speed * dt;
+      cs.y = hoverY;
+
+      const zLeft  = player.zone.x;
+      const zRight = player.zone.x + player.zone.w;
+
+      // Bounce at zone edges
+      if (cs.dir === 'left') {
+        if (cs.x + cs.w >= zRight) {
+          cs.speed = -SUSHI_SPEED;
+          cs.dir = 'right';
+        } else if (cs.x <= zLeft) {
+          cs.speed = SUSHI_SPEED;
+          cs.dir = 'left';
+        }
+      } else {
+        if (cs.x <= zLeft) {
+          cs.speed = SUSHI_SPEED;
+          cs.dir = 'left';
+        } else if (cs.x + cs.w >= zRight) {
+          cs.speed = -SUSHI_SPEED;
+          cs.dir = 'right';
+        }
+      }
+
+    } else {
+      // Falling
+      cs.vy += GRAVITY * dt;
+      cs.y  += cs.vy * dt;
+      const landY = towerTopY(player) - SUSHI_HEIGHT;
+      if (cs.y >= landY) {
+        placePiece(player, cs);
+      }
     }
-    player.fallingPieces=player.fallingPieces.filter(fp=>{
-      fp.vy+=GRAVITY*dt;fp.x+=fp.vx*dt;fp.y+=fp.vy*dt;
-      const mid=fp.x+fp.w/2;
-      const stackBelow=player.stack.filter(s=>mid>=s.x&&mid<=s.x+s.w&&s.y>fp.y).sort((a,b)=>a.y-b.y);
-      const stackLandY=stackBelow.length>0?stackBelow[0].y-SUSHI_HEIGHT:null;
-      const surfLandY=(mid>=player.surfaceX&&mid<=player.surfaceX+SURFACE_W)?player.surfaceY-SUSHI_HEIGHT:null;
-      let landY=null;
-      if(stackLandY!==null&&surfLandY!==null)landY=Math.min(stackLandY,surfLandY);
-      else if(stackLandY!==null)landY=stackLandY;
-      else if(surfLandY!==null)landY=surfLandY;
-      if(landY!==null&&fp.y>=landY){player.stack.push({x:fp.x,y:landY,w:fp.w,h:fp.h,color:fp.color,inTower:false});rebuildTowerFlags(player);return false;}
-      if(fp.y>player.surfaceY+60)return false;
-      if(fp.x+fp.w<player.zone.x-40||fp.x>player.zone.x+player.zone.w+40)return false;
+
+    // Update falling pieces (ejected from tower)
+    player.fallingPieces = player.fallingPieces.filter(fp => {
+      fp.vy += GRAVITY * dt;
+      fp.x  += fp.vx * dt;
+      fp.y  += fp.vy * dt;
+
+      const mid = fp.x + fp.w / 2;
+
+      // Find landing surface: highest stack piece under midpoint, or surface platform
+      const stackBelow = player.stack
+        .filter(s => mid >= s.x && mid <= s.x + s.w && s.y > fp.y)
+        .sort((a, b) => a.y - b.y);
+      const stackLandY = stackBelow.length > 0 ? stackBelow[0].y - SUSHI_HEIGHT : null;
+      const surfLandY  = (mid >= player.surfaceX && mid <= player.surfaceX + SURFACE_W)
+        ? player.surfaceY - SUSHI_HEIGHT : null;
+
+      let landY = null;
+      if (stackLandY !== null && surfLandY !== null) landY = Math.min(stackLandY, surfLandY);
+      else if (stackLandY !== null) landY = stackLandY;
+      else if (surfLandY  !== null) landY = surfLandY;
+
+      if (landY !== null && fp.y >= landY) {
+        // Land — add to stack as a settled piece, no further cascade
+        player.stack.push({ x: fp.x, y: landY, w: fp.w, h: fp.h, color: fp.color, inTower: false });
+        rebuildTowerFlags(player);
+        return false;
+      }
+
+      // Gone if below screen or out of zone
+      if (fp.y > player.surfaceY + 60) return false;
+      if (fp.x + fp.w < player.zone.x - 40 || fp.x > player.zone.x + player.zone.w + 40) return false;
       return true;
     });
-    player.particles=player.particles.filter(p=>p.life>0);
-    player.particles.forEach(p=>{p.x+=p.vx*dt;p.y+=p.vy*dt;if(p.type==='dot')p.vy+=200*dt;p.life-=dt;});
+
+    // Update particles
+    player.particles = player.particles.filter(p => p.life > 0);
+    player.particles.forEach(p => {
+      p.x += p.vx * dt;
+      p.y += p.vy * dt;
+      if (p.type === 'dot') p.vy += 200*dt;
+      if (p.type === 'piece') { p.vy += GRAVITY*dt; p.x += p.vx*dt; }
+      p.life -= dt;
+    });
   });
 }
 
-function endByTime(){
-  if(gameOver)return;gameOver=true;stopBGM();sfxTimeUp();
-  let best=-1,bestId=-1;
-  players.forEach(p=>{const h=p.stack.length>0?(p.surfaceY-Math.min(...p.stack.map(s=>s.y))):0;if(h>best){best=h;bestId=p.id;}});
-  winnerId=bestId;
-  if(onlineMode&&currentRoomId){dbUpdate(ref(db,`rooms/${currentRoomId}`),{status:'done',winnerId:bestId}).catch(()=>{});}
-  setTimeout(showResult,400);
+function endByTime() {
+  if (gameOver) return;
+  gameOver = true;
+  stopBGM();
+  sfxTimeUp();
+  // Tally stack heights
+  let best = -1, bestId = -1;
+  players.forEach(p => {
+    const height = p.stack.length > 0
+      ? (p.surfaceY - p.stack.reduce((m,p) => p.y < m ? p.y : m, Infinity))
+      : 0;
+    if (height > best) { best = height; bestId = p.id; }
+  });
+  winnerId = bestId;
+  setTimeout(showResult, 400);
 }
 
-// ── DRAW ───────────────────────────────────────────────────
-function draw(){
-  const W=canvas.width,H=canvas.height;
-  ctx.clearRect(0,0,W,H);
-  ctx.fillStyle='#0e0e18';ctx.fillRect(0,0,W,H);
-  ctx.strokeStyle='rgba(200,120,60,0.15)';ctx.lineWidth=1;
-  if(numPlayers>1){ctx.beginPath();ctx.moveTo(W/2,0);ctx.lineTo(W/2,H);ctx.stroke();}
-  if(numPlayers>2){ctx.beginPath();ctx.moveTo(0,H/2);ctx.lineTo(W/2,H/2);ctx.stroke();}
-  if(numPlayers===4){ctx.beginPath();ctx.moveTo(W/2,H/2);ctx.lineTo(W,H/2);ctx.stroke();}
+// ── Draw ───────────────────────────────────────────────────────
+function draw() {
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+
+  // Background
+  ctx.fillStyle = '#0e0e18';
+  ctx.fillRect(0, 0, W, H);
+
+  // Zone dividers
+  ctx.strokeStyle = 'rgba(200,120,60,0.15)';
+  ctx.lineWidth = 1;
+  if (numPlayers > 1) {
+    ctx.beginPath(); ctx.moveTo(W/2,0); ctx.lineTo(W/2,H); ctx.stroke();
+  }
+  if (numPlayers > 2) {
+    ctx.beginPath(); ctx.moveTo(0,H/2); ctx.lineTo(W/2,H/2); ctx.stroke();
+  }
+  if (numPlayers === 4) {
+    ctx.beginPath(); ctx.moveTo(W/2,H/2); ctx.lineTo(W,H/2); ctx.stroke();
+  }
+
   players.forEach(drawPlayer);
   drawTouchButtons();
 }
 
-function drawPlayer(player){
-  const{zone,surfaceX,surfaceY,color,label,winLine,stack,chopstick,particles,winner,eliminated}=player;
-  ctx.font='700 11px "Noto Sans JP"';ctx.fillStyle=color+'88';ctx.textAlign='left';
-  ctx.fillText(label,zone.x+10,zone.y+22);
-  ctx.strokeStyle=color+'aa';ctx.lineWidth=1.5;ctx.setLineDash([6,4]);
-  ctx.beginPath();ctx.moveTo(zone.x+4,winLine);ctx.lineTo(zone.x+zone.w-4,winLine);ctx.stroke();
+function drawPlayer(player) {
+  const { zone, surfaceX, surfaceY, color, label, winLine, stack, chopstick, particles, winner, eliminated } = player;
+
+  // Zone label
+  ctx.font = '700 11px "Noto Sans JP"';
+  ctx.letterSpacing = '0.1em';
+  ctx.fillStyle = color + '88';
+  ctx.textAlign = 'left';
+  ctx.fillText(label, zone.x + 10, zone.y + 22);
+  ctx.letterSpacing = '0em';
+
+  // Win line
+  ctx.strokeStyle = color + 'aa';
+  ctx.lineWidth = 1.5;
+  ctx.setLineDash([6,4]);
+  ctx.beginPath();
+  ctx.moveTo(zone.x + 4, winLine);
+  ctx.lineTo(zone.x + zone.w - 4, winLine);
+  ctx.stroke();
   ctx.setLineDash([]);
-  ctx.font='600 9px "Noto Sans JP"';ctx.fillStyle=color+'99';ctx.textAlign='right';
-  ctx.fillText(T('winLine'),zone.x+zone.w-6,winLine-3);
-  const grad=ctx.createLinearGradient(surfaceX,surfaceY,surfaceX,surfaceY+SURFACE_H);
-  grad.addColorStop(0,'#c8a870');grad.addColorStop(1,'#8a6840');
-  ctx.fillStyle=grad;ctx.beginPath();ctx.roundRect(surfaceX,surfaceY,SURFACE_W,SURFACE_H,3);ctx.fill();
-  ctx.strokeStyle='rgba(255,255,255,0.12)';ctx.lineWidth=1;
-  for(let i=4;i<SURFACE_W;i+=8){ctx.beginPath();ctx.moveTo(surfaceX+i,surfaceY+2);ctx.lineTo(surfaceX+i,surfaceY+SURFACE_H-2);ctx.stroke();}
-  stack.forEach(piece=>drawSushiPiece(ctx,piece.x,piece.y,piece.w,piece.h,piece.color,1));
-  if(stack.length>0){const topY=Math.min(...stack.map(s=>s.y));const heightPx=surfaceY-topY;ctx.font='bold 10px "Noto Sans JP"';ctx.fillStyle=color+'cc';ctx.textAlign='center';ctx.fillText(`${Math.round(heightPx)}px`,surfaceX+SURFACE_W/2,topY-5);}
-  if(!eliminated&&!gameOver||(gameOver&&!winner)){if(!chopstick.falling||chopstick.y<surfaceY){drawChopsticks(ctx,chopstick,color);drawSushiPiece(ctx,chopstick.x,chopstick.y,chopstick.w,chopstick.h,chopstick.color,1);}}
-  if(winner){ctx.fillStyle=color+'22';ctx.fillRect(zone.x,zone.y,zone.w,zone.h);ctx.font='bold 48px serif';ctx.textAlign='center';ctx.fillText('🏆',zone.x+zone.w/2,zone.y+zone.h/2);}
-  (player.fallingPieces||[]).forEach(fp=>drawSushiPiece(ctx,fp.x,fp.y,fp.w,fp.h,fp.color,1));
-  particles.forEach(p=>{const alpha=Math.max(0,p.life);if(p.type==='dot'){ctx.globalAlpha=alpha;ctx.fillStyle=p.color;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1;}});
+  // Win line label
+  ctx.font = '600 9px "Noto Sans JP"';
+  ctx.fillStyle = color + '99';
+  ctx.textAlign = 'right';
+  ctx.fillText(t('winLine'), zone.x + zone.w - 6, winLine - 3);
+
+  // Surface (platform)
+  const grad = ctx.createLinearGradient(surfaceX, surfaceY, surfaceX, surfaceY + SURFACE_H);
+  grad.addColorStop(0, '#c8a870');
+  grad.addColorStop(1, '#8a6840');
+  ctx.fillStyle = grad;
+  ctx.beginPath();
+  ctx.roundRect(surfaceX, surfaceY, SURFACE_W, SURFACE_H, 3);
+  ctx.fill();
+  // Subtle wood grain
+  ctx.strokeStyle = 'rgba(255,255,255,0.12)';
+  ctx.lineWidth = 1;
+  for (let i=4; i<SURFACE_W; i+=8) {
+    ctx.beginPath();
+    ctx.moveTo(surfaceX+i, surfaceY+2);
+    ctx.lineTo(surfaceX+i, surfaceY+SURFACE_H-2);
+    ctx.stroke();
+  }
+
+  // Stack pieces
+  stack.forEach((piece, i) => {
+    drawSushiPiece(ctx, piece.x, piece.y, piece.w, piece.h, piece.color, 1);
+  });
+
+  // Stack height counter
+  if (stack.length > 0) {
+    const topY = stack.reduce((m,p) => p.y < m ? p.y : m, Infinity);
+    const heightPx = surfaceY - topY;
+    ctx.font = 'bold 10px "Noto Sans JP"';
+    ctx.fillStyle = color + 'cc';
+    ctx.textAlign = 'center';
+    ctx.fillText(`${Math.round(heightPx)}px`, surfaceX + SURFACE_W/2, topY - 5);
+  }
+
+  // Chopstick + moving sushi
+  if (!eliminated && !gameOver || (gameOver && !winner)) {
+    if (!chopstick.falling || chopstick.y < surfaceY) {
+      drawChopsticks(ctx, chopstick, color);
+      drawSushiPiece(ctx, chopstick.x, chopstick.y, chopstick.w, chopstick.h, chopstick.color, 1);
+    }
+  }
+
+  // Winner flash
+  if (winner) {
+    ctx.fillStyle = color + '22';
+    ctx.fillRect(zone.x, zone.y, zone.w, zone.h);
+    ctx.font = 'bold 48px serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('🏆', zone.x + zone.w/2, zone.y + zone.h/2);
+  }
+
+  // Falling ejected pieces
+  (player.fallingPieces || []).forEach(fp => {
+    drawSushiPiece(ctx, fp.x, fp.y, fp.w, fp.h, fp.color, 1);
+  });
+
+  // Particles
+  particles.forEach(p => {
+    const alpha = Math.max(0, p.life);
+    if (p.type === 'dot') {
+      ctx.globalAlpha = alpha;
+      ctx.fillStyle = p.color;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+      ctx.fill();
+      ctx.globalAlpha = 1;
+    } else if (p.type === 'piece') {
+      ctx.globalAlpha = Math.min(1, alpha * 2);
+      drawSushiPiece(ctx, p.x, p.y, p.w, p.h, p.color, alpha);
+      ctx.globalAlpha = 1;
+    }
+  });
 }
 
-function drawSushiPiece(ctx,x,y,w,h,color,alpha){
-  ctx.globalAlpha=alpha;
-  const bodyGrad=ctx.createLinearGradient(x,y+h*0.4,x,y+h);
-  bodyGrad.addColorStop(0,'#f8f4ee');bodyGrad.addColorStop(1,'#e8e0d4');
-  ctx.fillStyle=bodyGrad;ctx.beginPath();ctx.roundRect(x,y+Math.floor(h*0.4),w,Math.ceil(h*0.6),2);ctx.fill();
-  const topGrad=ctx.createLinearGradient(x,y,x,y+h*0.5);
-  topGrad.addColorStop(0,color.top);topGrad.addColorStop(1,color.body);
-  ctx.fillStyle=topGrad;ctx.beginPath();ctx.roundRect(x+1,y,w-2,Math.ceil(h*0.55),[3,3,0,0]);ctx.fill();
-  ctx.fillStyle='#1a1a2a';ctx.fillRect(x,y+Math.floor(h*0.38),w,2);
-  ctx.fillStyle='rgba(255,255,255,0.3)';ctx.beginPath();ctx.roundRect(x+2,y+1,w-4,3,1);ctx.fill();
-  ctx.globalAlpha=1;
+function drawSushiPiece(ctx, x, y, w, h, color, alpha) {
+  ctx.globalAlpha = alpha;
+  // Rice body
+  const bodyGrad = ctx.createLinearGradient(x, y+h*0.4, x, y+h);
+  bodyGrad.addColorStop(0, '#f8f4ee');
+  bodyGrad.addColorStop(1, '#e8e0d4');
+  ctx.fillStyle = bodyGrad;
+  ctx.beginPath();
+  ctx.roundRect(x, y + Math.floor(h*0.4), w, Math.ceil(h*0.6), 2);
+  ctx.fill();
+
+  // Topping
+  const topGrad = ctx.createLinearGradient(x, y, x, y+h*0.5);
+  topGrad.addColorStop(0, color.top);
+  topGrad.addColorStop(1, color.body);
+  ctx.fillStyle = topGrad;
+  ctx.beginPath();
+  ctx.roundRect(x+1, y, w-2, Math.ceil(h*0.55), [3,3,0,0]);
+  ctx.fill();
+
+  // Nori band
+  ctx.fillStyle = '#1a1a2a';
+  ctx.fillRect(x, y+Math.floor(h*0.38), w, 2);
+
+  // Highlight
+  ctx.fillStyle = 'rgba(255,255,255,0.3)';
+  ctx.beginPath();
+  ctx.roundRect(x+2, y+1, w-4, 3, 1);
+  ctx.fill();
+
+  ctx.globalAlpha = 1;
 }
 
-function drawChopsticks(ctx,cs,color){
-  const cx=cs.x+cs.w/2,cy=cs.y;
-  ctx.strokeStyle=color+'cc';ctx.lineWidth=2;ctx.lineCap='round';
-  ctx.beginPath();ctx.moveTo(cx-5,cy-8);ctx.lineTo(cx-12,cy-28);ctx.stroke();
-  ctx.beginPath();ctx.moveTo(cx+5,cy-8);ctx.lineTo(cx+12,cy-28);ctx.stroke();
-  ctx.beginPath();ctx.moveTo(cx-5,cy-6);ctx.lineTo(cs.x+4,cy);ctx.stroke();
-  ctx.beginPath();ctx.moveTo(cx+5,cy-6);ctx.lineTo(cs.x+cs.w-4,cy);ctx.stroke();
+function drawChopsticks(ctx, cs, color) {
+  const cx = cs.x + cs.w/2;
+  const cy = cs.y;
+
+  ctx.strokeStyle = color + 'cc';
+  ctx.lineWidth = 2;
+  ctx.lineCap = 'round';
+
+  // Two chopstick lines above
+  ctx.beginPath();
+  ctx.moveTo(cx - 5, cy - 8);
+  ctx.lineTo(cx - 12, cy - 28);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(cx + 5, cy - 8);
+  ctx.lineTo(cx + 12, cy - 28);
+  ctx.stroke();
+
+  // Tips touching sushi
+  ctx.beginPath();
+  ctx.moveTo(cx - 5, cy - 6);
+  ctx.lineTo(cs.x + 4, cy);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(cx + 5, cy - 6);
+  ctx.lineTo(cs.x + cs.w - 4, cy);
+  ctx.stroke();
 }
 
-// ── TOUCH BUTTONS ─────────────────────────────────────────
-const TOUCH_BTN_R=38;
-const touchBtnPressed={};
-const isTouchDevice=()=>window.matchMedia('(pointer: coarse)').matches;
+// ── Touch buttons (drawn on canvas) ───────────────────────────
+const TOUCH_BTN_R = 38; // radius
+const touchBtnPressed = {}; // playerId → timestamp of last press
 
-function getTouchBtnCenter(player){
-  const{zone}=player;
-  const isRight=(player.zone.x>0);
-  const cx=isRight?zone.x+TOUCH_BTN_R+18:zone.x+zone.w-TOUCH_BTN_R-18;
-  const cy=zone.y+zone.h-TOUCH_BTN_R-18;
-  return{cx,cy};
+function getTouchBtnCenter(player) {
+  const { zone } = player;
+  // Place in bottom-corner of the zone, away from the stack (which is centered)
+  // Use bottom-right corner for left zones, bottom-left for right zones
+  const isRight = (player.zone.x > 0);
+  const cx = isRight
+    ? zone.x + TOUCH_BTN_R + 18
+    : zone.x + zone.w - TOUCH_BTN_R - 18;
+  const cy = zone.y + zone.h - TOUCH_BTN_R - 18;
+  return { cx, cy };
 }
 
-function drawTouchButtons(){
-  if(!gameRunning||gameOver)return;
-  if(!isTouchDevice())return;
-  players.forEach(player=>{
-    // In online mode, only draw button for MY player
-    if(onlineMode&&player.id!==myPlayerIndex)return;
-    if(player.eliminated||player.winner)return;
-    const{cx,cy}=getTouchBtnCenter(player);
-    const now=performance.now();
-    const pressAge=now-(touchBtnPressed[player.id]||-9999);
-    const isPressed=pressAge<150;
-    const scale=isPressed?0.88:1;
-    ctx.save();ctx.translate(cx,cy);ctx.scale(scale,scale);
-    const glowAlpha=isPressed?0.6:0.2;
-    ctx.beginPath();ctx.arc(0,0,TOUCH_BTN_R+8,0,Math.PI*2);
-    ctx.fillStyle=player.color+Math.round(glowAlpha*255).toString(16).padStart(2,'0');ctx.fill();
-    ctx.beginPath();ctx.arc(0,0,TOUCH_BTN_R,0,Math.PI*2);
-    ctx.fillStyle=isPressed?player.color+'cc':'rgba(20,20,30,0.75)';ctx.fill();
-    ctx.strokeStyle=player.color+(isPressed?'ff':'88');ctx.lineWidth=2.5;ctx.stroke();
-    ctx.fillStyle=isPressed?'#fff':player.color+'ee';ctx.font=`${isPressed?26:24}px serif`;
-    ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('🥢',0,-2);
-    ctx.font='bold 9px "Noto Sans JP"';ctx.fillStyle=isPressed?'#ffffffcc':player.color+'aa';
-    ctx.textBaseline='alphabetic';ctx.fillText(T('dropLabel'),0,TOUCH_BTN_R-8);
+const isTouchDevice = () => window.matchMedia('(pointer: coarse)').matches;
+
+function drawTouchButtons() {
+  if (!gameRunning || gameOver) return;
+  if (!isTouchDevice()) return;
+  players.forEach(player => {
+    if (player.eliminated || player.winner) return;
+    const { cx, cy } = getTouchBtnCenter(player);
+    const now = performance.now();
+    const pressAge = now - (touchBtnPressed[player.id] || -9999);
+    const isPressed = pressAge < 150;
+    const scale = isPressed ? 0.88 : 1;
+
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.scale(scale, scale);
+
+    // Outer glow ring
+    const glowAlpha = isPressed ? 0.6 : 0.2;
+    ctx.beginPath();
+    ctx.arc(0, 0, TOUCH_BTN_R + 8, 0, Math.PI*2);
+    ctx.fillStyle = player.color + Math.round(glowAlpha * 255).toString(16).padStart(2,'0');
+    ctx.fill();
+
+    // Button body
+    const grad = ctx.createRadialGradient(-6, -6, 2, 0, 0, TOUCH_BTN_R);
+    if (isPressed) {
+      grad.addColorStop(0, player.color + 'dd');
+      grad.addColorStop(1, player.color + '88');
+    } else {
+      grad.addColorStop(0, 'rgba(255,255,255,0.18)');
+      grad.addColorStop(1, 'rgba(0,0,0,0.35)');
+    }
+    ctx.beginPath();
+    ctx.arc(0, 0, TOUCH_BTN_R, 0, Math.PI*2);
+    ctx.fillStyle = isPressed ? grad : 'rgba(20,20,30,0.75)';
+    ctx.fill();
+    ctx.strokeStyle = player.color + (isPressed ? 'ff' : '88');
+    ctx.lineWidth = 2.5;
+    ctx.stroke();
+
+    // Drop arrow icon
+    ctx.fillStyle = isPressed ? '#fff' : player.color + 'ee';
+    ctx.font = `${isPressed ? 26 : 24}px serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('🥢', 0, -2);
+
+    // "DROP" label
+    ctx.font = `bold 9px "Noto Sans JP"`;
+    ctx.fillStyle = isPressed ? '#ffffffcc' : player.color + 'aa';
+    ctx.textBaseline = 'alphabetic';
+    ctx.fillText(t('dropLabel'), 0, TOUCH_BTN_R - 8);
+
     ctx.restore();
   });
 }
 
-function isTouchOnBtn(tx,ty,player){
-  const{cx,cy}=getTouchBtnCenter(player);
-  const dx=tx-cx,dy=ty-cy;
-  return Math.sqrt(dx*dx+dy*dy)<=TOUCH_BTN_R+12;
+function isTouchOnBtn(tx, ty, player) {
+  const { cx, cy } = getTouchBtnCenter(player);
+  const dx = tx - cx, dy = ty - cy;
+  return Math.sqrt(dx*dx + dy*dy) <= TOUCH_BTN_R + 12; // slightly forgiving
 }
 
-// ── PARTICLES ─────────────────────────────────────────────
-function spawnParticles(player,cx,cy){
-  for(let i=0;i<8;i++){
-    const angle=Math.random()*Math.PI*2,speed=40+Math.random()*80;
-    player.particles.push({type:'dot',x:cx,y:cy,vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed-60,r:2+Math.random()*3,color:player.color,life:0.6+Math.random()*0.4});
-  }
+// ── Game loop ──────────────────────────────────────────────────
+function gameLoop(ts) {
+  if (!gameRunning) return;
+  if (lastTime === null) lastTime = ts;
+  const dt = Math.min((ts - lastTime) / 1000, 0.05);
+  lastTime = ts;
+
+  update(dt);
+  draw();
+
+  animFrame = requestAnimationFrame(gameLoop);
 }
 
-// ── GAME LOOP ──────────────────────────────────────────────
-function gameLoop(ts){
-  if(!gameRunning)return;
-  if(lastTime===null)lastTime=ts;
-  const dt=Math.min((ts-lastTime)/1000,0.05);
-  lastTime=ts;
-  update(dt);draw();
-  animFrame=requestAnimationFrame(gameLoop);
-}
-
-// ── INPUT ──────────────────────────────────────────────────
-function setupInput(){
-  document.addEventListener('keydown',e=>{
-    if(!gameRunning||gameOver)return;
-    players.forEach(p=>{
-      if(onlineMode&&p.id!==myPlayerIndex)return;
-      if(e.code===p.key){
+// ── Input ──────────────────────────────────────────────────────
+function setupInput() {
+  document.addEventListener('keydown', e => {
+    if (!gameRunning || gameOver) return;
+    players.forEach(p => {
+      if (e.code === p.key) {
         e.preventDefault();
         dropSushi(p);
-        if(onlineMode)broadcastDrop();
       }
     });
   });
 
-  canvas.addEventListener('touchstart',e=>{
+  canvas.addEventListener('touchstart', e => {
     e.preventDefault();
-    if(!gameRunning||gameOver)return;
-    const rect=canvas.getBoundingClientRect();
-    const scaleX=canvas.width/rect.width,scaleY=canvas.height/rect.height;
-    for(let t of e.changedTouches){
-      const tx=(t.clientX-rect.left)*scaleX,ty=(t.clientY-rect.top)*scaleY;
-      players.forEach(p=>{
-        if(onlineMode&&p.id!==myPlayerIndex)return;
-        if(isTouchOnBtn(tx,ty,p)||(tx>=p.zone.x&&tx<p.zone.x+p.zone.w&&ty>=p.zone.y&&ty<p.zone.y+p.zone.h)){
-          touchBtnPressed[p.id]=performance.now();
+    if (!gameRunning || gameOver) return;
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    for (let t of e.changedTouches) {
+      const tx = (t.clientX - rect.left) * scaleX;
+      const ty = (t.clientY - rect.top) * scaleY;
+      players.forEach(p => {
+        // Hit button circle OR anywhere in zone as fallback
+        if (isTouchOnBtn(tx, ty, p) ||
+            (tx >= p.zone.x && tx < p.zone.x + p.zone.w &&
+             ty >= p.zone.y && ty < p.zone.y + p.zone.h)) {
+          touchBtnPressed[p.id] = performance.now();
           dropSushi(p);
-          if(onlineMode)broadcastDrop();
         }
       });
     }
-  },{passive:false});
+  }, { passive: false });
 }
 
-// ── SCREENS ───────────────────────────────────────────────
-function showMenuScreen(){
-  qs('#online-badge').style.display='none';
-  showScreen('menu');
+// ── Screens ────────────────────────────────────────────────────
+function showMenu() {
+  document.getElementById('menu').style.display          = 'flex';
+  document.getElementById('game-wrap').style.display     = 'none';
+  document.getElementById('result-screen').style.display = 'none';
+  document.getElementById('lobby-screen').style.display  = 'none';
 }
 
-function showResult(){
-  gameRunning=false;gameOver=true;
-  if(animFrame){cancelAnimationFrame(animFrame);animFrame=null;}
-  showScreen('result-screen');
-  const winner=players.find(p=>p.id===winnerId);
-  const titleEl=qs('#result-title'),detailEl=qs('#result-details');
-  if(winner){titleEl.textContent=T('winner',winner.label);titleEl.style.color=winner.color;}
-  else{titleEl.textContent=T('timeUp');titleEl.style.color='#f5e6c8';}
-  const lines=players.map(p=>{
-    const height=p.stack.length>0?Math.round(p.surfaceY-Math.min(...p.stack.map(s=>s.y))):0;
-    const pieces=p.stack.length,star=p.id===winnerId?' ⭐':'';
-    return T('resultLine',p.label,pieces,height,star);
+function showGame() {
+  document.getElementById('menu').style.display          = 'none';
+  document.getElementById('game-wrap').style.display     = 'flex';
+  document.getElementById('result-screen').style.display = 'none';
+  document.getElementById('lobby-screen').style.display  = 'none';
+}
+
+function showResult() {
+  gameRunning = false;
+  gameOver = true;
+  if (animFrame) { cancelAnimationFrame(animFrame); animFrame = null; }
+
+  document.getElementById('menu').style.display          = 'none';
+  document.getElementById('game-wrap').style.display     = 'none';
+  document.getElementById('result-screen').style.display = 'flex';
+  document.getElementById('lobby-screen').style.display  = 'none';
+
+  const winner = players.find(p => p.id === winnerId);
+  const titleEl = document.getElementById('result-title');
+  const detailEl = document.getElementById('result-details');
+
+  if (winner) {
+    titleEl.textContent = t('winner', winner.label);
+    titleEl.style.color = winner.color;
+  } else {
+    titleEl.textContent = t('timeUp');
+    titleEl.style.color = '#f5e6c8';
+  }
+
+  const lines = players.map(p => {
+    const height = p.stack.length > 0
+      ? Math.round(p.surfaceY - p.stack.reduce((m,p) => p.y < m ? p.y : m, Infinity))
+      : 0;
+    const pieces = p.stack.length;
+    const star = p.id === winnerId ? ' ⭐' : '';
+    return t('resultLine', p.label, pieces, height, star);
   });
-  detailEl.innerHTML=lines.join('<br>');
+  detailEl.innerHTML = lines.join('<br>');
 
-  let countdown=5;
-  const replayBtn=qs('#replay-btn');
-  replayBtn.textContent=`${T('replayBtn')} (${countdown})`;
-  const countInterval=setInterval(()=>{
+  // 5-second countdown then auto-return to menu
+  let countdown = 5;
+  const replayBtn = document.getElementById('replay-btn');
+  const replayText = () => t('replayBtn');
+  replayBtn.textContent = `${replayText()} (${countdown})`;
+  const countInterval = setInterval(() => {
     countdown--;
-    if(countdown<=0){clearInterval(countInterval);replayBtn.textContent=T('replayBtn');showMenuScreen();if(onlineMode)leaveRoom(true);}
-    else replayBtn.textContent=`${T('replayBtn')} (${countdown})`;
-  },1000);
-  replayBtn.onclick=()=>{clearInterval(countInterval);replayBtn.textContent=T('replayBtn');if(onlineMode)leaveRoom(true).then(()=>showMenuScreen());else{startGame();}};
+    if (countdown <= 0) {
+      clearInterval(countInterval);
+      replayBtn.textContent = replayText();
+      showMenu();
+    } else {
+      replayBtn.textContent = `${replayText()} (${countdown})`;
+    }
+  }, 1000);
+
+  replayBtn.onclick = () => {
+    clearInterval(countInterval);
+    replayBtn.textContent = replayText();
+    startGame();
+  };
 }
 
-// ── START / RESIZE ─────────────────────────────────────────
-function resizeCanvas(){canvas.width=window.innerWidth;canvas.height=window.innerHeight;}
-
-function startGame(){
-  if(animFrame){cancelAnimationFrame(animFrame);animFrame=null;}
-  stopBGM();resizeCanvas();
-  timeLeft=GAME_DURATION;gameOver=false;winnerId=null;lastTime=null;lastTickSecond=-1;gameRunning=true;
-  remoteDrops={};
-  initPlayers();showScreen('game-wrap');startBGM();
-  animFrame=requestAnimationFrame(gameLoop);
+// ── Resize / init ──────────────────────────────────────────────
+function resizeCanvas() {
+  canvas.width  = window.innerWidth;
+  canvas.height = window.innerHeight;
 }
 
-// ═══════════════════════════════════════════════════════════
-// AUDIO
-// ═══════════════════════════════════════════════════════════
-let audioCtx=null,musicNodes=[],musicPlaying=false,muted=false;
-function getAudioCtx(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();if(audioCtx.state==='suspended')audioCtx.resume();return audioCtx;}
-function makeMaster(ctx,vol=0.5){const g=ctx.createGain();g.gain.value=vol;g.connect(ctx.destination);return g;}
-function playTone(freq,type,duration,gainVal,startTime,dest,ctx){const osc=ctx.createOscillator();const g=ctx.createGain();osc.type=type;osc.frequency.setValueAtTime(freq,startTime);g.gain.setValueAtTime(gainVal,startTime);g.gain.exponentialRampToValueAtTime(0.001,startTime+duration);osc.connect(g);g.connect(dest);osc.start(startTime);osc.stop(startTime+duration+0.01);}
-function sfxLand(){const ctx=getAudioCtx();const m=makeMaster(ctx,0.4);const t=ctx.currentTime;playTone(220,'sine',0.08,0.5,t,m,ctx);playTone(110,'triangle',0.12,0.3,t+0.02,m,ctx);}
-function sfxFall(){const ctx=getAudioCtx();const m=makeMaster(ctx,0.35);const t=ctx.currentTime;const osc=ctx.createOscillator();const g=ctx.createGain();osc.type='sawtooth';osc.frequency.setValueAtTime(300,t);osc.frequency.exponentialRampToValueAtTime(80,t+0.25);g.gain.setValueAtTime(0.4,t);g.gain.exponentialRampToValueAtTime(0.001,t+0.25);osc.connect(g);g.connect(m);osc.start(t);osc.stop(t+0.3);}
-function sfxDrop(){const ctx=getAudioCtx();const m=makeMaster(ctx,0.3);const t=ctx.currentTime;playTone(600,'square',0.04,0.25,t,m,ctx);playTone(400,'square',0.04,0.15,t+0.03,m,ctx);}
-function sfxWin(){const ctx=getAudioCtx();const m=makeMaster(ctx,0.5);const t=ctx.currentTime;[523,659,784,1047].forEach((f,i)=>{playTone(f,'triangle',0.18,0.5,t+i*0.13,m,ctx);playTone(f*0.5,'sine',0.18,0.2,t+i*0.13,m,ctx);});playTone(1047,'triangle',0.5,0.6,t+0.6,m,ctx);}
-function sfxTimeUp(){const ctx=getAudioCtx();const m=makeMaster(ctx,0.4);const t=ctx.currentTime;[440,392,349,330].forEach((f,i)=>playTone(f,'triangle',0.15,0.4,t+i*0.12,m,ctx));}
-function sfxTick(){const ctx=getAudioCtx();const m=makeMaster(ctx,0.2);const t=ctx.currentTime;playTone(880,'square',0.05,0.2,t,m,ctx);}
-function sfxClick(){const ctx=getAudioCtx();const m=makeMaster(ctx,0.25);const t=ctx.currentTime;playTone(440,'sine',0.06,0.3,t,m,ctx);playTone(660,'sine',0.06,0.2,t+0.04,m,ctx);}
-const BGM_BPM=128,BGM_BEAT=60/BGM_BPM;
-const PENTA=[261.6,293.7,329.6,392.0,440.0,523.3,587.3,659.3,784.0,880.0];
-const MELODY=[[4,.5],[5,.5],[6,1],[4,.5],[3,.5],[2,1],[5,.5],[6,.5],[7,1],[5,.5],[4,.5],[3,1],[6,.5],[7,.5],[8,.5],[7,.5],[6,1],[4,1],[3,.5],[4,.5],[5,.5],[3,.5],[2,1],[1,1]];
-const BASS=[[0,2],[2,2],[1,2],[0,2]];
-function startBGM(){if(musicPlaying)return;musicPlaying=true;scheduleBGM(getAudioCtx());}
-function stopBGM(){musicPlaying=false;musicNodes.forEach(n=>{try{n.stop();}catch(e){}});musicNodes=[];}
-function scheduleBGM(ctx){
-  if(!musicPlaying)return;
-  const master=makeMaster(ctx,0.18);const t=ctx.currentTime+0.05;
-  let mt=t;MELODY.forEach(([idx,beats])=>{const freq=PENTA[idx];const dur=beats*BGM_BEAT*0.85;const osc=ctx.createOscillator();const g=ctx.createGain();osc.type='triangle';osc.frequency.value=freq;g.gain.setValueAtTime(0,mt);g.gain.linearRampToValueAtTime(0.5,mt+0.02);g.gain.exponentialRampToValueAtTime(0.001,mt+dur);osc.connect(g);g.connect(master);osc.start(mt);osc.stop(mt+dur+0.02);musicNodes.push(osc);mt+=beats*BGM_BEAT;});
-  let bt=t;BASS.forEach(([idx,beats])=>{const freq=PENTA[idx]*0.5;const dur=beats*BGM_BEAT*0.6;const osc=ctx.createOscillator();const g=ctx.createGain();osc.type='sine';osc.frequency.value=freq;g.gain.setValueAtTime(0.4,bt);g.gain.exponentialRampToValueAtTime(0.001,bt+dur);osc.connect(g);g.connect(master);osc.start(bt);osc.stop(bt+dur+0.02);musicNodes.push(osc);bt+=beats*BGM_BEAT;});
-  for(let i=0;i<16;i++){const ht=t+i*BGM_BEAT*0.5;const buf=ctx.createBuffer(1,ctx.sampleRate*0.05,ctx.sampleRate);const data=buf.getChannelData(0);for(let j=0;j<data.length;j++)data[j]=(Math.random()*2-1)*0.3;const src=ctx.createBufferSource();const g=ctx.createGain();const filt=ctx.createBiquadFilter();filt.type='highpass';filt.frequency.value=6000;src.buffer=buf;g.gain.setValueAtTime(i%4===0?0.6:0.2,ht);g.gain.exponentialRampToValueAtTime(0.001,ht+0.04);src.connect(filt);filt.connect(g);g.connect(master);src.start(ht);src.stop(ht+0.06);musicNodes.push(src);}
-  const loopDuration=MELODY.reduce((s,[,b])=>s+b,0)*BGM_BEAT;
-  const loopTimer=setTimeout(()=>scheduleBGM(ctx),(loopDuration-0.1)*1000);
-  musicNodes.push({stop:()=>clearTimeout(loopTimer)});
+function startGame() {
+  if (animFrame) { cancelAnimationFrame(animFrame); animFrame = null; }
+  stopBGM();
+  resizeCanvas();
+  timeLeft = GAME_DURATION;
+  gameOver = false;
+  winnerId = null;
+  lastTime = null;
+  lastTickSecond = -1;
+  gameRunning = true;
+  initPlayers();
+  showGame();
+  startBGM();
+  animFrame = requestAnimationFrame(gameLoop);
 }
 
-// ═══════════════════════════════════════════════════════════
-// EVENT BINDINGS
-// ═══════════════════════════════════════════════════════════
-qs('#lang-en').addEventListener('click',()=>{lang='en';sfxClick();applyLanguage();});
-qs('#lang-he').addEventListener('click',()=>{lang='he';sfxClick();applyLanguage();});
+// Local play from lobby: set numPlayers from selector then startGame
 
-qs('#mode-local').addEventListener('click',()=>{sfxClick();onlineMode=false;showScreen('local-setup');});
-qs('#mode-online').addEventListener('click',()=>{sfxClick();showScreen('online-lobby');});
+// ═══════════════════════════════════════════════════════════════
+// FIREBASE MULTIPLAYER
+// ═══════════════════════════════════════════════════════════════
 
-qs('#back-from-local').addEventListener('click',()=>{sfxClick();showMenuScreen();});
-qs('#back-from-online').addEventListener('click',()=>{sfxClick();showMenuScreen();});
+const PLAYER_COLORS = ['#e8405a','#4090e8','#40c870','#e8c040'];
+const ZONE_KEYS = ['tl','tr','bl','br'];
 
-document.querySelectorAll('.player-btn').forEach(btn=>{
-  btn.addEventListener('click',()=>{
+let multiMode   = false;   // true when playing online
+let isHost      = false;
+let myPlayerId  = null;    // 0-3
+let roomCode    = null;
+let roomRef     = null;
+let listeners   = [];      // {ref, cb} to unsubscribe on cleanup
+
+function genRoomCode() {
+  return Math.floor(1000 + Math.random() * 9000).toString();
+}
+
+function waitForFirebase(cb) {
+  if (window._firebaseReady) { cb(); return; }
+  window.addEventListener('firebaseReady', cb, { once: true });
+}
+
+// ── Show lobby screen ──────────────────────────────────────────
+function showLobby() {
+  document.getElementById('menu').style.display          = 'none';
+  document.getElementById('game-wrap').style.display     = 'none';
+  document.getElementById('result-screen').style.display = 'none';
+  document.getElementById('lobby-screen').style.display  = 'flex';
+  // Reset lobby UI
+  document.getElementById('lobby-mode').style.display       = 'flex';
+  document.getElementById('lobby-join-area').style.display  = 'none';
+  document.getElementById('lobby-room-display').style.display = 'none';
+  document.getElementById('btn-lobby-start').style.display  = 'none';
+  document.getElementById('lobby-players').innerHTML        = '';
+  document.getElementById('lobby-status').textContent       = '';
+}
+
+// ── Host a game ────────────────────────────────────────────────
+async function hostGame() {
+  waitForFirebase(async () => {
+    const db = window._db;
+    roomCode = genRoomCode();
+    myPlayerId = 0;
+    isHost = true;
+    multiMode = true;
+
+    roomRef = window._ref(db, `sushi_rooms/${roomCode}`);
+
+    // Write initial room data
+    await window._set(roomRef, {
+      host: 0,
+      status: 'lobby',
+      numPlayers: 1,
+      players: {
+        0: { id: 0, name: 'P1', ready: false }
+      },
+      gameState: null,
+      created: window._serverTimestamp()
+    });
+
+    document.getElementById('lobby-mode').style.display = 'none';
+    document.getElementById('lobby-room-display').style.display = 'flex';
+    document.getElementById('room-code-display').textContent = roomCode;
+    document.getElementById('btn-lobby-start').style.display = 'block';
+    document.getElementById('lobby-status').textContent = 'Waiting for players...';
+
+    listenLobby();
+  });
+}
+
+// ── Join a game ────────────────────────────────────────────────
+async function joinGame(code) {
+  waitForFirebase(async () => {
+    const db = window._db;
+    code = code.toUpperCase().trim();
+    if (code.length !== 4) { alert('Enter a 4-digit room code'); return; }
+
+    roomRef = window._ref(db, `sushi_rooms/${code}`);
+    const snap = await window._get(roomRef);
+    if (!snap.exists()) { alert('Room not found!'); return; }
+
+    const data = snap.val();
+    if (data.status !== 'lobby') { alert('Game already started!'); return; }
+
+    const takenIds = Object.keys(data.players || {}).map(Number);
+    if (takenIds.length >= 4) { alert('Room is full!'); return; }
+
+    // Assign next available player id
+    myPlayerId = [0,1,2,3].find(i => !takenIds.includes(i));
+    roomCode = code;
+    isHost = false;
+    multiMode = true;
+
+    await window._update(window._ref(db, `sushi_rooms/${code}/players/${myPlayerId}`), {
+      id: myPlayerId, name: `P${myPlayerId+1}`, ready: false
+    });
+
+    document.getElementById('lobby-mode').style.display = 'none';
+    document.getElementById('lobby-room-display').style.display = 'flex';
+    document.getElementById('room-code-display').textContent = code;
+    document.getElementById('lobby-status').textContent = `Joined as P${myPlayerId+1}! Waiting for host...`;
+
+    listenLobby();
+  });
+}
+
+// ── Listen to lobby changes ────────────────────────────────────
+function listenLobby() {
+  const db = window._db;
+  const playersRef = window._ref(db, `sushi_rooms/${roomCode}/players`);
+
+  const cb = (snap) => {
+    const players = snap.val() || {};
+    const count = Object.keys(players).length;
+
+    // Update player slots UI
+    const container = document.getElementById('lobby-players');
+    container.innerHTML = '';
+    [0,1,2,3].forEach(i => {
+      const el = document.createElement('div');
+      el.style.cssText = `width:70px;height:70px;border-radius:10px;display:flex;flex-direction:column;
+        align-items:center;justify-content:center;gap:4px;font-size:1.5rem;
+        border:2px solid ${players[i] ? PLAYER_COLORS[i] : 'rgba(255,255,255,0.1)'};
+        background:${players[i] ? PLAYER_COLORS[i]+'22' : 'rgba(255,255,255,0.03)'}`;
+      el.innerHTML = players[i]
+        ? `<span>🧑</span><span style="font-size:0.6rem;color:${PLAYER_COLORS[i]};letter-spacing:0.1em">P${i+1}</span>`
+        : `<span style="opacity:0.2">+</span><span style="font-size:0.55rem;color:rgba(255,255,255,0.2)">EMPTY</span>`;
+      container.appendChild(el);
+    });
+
+    // Update numPlayers on Firebase (host only)
+    if (isHost) {
+      window._update(roomRef, { numPlayers: count });
+    }
+
+    // Check if game started (non-host)
+    if (!isHost && snap.ref) {
+      const statusRef = window._ref(db, `sushi_rooms/${roomCode}/status`);
+      window._get(statusRef).then(s => {
+        if (s.val() === 'playing') startMultiGame();
+      });
+    }
+  };
+
+  window._onValue(playersRef, cb);
+  listeners.push({ ref: playersRef, cb });
+
+  // Also listen for status change (for joiners waiting for host to start)
+  if (!isHost) {
+    const statusRef = window._ref(db, `sushi_rooms/${roomCode}/status`);
+    const statusCb = (snap) => {
+      if (snap.val() === 'playing') startMultiGame();
+    };
+    window._onValue(statusRef, statusCb);
+    listeners.push({ ref: statusRef, cb: statusCb });
+  }
+}
+
+// ── Host starts the game ───────────────────────────────────────
+async function hostStartGame() {
+  if (!isHost) return;
+  const db = window._db;
+  // Get current player count
+  const snap = await window._get(window._ref(db, `sushi_rooms/${roomCode}/players`));
+  const count = Object.keys(snap.val() || {}).length;
+  numPlayers = count;
+
+  await window._update(roomRef, { status: 'playing', numPlayers: count });
+  startMultiGame();
+}
+
+// ── Start multiplayer game ─────────────────────────────────────
+function startMultiGame() {
+  cleanupListeners();
+  document.getElementById('lobby-screen').style.display = 'none';
+
+  if (animFrame) { cancelAnimationFrame(animFrame); animFrame = null; }
+  stopBGM();
+  resizeCanvas();
+  timeLeft = GAME_DURATION;
+  gameOver = false;
+  winnerId = null;
+  lastTime = null;
+  lastTickSecond = -1;
+  gameRunning = true;
+  initPlayers();
+  showGame();
+  startBGM();
+
+  // Setup Firebase sync
+  setupMultiSync();
+
+  animFrame = requestAnimationFrame(gameLoop);
+}
+
+// ── Firebase sync during game ──────────────────────────────────
+let syncThrottle = 0;
+
+function setupMultiSync() {
+  const db = window._db;
+
+  // Listen to all OTHER players' chopstick positions
+  players.forEach(p => {
+    if (p.id === myPlayerId) return;
+    const chopRef = window._ref(db, `sushi_rooms/${roomCode}/chopsticks/${p.id}`);
+    const cb = (snap) => {
+      if (!snap.exists()) return;
+      const d = snap.val();
+      if (d && players[p.id]) {
+        players[p.id].chopstick.x  = d.x;
+        players[p.id].chopstick.y  = d.y;
+        players[p.id].chopstick.w  = d.w;
+        players[p.id].chopstick.h  = d.h;
+        players[p.id].chopstick.color = d.color || players[p.id].chopstick.color;
+      }
+    };
+    window._onValue(chopRef, cb);
+    listeners.push({ ref: chopRef, cb });
+
+    // Listen to other players' stacks
+    const stackRef = window._ref(db, `sushi_rooms/${roomCode}/stacks/${p.id}`);
+    const stackCb = (snap) => {
+      if (!snap.exists() || !players[p.id]) return;
+      const raw = snap.val();
+      players[p.id].stack = raw ? Object.values(raw) : [];
+      rebuildTowerFlags(players[p.id]);
+    };
+    window._onValue(stackRef, stackCb);
+    listeners.push({ ref: stackRef, cb: stackCb });
+
+    // Listen to drop events
+    const dropRef = window._ref(db, `sushi_rooms/${roomCode}/drops/${p.id}`);
+    const dropCb = (snap) => {
+      if (!snap.exists() || !players[p.id]) return;
+      const d = snap.val();
+      if (d && d.ts > (window._lastDropTs || 0)) {
+        window._lastDropTs = d.ts;
+        if (!players[p.id].chopstick.falling) {
+          players[p.id].chopstick.falling = true;
+          players[p.id].chopstick.vy = 0;
+        }
+      }
+    };
+    window._onValue(dropRef, dropCb);
+    listeners.push({ ref: dropRef, cb: dropCb });
+  });
+
+  // Host owns the timer — broadcast timeLeft
+  if (isHost) {
+    const timerInterval = setInterval(() => {
+      if (!gameRunning || gameOver) { clearInterval(timerInterval); return; }
+      window._set(window._ref(db, `sushi_rooms/${roomCode}/timeLeft`), timeLeft);
+    }, 500);
+  } else {
+    // Non-host listens to timer
+    const timerRef = window._ref(db, `sushi_rooms/${roomCode}/timeLeft`);
+    const timerCb = (snap) => {
+      if (snap.exists()) timeLeft = snap.val();
+    };
+    window._onValue(timerRef, timerCb);
+    listeners.push({ ref: timerRef, cb: timerCb });
+  }
+
+  // Listen for game over
+  const gameOverRef = window._ref(db, `sushi_rooms/${roomCode}/gameOver`);
+  const gameOverCb = (snap) => {
+    if (!snap.exists()) return;
+    const d = snap.val();
+    if (d && d.winnerId !== undefined && !gameOver) {
+      gameOver = true;
+      winnerId = d.winnerId;
+      stopBGM();
+      if (d.winnerId !== null) sfxWin(); else sfxTimeUp();
+      setTimeout(showResult, 600);
+    }
+  };
+  window._onValue(gameOverRef, gameOverCb);
+  listeners.push({ ref: gameOverRef, cb: gameOverCb });
+}
+
+// Push my chopstick state to Firebase (called every frame for my player)
+function pushMyChopstick() {
+  if (!multiMode || !window._firebaseReady) return;
+  const now = performance.now();
+  if (now - syncThrottle < 50) return; // max 20fps sync
+  syncThrottle = now;
+
+  const p = players[myPlayerId];
+  if (!p) return;
+  const cs = p.chopstick;
+  window._set(window._ref(window._db, `sushi_rooms/${roomCode}/chopsticks/${myPlayerId}`), {
+    x: Math.round(cs.x), y: Math.round(cs.y), w: cs.w, h: cs.h,
+    colorTop: cs.color.top, colorBody: cs.color.body
+  });
+}
+
+// Push my stack to Firebase
+function pushMyStack() {
+  if (!multiMode || !window._firebaseReady) return;
+  const p = players[myPlayerId];
+  if (!p) return;
+  const stackData = {};
+  p.stack.forEach((piece, i) => {
+    stackData[i] = { x: piece.x, y: piece.y, w: piece.w, h: piece.h,
+      inTower: piece.inTower,
+      colorTop: piece.color.top, colorBody: piece.color.body };
+  });
+  window._set(window._ref(window._db, `sushi_rooms/${roomCode}/stacks/${myPlayerId}`), stackData);
+}
+
+// Push a drop event
+function pushMyDrop() {
+  if (!multiMode || !window._firebaseReady) return;
+  window._set(window._ref(window._db, `sushi_rooms/${roomCode}/drops/${myPlayerId}`), {
+    ts: Date.now()
+  });
+}
+
+// Push game over (host only)
+function pushGameOver(wid) {
+  if (!multiMode || !isHost || !window._firebaseReady) return;
+  window._set(window._ref(window._db, `sushi_rooms/${roomCode}/gameOver`), {
+    winnerId: wid, ts: Date.now()
+  });
+}
+
+function cleanupListeners() {
+  listeners.forEach(({ ref: r, cb }) => {
+    try { window._off(r, 'value', cb); } catch(e) {}
+  });
+  listeners = [];
+}
+
+function cleanupRoom() {
+  cleanupListeners();
+  if (multiMode && isHost && roomCode && window._firebaseReady) {
+    window._remove(window._ref(window._db, `sushi_rooms/${roomCode}`)).catch(()=>{});
+  }
+  multiMode = false;
+  isHost = false;
+  myPlayerId = null;
+  roomCode = null;
+  roomRef = null;
+}
+
+// ── Override dropSushi to also push in multiplayer ─────────────
+const _origDropSushi = dropSushi;
+function dropSushi(player) {
+  if (multiMode && player.id !== myPlayerId) return; // can't control others
+  _origDropSushi(player);
+  if (multiMode && player.id === myPlayerId) pushMyDrop();
+}
+
+// ── Override triggerWin to broadcast in multiplayer ────────────
+const _origTriggerWin = triggerWin;
+function triggerWin(playerId) {
+  if (multiMode && isHost) pushGameOver(playerId);
+  else if (multiMode && !isHost) return; // wait for firebase broadcast
+  _origTriggerWin(playerId);
+}
+
+// ── Override endByTime to broadcast in multiplayer ─────────────
+const _origEndByTime = endByTime;
+function endByTime() {
+  if (multiMode && !isHost) return; // only host ends the game
+  if (multiMode && isHost) {
+    // calculate winner locally then push
+    let best = -1, bestId = -1;
+    players.forEach(p => {
+      const height = p.stack.length > 0
+        ? (p.surfaceY - p.stack.reduce((m,p) => p.y < m ? p.y : m, Infinity)) : 0;
+      if (height > best) { best = height; bestId = p.id; }
+    });
+    pushGameOver(bestId);
+  }
+  _origEndByTime();
+}
+
+// ── Hook into update to push my state each frame ───────────────
+const _origUpdate = update;
+function update(dt) {
+  _origUpdate(dt);
+  if (multiMode && myPlayerId !== null && players[myPlayerId]) {
+    pushMyChopstick();
+  }
+}
+
+// ── Hook into placePiece to push stack ─────────────────────────
+// placePiece online sync handled inline in original function
+
+// ── Lobby UI bindings ──────────────────────────────────────────
+document.getElementById('btn-host').addEventListener('click', () => {
+  sfxClick();
+  showLobby();
+  hostGame();
+});
+document.getElementById('btn-join').addEventListener('click', () => {
+  sfxClick();
+  showLobby();
+  document.getElementById('lobby-join-area').style.display = 'flex';
+  document.getElementById('room-code-input').focus();
+});
+document.getElementById('btn-join-confirm').addEventListener('click', () => {
+  joinGame(document.getElementById('room-code-input').value);
+});
+document.getElementById('room-code-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') joinGame(e.target.value);
+});
+document.getElementById('btn-lobby-start').addEventListener('click', hostStartGame);
+document.getElementById('btn-lobby-back').addEventListener('click', () => {
+  cleanupRoom();
+  document.getElementById('lobby-screen').style.display = 'none';
+  showMenu();
+});
+
+// ── Menu bindings ──────────────────────────────────────────────
+document.getElementById('lang-en').addEventListener('click', () => {
+  lang = 'en'; sfxClick(); applyLanguage();
+});
+document.getElementById('lang-he').addEventListener('click', () => {
+  lang = 'he'; sfxClick(); applyLanguage();
+});
+
+document.querySelectorAll('.player-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
     sfxClick();
-    document.querySelectorAll('.player-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.player-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
-    numPlayers=parseInt(btn.dataset.players);
+    numPlayers = parseInt(btn.dataset.players);
     applyLanguage();
   });
 });
 
-qs('#start-local-btn').addEventListener('click',()=>{onlineMode=false;startGame();});
+let muted = false;
+document.getElementById('mute-btn').addEventListener('click', () => {
+  muted = !muted;
+  document.getElementById('mute-btn').textContent = muted ? '🔇' : '🔊';
+  if (audioCtx) muted ? audioCtx.suspend() : audioCtx.resume();
+});
 
-qs('#create-room-btn').addEventListener('click',()=>{sfxClick();createRoom();});
-qs('#join-room-btn').addEventListener('click',()=>{sfxClick();joinRoom();});
-qs('#room-code-input').addEventListener('keydown',e=>{if(e.key==='Enter')joinRoom();});
+// Local play
+document.getElementById('start-btn').addEventListener('click', () => {
+  sfxClick();
+  startGame();
+});
 
-qs('#ready-btn').addEventListener('click',()=>{sfxClick();toggleReady();});
-qs('#start-online-btn').addEventListener('click',()=>{sfxClick();hostStartGame();});
-qs('#back-from-waiting').addEventListener('click',()=>{sfxClick();leaveRoom();});
-
-qs('#back-btn').addEventListener('click',()=>{
-  gameRunning=false;gameOver=true;
-  if(animFrame){cancelAnimationFrame(animFrame);animFrame=null;}
+document.getElementById('back-btn').addEventListener('click', () => {
+  gameRunning = false;
+  gameOver = true;
+  if (animFrame) { cancelAnimationFrame(animFrame); animFrame = null; }
   stopBGM();
-  if(onlineMode)leaveRoom().then(()=>showMenuScreen());
-  else showMenuScreen();
+  cleanupRoom();
+  showMenu();
 });
 
-qs('#mute-btn').addEventListener('click',()=>{
-  muted=!muted;
-  qs('#mute-btn').textContent=muted?'🔇':'🔊';
-  if(audioCtx)muted?audioCtx.suspend():audioCtx.resume();
+window.addEventListener('resize', () => {
+  if (gameRunning) { resizeCanvas(); initPlayers(); }
 });
-
-window.addEventListener('resize',()=>{
-  if(gameRunning){resizeCanvas();initPlayers();}
-});
-
-// Cleanup on page leave
-window.addEventListener('beforeunload',()=>{
-  if(currentRoomId&&myPlayerId){
-    remove(ref(db,`rooms/${currentRoomId}/players/${myPlayerId}`));
-  }
-});
-
-// ── INIT ──────────────────────────────────────────────────
-numPlayers=1;
+// Init
+numPlayers = 1;
 applyLanguage();
 setupInput();
-showScreen('menu');
+showMenu();
 </script>
 </body>
 </html>
