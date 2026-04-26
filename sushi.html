@@ -661,9 +661,11 @@ function chopstickHoverY(player) {
 // ── Drop ───────────────────────────────────────────────────────
 function dropSushi(player) {
   if (player.eliminated || player.winner || player.chopstick.falling) return;
+  if (typeof multiMode !== 'undefined' && multiMode && player.id !== myPlayerId) return;
   sfxDrop();
   player.chopstick.falling = true;
   player.chopstick.vy = 0;
+  if (typeof multiMode !== 'undefined' && multiMode && player.id === myPlayerId) pushMyDrop();
 }
 
 // ── Place piece ────────────────────────────────────────────────
@@ -802,6 +804,8 @@ function checkOverlap(pieceX, pieceW, targetX, targetW) {
 
 function triggerWin(playerId) {
   if (gameOver) return;
+  if (typeof multiMode !== 'undefined' && multiMode && !isHost) return;
+  if (typeof multiMode !== 'undefined' && multiMode && isHost) pushGameOver(playerId);
   gameOver = true;
   winnerId = playerId;
   const p = players.find(p => p.id === playerId);
@@ -1151,18 +1155,18 @@ function update(dt) {
 
 function endByTime() {
   if (gameOver) return;
+  if (typeof multiMode !== 'undefined' && multiMode && !isHost) return;
   gameOver = true;
   stopBGM();
   sfxTimeUp();
-  // Tally stack heights
   let best = -1, bestId = -1;
   players.forEach(p => {
     const height = p.stack.length > 0
-      ? (p.surfaceY - p.stack.reduce((m,p) => p.y < m ? p.y : m, Infinity))
-      : 0;
+      ? (p.surfaceY - p.stack.reduce((m,s) => s.y < m ? s.y : m, Infinity)) : 0;
     if (height > best) { best = height; bestId = p.id; }
   });
   winnerId = bestId;
+  if (typeof multiMode !== 'undefined' && multiMode && isHost) pushGameOver(bestId);
   setTimeout(showResult, 400);
 }
 
@@ -1920,38 +1924,7 @@ function cleanupRoom() {
   roomRef = null;
 }
 
-// ── Override dropSushi to also push in multiplayer ─────────────
-const _origDropSushi = dropSushi;
-function dropSushi(player) {
-  if (multiMode && player.id !== myPlayerId) return; // can't control others
-  _origDropSushi(player);
-  if (multiMode && player.id === myPlayerId) pushMyDrop();
-}
-
-// ── Override triggerWin to broadcast in multiplayer ────────────
-const _origTriggerWin = triggerWin;
-function triggerWin(playerId) {
-  if (multiMode && isHost) pushGameOver(playerId);
-  else if (multiMode && !isHost) return; // wait for firebase broadcast
-  _origTriggerWin(playerId);
-}
-
-// ── Override endByTime to broadcast in multiplayer ─────────────
-const _origEndByTime = endByTime;
-function endByTime() {
-  if (multiMode && !isHost) return; // only host ends the game
-  if (multiMode && isHost) {
-    // calculate winner locally then push
-    let best = -1, bestId = -1;
-    players.forEach(p => {
-      const height = p.stack.length > 0
-        ? (p.surfaceY - p.stack.reduce((m,p) => p.y < m ? p.y : m, Infinity)) : 0;
-      if (height > best) { best = height; bestId = p.id; }
-    });
-    pushGameOver(bestId);
-  }
-  _origEndByTime();
-}
+// ── Multiplayer hooks inlined into original functions ──────────
 
 // ── Hook into update to push my state each frame ───────────────
 // (inlined directly in update function above)
