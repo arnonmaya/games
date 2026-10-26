@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>המקרר החכם שלי</title>
+<style>
+:root{--bg:#f3f4f8;--card:#fff;--ink:#0f1b3d;--mute:#6b7280;--line:#e5e7eb;--blue:#2f6fe4;--bl:#8db8f0;--gr:#7cc796;--or:#f2a465;--red:#d94b4b;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10141f;--card:#1a2030;--ink:#eef1f8;--mute:#9aa3b5;--line:#2a3144}}
+:root[data-theme="dark"]{--bg:#10141f;--card:#1a2030;--ink:#eef1f8;--mute:#9aa3b5;--line:#2a3144}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--ink);font-family:"Heebo","Assistant",system-ui,sans-serif;display:flex;flex-direction:column;max-width:480px;margin:0 auto}
+main{flex:1;overflow-y:auto;padding:24px 20px}
+h1{font-size:34px;margin:24px 0 8px;font-weight:800;text-align:center}
+.sub{text-align:center;color:var(--ink);margin:0 0 28px}
+h2{font-size:18px;color:var(--mute);font-weight:500;margin:0 0 12px}
+.card{display:flex;align-items:center;gap:16px;background:var(--card);border-radius:20px;padding:16px;margin-bottom:14px;box-shadow:0 2px 10px rgba(0,0,0,.06);cursor:pointer;border:0;width:100%;text-align:right;color:inherit;font:inherit}
+.ic{width:56px;height:56px;border-radius:16px;display:grid;place-items:center;font-size:28px;flex:none}
+.card b{display:block;font-size:20px}.card small{color:var(--mute);font-size:15px}
+.card .t{flex:1}.chev{color:var(--mute);font-size:22px}
+.top{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.top button{background:none;border:0;font-size:24px;color:var(--ink);cursor:pointer}
+.top h1{margin:0;font-size:24px;text-align:right}
+.row{display:flex;align-items:center;gap:12px;background:var(--card);padding:12px 14px;border-radius:14px;margin-bottom:10px}
+.row .n{flex:1}.row small{display:block;color:var(--mute)}
+.row button{border:0;background:none;color:var(--red);font-size:20px;cursor:pointer}
+.row input[type=checkbox]{width:22px;height:22px;accent-color:var(--blue)}
+.done span{text-decoration:line-through;color:var(--mute)}
+.add{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.add input{flex:1;min-width:90px;padding:12px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit}
+.add button,.btn{background:var(--blue);color:#fff;border:0;border-radius:12px;padding:12px 18px;font:inherit;font-weight:600;cursor:pointer}
+.exp{color:var(--red)}.dt{width:44px;padding:6px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:inherit;font-size:12px}.qty{display:flex;align-items:center;gap:8px}.qty button{width:32px;height:32px;border-radius:50%;background:var(--bg);color:var(--ink);font-size:18px;border:1px solid var(--line)}.add select{padding:12px 8px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit}.qty b{min-width:60px;text-align:center;font-size:15px}.out{font-size:13px!important;color:var(--blue)!important;border:1px solid var(--line)!important;border-radius:10px;padding:6px 10px}.dot{width:10px;height:10px;background:var(--blue);border-radius:50%}
+.empty{text-align:center;color:var(--mute);padding:30px 0}
+nav{display:flex;border-top:1px solid var(--line);background:var(--card);padding:8px 0 calc(8px + env(safe-area-inset-bottom,0px))}
+nav button{flex:1;background:none;border:0;color:var(--mute);font:inherit;font-size:13px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px}
+nav button i{font-style:normal;font-size:24px}
+nav button.on{color:var(--blue);font-weight:700}
+.set{display:flex;justify-content:space-between;align-items:center;background:var(--card);padding:16px;border-radius:14px;margin-bottom:10px}
+</style>
+</head>
+<body>
+<main id="app"><h1>המקרר החכם שלי</h1><p class="sub">ברוך הבא! הכל מעודכן להיום</p><h2>תפריט ראשי</h2>
+ <button class="card" data-a="go:fridge"><div class="ic" style="background:var(--bl)">🧊</div><div class="t"><b>המקרר שלי</b><small>4 מוצרים</small></div><span class="chev">‹</span></button>
+ <button class="card" data-a="go:shop"><div class="ic" style="background:var(--gr)">📝</div><div class="t"><b>רשימת קניות</b><small>5 פריטים</small></div><span class="chev">‹</span></button>
+ <button class="card" data-a="go:msgs"><div class="ic" style="background:var(--or)">🔔</div><div class="t"><b>הודעות</b><small>2 הודעות שלא נקראו</small></div><span class="chev">‹</span></button></main>
+<nav>
+  <button data-t="home"><i>🏠</i>בית</button>
+  <button data-t="alerts"><i>🔔</i>התראות</button>
+  <button data-t="settings"><i>⚙️</i>הגדרות</button>
+</nav>
+<script>
+function ld(){try{return localStorage.getItem("fridgeCode")||""}catch(e){return ""}}
+function sv(c){try{c?localStorage.setItem("fridgeCode",c):localStorage.removeItem("fridgeCode")}catch(e){}}
+window.onerror=function(m,s,l){var d=document.createElement("div");d.style.cssText="position:fixed;top:0;left:0;right:0;background:#fee;color:#900;padding:8px;font-size:12px;z-index:9;direction:ltr";d.textContent="JS error: "+m+" line "+l;document.body.appendChild(d)};
+(function(){
+
+const today=new Date().toISOString().slice(0,10),addDays=n=>new Date(Date.now()+n*864e5).toISOString().slice(0,10);
+let S={fridge:[{n:"ביצים",q:"12 יח׳"},{n:"גבינה לבנה",q:"1"},{n:"עגבניות",q:"6"},{n:"מלפפונים",q:"5"}],
+ shop:[{n:"לחם",c:0,q:1,u:"יח׳"},{n:"יוגורט",c:0,q:4,u:"יח׳"},{n:"גבינה צהובה",c:0,q:300,u:"גרם"},{n:"תפוחים",c:1,q:2,u:"ק״ג"},{n:"אורז",c:0,q:1,u:"חבילה"}],
+ msgs:[{t:"החלב נגמר. כדאי להוסיף לרשימת הקניות",r:0},{t:"הטחינה פגה תוקף",r:0}],code:ld(),err:"",name:"",notif:true,runout:true};
+let tab="home",sub=null;
+const $=s=>document.querySelector(s),app=$("#app");
+const days=d=>!d?null:Math.round((new Date(d)-new Date(today))/864e5);
+const unread=()=>S.msgs.filter(m=>!m.r).length;
+function gate(){
+ document.querySelector("nav").style.display="none";
+ app.innerHTML=`<div style="text-align:center;padding-top:60px"><div class="ic" style="background:var(--bl);margin:0 auto 20px;width:80px;height:80px;font-size:42px;border-radius:24px">🧊</div><h1 style="margin-top:0">המקרר החכם שלי</h1><p class="sub">הכנס את קוד המקרר כדי להתחבר</p><input id="code" inputmode="numeric" maxlength="8" autocomplete="off" aria-label="קוד מקרר" placeholder="• • • • • •" style="width:100%;padding:16px;font-size:26px;letter-spacing:8px;text-align:center;border-radius:16px;border:1px solid var(--line);background:var(--card);color:var(--ink);font-family:inherit"><p class="exp" style="min-height:22px;margin:10px 0">${S.err}</p><button class="btn" data-a="login" style="width:100%;padding:16px;font-size:18px">התחבר</button><p class="sub" style="color:var(--mute);margin-top:20px;font-size:14px">את הקוד אפשר למצוא על המקרר או באפליקציה של היצרן</p></div>`;
+}
+function login(){const c=($("#code").value||"").trim();if(c.length<4){S.err="הקוד חייב להכיל לפחות 4 תווים";return gate()}S.code=c;sv(c);S.err="";tab="home";sub=null;render()}
+function render(){
+ if(!S.code)return gate();
+ document.querySelector("nav").style.display="";
+ document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("on",b.dataset.t===tab&&!sub));
+ if(tab==="home"&&!sub)home();else if(sub==="fridge")fridge();else if(sub==="shop")shop();
+ else if(tab==="alerts"||sub==="msgs")msgs();else settings();
+}
+function home(){
+ const sh=S.shop.length;
+ app.innerHTML=`<h1>המקרר החכם שלי</h1><p class="sub">ברוך הבא${S.name?" "+S.name:""}! הכל מעודכן להיום</p><h2>תפריט ראשי</h2>
+ <button class="card" data-a="go:fridge"><div class="ic" style="background:var(--bl)">🧊</div><div class="t"><b>המקרר שלי</b><small>${S.fridge.length} מוצרים • ${S.fridge.some(f=>f.d&&days(f.d)<=1)?"יש מוצרים שעומדים לפוג":"הכל תקין"}</small></div><span class="chev">‹</span></button>
+ <button class="card" data-a="go:shop"><div class="ic" style="background:var(--gr)">📝</div><div class="t"><b>רשימת קניות</b><small>${sh} פריטים</small></div><span class="chev">‹</span></button>
+ <button class="card" data-a="go:msgs"><div class="ic" style="background:var(--or)">🔔</div><div class="t"><b>הודעות</b><small>${unread()===1?"הודעה אחת שלא נקראה":unread()+" הודעות שלא נקראו"}</small></div><span class="chev">‹</span></button>`;
+}
+
+function back(){sub=null;render()}
+function hdr(t){return `<div class="top"><button data-a="back" aria-label="חזרה">→</button><h1>${t}</h1></div>`}
+function fridge(){
+ const items=S.fridge.map((f,i)=>({...f,i})).sort((a,b)=>(a.d||"9").localeCompare(b.d||"9"));
+ app.innerHTML=hdr("המקרר שלי")+`<div class="add"><input id="n" placeholder="שם מוצר"><input id="q" placeholder="כמות"><input id="d" type="date" aria-label="תאריך תפוגה (לא חובה)"><button data-a="addF">הוסף</button></div>`+
+ (items.length?items.map(f=>{const x=days(f.d);const st=f.d?(x<0?"פג תוקף":x===0?"פג היום":"עוד "+x+" ימים"):"";
+ return `<div class="row"><div class="n">${esc(f.n)}<small class="${f.d&&x<=1?"exp":""}">${esc(f.q)}${st?" • "+st:""}</small></div>${f.d?"":`<input class="dt" type="date" data-a="setD:${f.i}" aria-label="הוסף תאריך תפוגה">`}<button class="out" data-a="out:${f.i}">נגמר</button><button data-a="delF:${f.i}" aria-label="מחק">✕</button></div>`}).join(""):`<p class="empty">המקרר ריק. הוסף מוצר ראשון.</p>`);
+}
+function addF(){const n=$("#n").value.trim();if(!n)return;const dv=$("#d").value;S.fridge.push({n,q:$("#q").value||"1",d:dv||""});if(S.notif&&dv&&days(dv)<=2)S.msgs.unshift({t:n+" עומד לפוג בקרוב",r:0});render()}
+function shop(){
+ app.innerHTML=hdr("רשימת קניות")+`<div class="add"><input id="n" placeholder="מה צריך לקנות?"><input id="q" type="number" min="1" value="1" inputmode="numeric" aria-label="כמות" style="max-width:70px"><select id="u" aria-label="יחידת מידה"><option>יח׳</option><option>ק״ג</option><option>גרם</option><option>ליטר</option><option>מ״ל</option><option>חבילה</option></select><button data-a="addS">הוסף</button></div>`+
+ (S.shop.length?S.shop.map((s,i)=>`<div class="row ${s.c?"done":""}"><input type="checkbox" ${s.c?"checked":""} data-a="chk:${i}" aria-label="סמן"><div class="n"><span>${esc(s.n)}</span></div><div class="qty"><button data-a="dec:${i}" aria-label="הפחת">−</button><b>${s.q} ${esc(s.u||"")}</b><button data-a="inc:${i}" aria-label="הוסף">+</button></div><button data-a="delS:${i}" aria-label="מחק">✕</button></div>`).join("")+`<button class="btn" data-a="buy">העבר מסומנים למקרר</button>`:`<p class="empty">הרשימה ריקה.</p>`);
+}
+function step(s){return s.u==="גרם"||s.u==="מ״ל"?50:1}
+function addS(){const n=$("#n").value.trim();if(n){S.shop.push({n,c:0,q:Math.max(1,parseInt($("#q").value)||1),u:$("#u").value});render()}}
+function buy(){S.shop.filter(s=>s.c).forEach(s=>S.fridge.push({n:s.n,q:s.q+" "+(s.u||"")}));S.shop=S.shop.filter(s=>!s.c);render()}
+function msgs(){
+ app.innerHTML=(sub?hdr("הודעות"):`<h1 style="text-align:right;font-size:26px">התראות</h1>`)+(S.msgs.length?S.msgs.map((m,i)=>`<div class="row" data-a="read:${i}">${m.r?"":'<span class="dot"></span>'}<div class="n">${esc(m.t)}</div><button data-a="delM:${i}" aria-label="מחק">✕</button></div>`).join(""):`<p class="empty">אין הודעות חדשות.</p>`);
+}
+function settings(){
+ app.innerHTML=`<h1 style="text-align:right;font-size:26px">הגדרות</h1><div class="set"><label for="nm">השם שלך</label><input id="nm" value="${esc(S.name)}" style="padding:8px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:inherit;width:50%" data-a="name"></div>
+ <div class="set"><label for="nt">התראות על תוקף</label><input id="nt" type="checkbox" ${S.notif?"checked":""} data-a="notif" style="width:22px;height:22px;accent-color:var(--blue)"></div>
+ <div class="set"><span>קוד מקרר: <b>${esc(S.code)}</b></span><button class="out" data-a="logout">החלף מקרר</button></div>
+ <div class="set"><label for="ro">התראה כשמוצר נגמר</label><input id="ro" type="checkbox" ${S.runout?"checked":""} data-a="runout" style="width:22px;height:22px;accent-color:var(--blue)"></div>`;
+}
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
+document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>{tab=b.dataset.t;sub=null;render()});
+
+function act(e){
+ const el=e.target.closest("[data-a]");if(!el)return;
+ const [a,v]=el.dataset.a.split(":");const i=+v;
+ if(a==="name"){if(e.type==="input")S.name=el.value;return}
+ if(e.type==="input")return;
+ if(a==="chk"){if(e.type!=="change")return;S.shop[i].c=el.checked;return render()}
+ if(a==="setD"){if(e.type==="change"&&el.value){S.fridge[i].d=el.value;render()}return}
+ if(a==="runout"){if(e.type==="change")S.runout=el.checked;return}
+ if(a==="notif"){if(e.type==="change")S.notif=el.checked;return}
+ if(e.type==="change")return;
+ if(a==="login")login();
+ else if(a==="logout"){S.code="";sv("");S.err="";render()}
+ else if(a==="go"){sub=v;render()}
+ else if(a==="back")back();
+ else if(a==="addF")addF();else if(a==="addS")addS();else if(a==="buy")buy();
+ else if(a==="out"){const f=S.fridge.splice(i,1)[0];if(S.runout)S.msgs.unshift({t:f.n+" נגמר. כדאי להוסיף לרשימת הקניות",r:0});render()}
+ else if(a==="delF"){S.fridge.splice(i,1);render()}
+ else if(a==="inc"){S.shop[i].q+=step(S.shop[i]);render()}
+ else if(a==="dec"){S.shop[i].q=Math.max(1,S.shop[i].q-step(S.shop[i]));render()}
+ else if(a==="delS"){S.shop.splice(i,1);render()}
+ else if(a==="read"){S.msgs[i].r=1;render()}
+ else if(a==="delM"){S.msgs.splice(i,1);render()}
+}
+
+app.addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target.id==="code")login()});
+["click","change","input"].forEach(t=>app.addEventListener(t,act));
+try{render()}catch(err){app.innerHTML='<p style="padding:20px">שגיאה: '+err.message+'</p>'}
+
+window.back=back;})();
+</script>
+</body>
+</html>
